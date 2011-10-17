@@ -1,4 +1,4 @@
-## SCM Breeze
+# SCM Breeze
 ### Streamline your SCM workflow.
 
 **Copyright 2011 Nathan Broadbent (http://madebynathan.com). All Rights Reserved.**
