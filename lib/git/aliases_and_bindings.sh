@@ -1,6 +1,7 @@
 #
 # Set up configured aliases & keyboard shortcuts
 # --------------------------------------------------------------------
+alias $git_alias='git'
 
 # SCM Breeze functions
 alias $git_status_shortcuts_alias="git_status_shortcuts"
