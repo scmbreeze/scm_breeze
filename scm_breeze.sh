@@ -14,7 +14,7 @@ if [[ -s "$HOME/.git.scmbrc" ]]; then
   . "$scmbDir/lib/_shared.sh"
   . "$scmbDir/lib/git/aliases_and_bindings.sh"
   . "$scmbDir/lib/git/status_shortcuts.sh"
-  . "$scmbDir/lib/git/repo_management.sh"
+  . "$scmbDir/lib/git/repo_index.sh"
   . "$scmbDir/lib/git/tools.sh"
 
   if ! type ruby > /dev/null 2>&1; then

@@ -10,7 +10,7 @@ export gs_max_changes="99"
 export ga_auto_remove="yes"
 
 
-# Git Repo Management Config
+# Git Index Config
 # --------------------------
 # Repos will be automatically added from this directory.
 export GIT_REPO_DIR="$HOME/src"
@@ -19,7 +19,7 @@ export GIT_REPO_DIR="$HOME/src"
 export GIT_REPOS=""
 export git_status_command="git_status_shortcuts"
 # Alias
-git_repo_alias="s"    # The 's' could stand for 'switch' or 'sourcecode'..
+git_index_alias="s"    # The 's' stands for 'switch' or 'sourcecode'...
 
 
 # Git Aliases
