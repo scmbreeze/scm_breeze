@@ -1,4 +1,4 @@
-# This loads Git Breeze into the shell session.
+# This loads SCM Breeze into the shell session.
 exec_string='[[ -s "$HOME/.scm_breeze/scm_breeze.sh" ]] && . "$HOME/.scm_breeze/scm_breeze.sh"'
 
 # Add line to bashrc and zshrc if not already present.

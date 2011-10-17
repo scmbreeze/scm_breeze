@@ -6,3 +6,7 @@ if [[ $shell == "zsh" ]]; then zsh_shwordsplit=$((setopt | grep -q shwordsplit) 
 zsh_compat(){ if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then setopt shwordsplit; fi; }
 zsh_reset(){  if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then unsetopt shwordsplit; fi; }
 
+
+# Update SCM Breeze from GitHub
+update_scm_breeze() { $(cd "$scmbreezeDir"; git pull origin master); }
+

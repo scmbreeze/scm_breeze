@@ -24,7 +24,7 @@ export git_status_command="git_status_shortcuts"
 # ------------------------------------------------------------------------------------
 git_alias="g"
 
-# 1. 'Git Breeze' functions
+# 1. 'SCM Breeze' functions
 git_status_shortcuts_alias="gs"
 git_add_shortcuts_alias="ga"
 git_show_files_alias="gsf"

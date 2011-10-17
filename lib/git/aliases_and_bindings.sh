@@ -2,7 +2,7 @@
 # Set up configured aliases & keyboard shortcuts
 # --------------------------------------------------------------------
 
-# Git Breeze functions
+# SCM Breeze functions
 alias $git_status_shortcuts_alias="git_status_shortcuts"
 alias $git_add_shortcuts_alias="git_add_shorcuts"
 alias $exec_git_expand_args_alias="exec_git_expand_args"
