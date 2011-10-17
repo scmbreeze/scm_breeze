@@ -2,21 +2,20 @@
 ### Streamline your SCM workflow.
 
 **Copyright 2011 Nathan Broadbent (http://madebynathan.com). All Rights Reserved.**
-**Released under the LGPL (GNU Lesser General Public License)**
 
 -------------------------------------------------------
 
 This is a collection of simple shell scripts (for `bash` and `zsh`) that enhance interaction with your SCM software.
 
-They have been incubated and refined in my bashrc for more than a year,
+They have been refined in my bashrc for more than a year,
 so I decided that they deserved their own project.
-They are currently **only written for Git**, but I decided to keep the project's name open,
+They are currently **only written for Git**, but I decided to keep the name open
 in case anybody wants to port these ideas for Mercurial, SVN, Bazaar, etc.
 
 
-## What does it do?
+# What does it do?
 
-### 1) File Shortcuts
+## File Shortcuts.
 
 This is the main feature of SCM Breeze.
 Whenever you view your SCM status, each path is stored in a numbered environment variable.
@@ -62,7 +61,7 @@ gco 5
 And if you want to be really fast, you can use keyboard shortcuts like this:
 
 ```
-1 4..7 <CTRL>+<x>+<c>
+$ 1 4..7 <CTRL>+<x>+<c>
 
 
 # Becomes...
@@ -89,10 +88,10 @@ Commit Message: |
 ```
 
 
-### 2) Repository Index
+## Repository Index
 
 The second feature is a repository index for all of your projects.
-This gives you super-fast switching between your project directories, with tab completion.
+This gives you super-fast switching between your project directories with tab completion.
 It can even tab-complete project subdirectories.
 It's similar to [autojump](https://github.com/joelthelion/autojump), but it doesn't need to 'learn' anything,
 and it can do SCM-specific stuff like:
@@ -101,13 +100,13 @@ and it can do SCM-specific stuff like:
 * Auto-updating a repo when you switch to it and it hasn't been updated for at least 5 hours.
 
 
-### Anything else?
+## Anything else?
 
-Well, there's also a pretty pathetic 'Misc Git Tools' section.
-All it contains is a command to remove files/folders from git history.
+Well, there's also a tiny stub for a 'Misc Git Tools' section.
+All it contains at the moment is a command to remove files/folders from git history.
 
 But if you have any awesome SCM scripts lurking in your `.*shrc`, please don't
-hesitate to send me a pull request. It would be cool to turn this project into a
+hesitate to send me a pull request. It would be cool to turn this project into a kind of
 [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) for SCM users.
 
 
@@ -133,5 +132,7 @@ Each feature is modular, so you are free to ignore the parts you don't want to u
 Just comment out the line in `~/.scm_breeze/scm_breeze.sh`.
 
 
-Hope you enjoy, and I look forward to your pull requests!
+## Hope you enjoy!
+
+I look forward to your pull requests!
 
