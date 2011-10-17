@@ -8,3 +8,10 @@ for rc in bashrc zshrc; do
   fi
 done
 
+
+# Set up
+if ! [[ -s "$HOME/.git.scmbrc" ]]; then
+  cp "$HOME/.scm_breeze/git.scmbrc.example" "$HOME/.git.scmbrc"
+  echo "== git.scmbrc.example has been copied to ~/.git.scmbrc. "
+fi
+

@@ -2,11 +2,11 @@
 # Git File Shortcuts Config
 # ------------------------------------------------------------------------------
 # - Set your preferred prefix for env variable file shortcuts.
-#   (I chose 'e' because it is the easiest key to press after '$'.)
+#   (I chose 'e' because it is easy to slide your finger to it from '$'.)
 export git_env_char="e"
 # - Max changes before reverting to 'git status'. git_status_shortcuts() may slow down for lots of changes.
-export gs_max_changes="110"
-# - Automatically use 'git rm' to remove deleted files when using the git_add_shorcuts() command?
+export gs_max_changes="99"
+# - When using the git_add_shorcuts() command, automatically invoke 'git rm' to remove deleted files?
 export ga_auto_remove="yes"
 
 
@@ -18,9 +18,11 @@ export GIT_REPO_DIR="$HOME/src"
 # e.g. "/opt/rails/project:/opt/rails/another project:$HOME/other/repo"
 export GIT_REPOS=""
 export git_status_command="git_status_shortcuts"
+# Alias
+git_repo_alias="s"
 
 
-# Alias configuration
+# Git Aliases
 # ------------------------------------------------------------------------------------
 git_alias="g"
 
@@ -60,11 +62,8 @@ git_log_stat_alias="gls"
 git_log_graph_alias="glg"
 git_show_alias="gsh"
 
-# Git repo management
-git_repo_alias="s"
 
-
-# Keyboard shortcuts configuration
+# Git Keyboard Shortcuts
 # ---------------------------------------------
 git_status_shortcuts_keys="\C- "   # CTRL+SPACE
 git_commit_all_keys="\C-x "        # CTRL+x SPACE
