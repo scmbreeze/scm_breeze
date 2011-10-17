@@ -12,6 +12,7 @@ done
 # Set up
 if ! [[ -s "$HOME/.git.scmbrc" ]]; then
   cp "$HOME/.scm_breeze/git.scmbrc.example" "$HOME/.git.scmbrc"
-  echo "== git.scmbrc.example has been copied to ~/.git.scmbrc. "
+  echo "== 'git.scmbrc.example' has been copied to '~/.git.scmbrc'.
+   Please edit this file to change SCM Breeze settings, and Git aliases & keyboard shortcuts."
 fi
 
