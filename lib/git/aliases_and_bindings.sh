@@ -43,7 +43,7 @@ alias $git_commit_amend_alias='git commit --amend'
 alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
 
 # Git repo management alias
-alias $git_repo_alias="git_repo"   # The 's' stands for 'switch' or 'sourcecode'
+alias $git_index_alias="git_index"
 
 
 # Tab completion for aliases
@@ -86,9 +86,9 @@ else
 fi
 
 # Git repo management & aliases.
-# If you know how to rewrite _git_repo_tab_completion() for zsh, please send me a pull request!
-complete -o nospace -o filenames -F _git_repo_tab_completion git_repo
-complete -o nospace -o filenames -F _git_repo_tab_completion $git_repo_alias
+# If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
+complete -o nospace -o filenames -F _git_index_tab_completion git_index
+complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
 
 
 # Keyboard Bindings

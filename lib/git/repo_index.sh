@@ -5,11 +5,11 @@
 # -------------------------------------------------------
 
 # -------------------------------------------------------
-# Repository management scripts for Git projects
+# Repository Indexing scripts for Git projects
 # -------------------------------------------------------
 
 
-# * The `git_repo` function makes it easy to list & switch between
+# * The `git_index` function makes it easy to list & switch between
 #   git projects in $GIT_REPO_DIR (default = ~/src)
 #
 #   * Change directory to any of your git repos or submodules, with recursive tab completion.
@@ -18,61 +18,61 @@
 #     (Scanning for git projects and submodules can take a few seconds.)
 #
 #   * Cache can be rebuilt by running:
-#       $ git_repo --rebuild-index
+#       $ git_index --rebuild-index
 #       ('--' commands have tab completion too.)
 #
 #   * Ignores projects within an 'archive' folder.
 #
 #   * Allows you to run batch commands across all your repositories:
 #
-#     - Update every repo from their remote: 'git_repo --update-all'
-#     - Produce a count of repos for each host: 'git_repo --count-by-host'
-#     - Run a custom command for each repo: 'git_repo --batch-cmd <command>'
+#     - Update every repo from their remote: 'git_index --update-all'
+#     - Produce a count of repos for each host: 'git_index --count-by-host'
+#     - Run a custom command for each repo: 'git_index --batch-cmd <command>'
 #
 # Examples:
 #
-#     $ git_repo --list
+#     $ git_index --list
 #     # => Lists all git projects
 #
-#     $ git_repo ub[TAB]
+#     $ git_index ub[TAB]
 #     # => Provides tab completion for all project folders that begin with 'ub'
 #
-#     $ git_repo ubuntu_config
+#     $ git_index ubuntu_config
 #     # => Changes directory to ubuntu_config, and auto-updates code from git remote.
 #
-#     $ git_repo buntu_conf
-#     # => Same result as `git_repo ubuntu_config`
+#     $ git_index buntu_conf
+#     # => Same result as `git_index ubuntu_config`
 #
-#     $ git_repo
+#     $ git_index
 #     # => cd $GIT_REPO_DIR
 
 
-function git_repo() {
+function git_index() {
   local IFS=$'\n'
   if [ -z "$1" ]; then
     # Just change to $GIT_REPO_DIR if no params given.
     cd $GIT_REPO_DIR
   else
     if [ "$1" = "--rebuild-index" ]; then
-      _rebuild_git_repo_index
+      _rebuild_git_index
     elif [ "$1" = "--update-all" ]; then
-      _git_repo_git_update_all
+      _git_index_git_update_all
     elif [ "$1" = "--batch-cmd" ]; then
-      _git_repo_git_batch_cmd "${@:2:$(($#-1))}" # Pass all args except $1
+      _git_index_git_batch_cmd "${@:2:$(($#-1))}" # Pass all args except $1
     elif [ "$1" = "--list" ] || [ "$1" = "-l" ]; then
-      echo -e "$_bld_col$(_git_repo_count)$_txt_col Git repositories in $_bld_col$GIT_REPO_DIR$_txt_col:\n"
-      for repo in $(_git_repo_dirs_without_home); do
+      echo -e "$_bld_col$(_git_index_count)$_txt_col Git repositories in $_bld_col$GIT_REPO_DIR$_txt_col:\n"
+      for repo in $(_git_index_dirs_without_home); do
         echo $(basename $repo) : $repo
       done | sort | column -t -s ':'
     elif [ "$1" = "--count-by-host" ]; then
       echo -e "=== Producing a report of the number of repos per host...\n"
-      _git_repo_batch_cmd git remote -v | grep "origin.*(fetch)" |
+      _git_index_batch_cmd git remote -v | grep "origin.*(fetch)" |
       sed -e "s/origin\s*//" -e "s/(fetch)//" |
       sed -e "s/\(\([^/]*\/\/\)\?\([^@]*@\)\?\([^:/]*\)\).*/\1/" |
       sort | uniq -c
       echo
     else
-      _check_git_repo_index
+      _check_git_index
       # Figure out which directory we need to change to.
       local project=$(echo $1 | cut -d "/" -f1)
       # Find base path of project
@@ -84,16 +84,16 @@ function git_repo() {
       fi
       # Try partial matches
       # - string at beginning of project
-      if [ -z "$base_path" ]; then base_path=$(_git_repo_dirs_without_home | grep -m1 "/$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | grep -m1 "/$project"); fi
       # - string anywhere in project
-      if [ -z "$base_path" ]; then base_path=$(_git_repo_dirs_without_home | grep -m1 "$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | grep -m1 "$project"); fi
       # --------------------
       # Go to our base path
       if [ -n "$base_path" ]; then
         unset IFS
         eval cd "$base_path"   # eval turns ~ into $HOME
         # Run git callback (either update or show changes), if we are in the root directory
-        if [ -z "${sub_path%/}" ]; then _git_repo_pull_or_status; fi
+        if [ -z "${sub_path%/}" ]; then _git_index_pull_or_status; fi
       else
         echo -e "$_wrn_col'$1' did not match any git repos in $GIT_REPO_DIR$_txt_col"
       fi
@@ -101,7 +101,7 @@ function git_repo() {
   fi
 }
 
-_git_repo_dirs_without_home() {
+_git_index_dirs_without_home() {
   sed -e "s/--.*//" -e "s%$HOME%~%" $GIT_REPO_DIR/.git_index
 }
 
@@ -124,7 +124,7 @@ function _find_git_submodules() {
 
 
 # Rebuilds index of git repos in $GIT_REPO_DIR.
-function _rebuild_git_repo_index() {
+function _rebuild_git_index() {
   if [ "$1" != "--silent" ]; then echo -e "== Scanning $GIT_REPO_DIR for git repos & submodules..."; fi
   # Get repos from src dir and custom dirs, then sort by basename
   local IFS=$'\n'
@@ -133,24 +133,24 @@ function _rebuild_git_repo_index() {
   done | sort | cut -d " " -f2- > "$GIT_REPO_DIR/.git_index"
 
   if [ "$1" != "--silent" ]; then
-    echo -e "===== Cached $_bld_col$(_git_repo_count)$_txt_col repos in $GIT_REPO_DIR/.git_index"
+    echo -e "===== Cached $_bld_col$(_git_index_count)$_txt_col repos in $GIT_REPO_DIR/.git_index"
   fi
 }
 
 # Build index if empty
-function _check_git_repo_index() {
+function _check_git_index() {
   if [ ! -f "$GIT_REPO_DIR/.git_index" ]; then
-    _rebuild_git_repo_index --silent
+    _rebuild_git_index --silent
   fi
 }
 
 # Produces a count of repos in the tab completion index (excluding commands)
-function _git_repo_count() {
+function _git_index_count() {
   echo $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | wc -l)
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
-function _git_repo_pull_or_status() {
+function _git_index_pull_or_status() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
     # Fall back to 'git status' if git status alias isn't configured
     if type $git_status_command 2>&1 | grep -qv "not found"; then
@@ -179,19 +179,19 @@ function _git_repo_pull_or_status() {
 }
 
 # Updates all git repositories with clean working directories.
-function _git_repo_update_all() {
-  echo -e "== Updating code in $_bld_col$(_git_repo_count)$_txt_col repos...\n"
+function _git_index_update_all() {
+  echo -e "== Updating code in $_bld_col$(_git_index_count)$_txt_col repos...\n"
   for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
     echo -e "===== Updating code in \e[1;32m$base_path\e[0m...\n"
     cd "$base_path"
-    _git_repo_pull_or_status
+    _git_index_pull_or_status
   done
 }
 
 # Runs a command for all git repos
-function _git_repo_batch_cmd() {
+function _git_index_batch_cmd() {
   if [ -n "$1" ]; then
-    echo -e "== Running command for $_bld_col$(_git_repo_count)$_txt_col repos...\n"
+    echo -e "== Running command for $_bld_col$(_git_index_count)$_txt_col repos...\n"
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
       cd "$base_path"
       $@
@@ -202,9 +202,9 @@ function _git_repo_batch_cmd() {
 }
 
 
-# Bash tab completion function for git_repo()
-function _git_repo_tab_completion() {
-  _check_git_repo_index
+# Bash tab completion function for git_index()
+function _git_index_tab_completion() {
+  _check_git_index
   local curw
   local IFS=$'\n'
   COMPREPLY=()

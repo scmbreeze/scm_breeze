@@ -17,7 +17,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwords
 
 # Load functions to test
 . "$scmbDir/lib/_shared.sh"
-. "$scmbDir/lib/git/repo_management.sh"
+. "$scmbDir/lib/git/repo_index.sh"
 
 
 # Setup and tear down
@@ -77,7 +77,7 @@ oneTimeTearDown() {
 }
 
 ensureIndex() {
-  _check_git_repo_index
+  _check_git_index
 }
 
 index_no_newlines() {
@@ -90,7 +90,7 @@ index_no_newlines() {
 #-----------------------------------------------------------------------------
 
 test_repo_index_command() {
-  git_repo --rebuild-index > /dev/null
+  git_index --rebuild-index > /dev/null
 
   # Test that all repos are detected, and sorted alphabetically
   assertIncludes "$(index_no_newlines)" "bitbucket.*\
@@ -105,45 +105,45 @@ test_repo_1"
 
 }
 
-test_check_git_repo_index() {
+test_check_git_index() {
   ensureIndex
   echo "should not be regenerated" >> $git_index_file
-  _check_git_repo_index
+  _check_git_index
   # Test that index is not rebuilt unless empty
   assertIncludes "$(index_no_newlines)" "should not be regenerated"
   rm $git_index_file
   # Test the index is rebuilt
-  _check_git_repo_index
+  _check_git_index
   assertTrue "[ -f $git_index_file ]"
 }
 
-test_git_repo_count() {
-  assertEquals "9" "$(_git_repo_count)"
+test_git_index_count() {
+  assertEquals "9" "$(_git_index_count)"
 }
 
 test_repo_list() {
   ensureIndex
-  list=$(git_repo --list)
+  list=$(git_index --list)
   assertIncludes "$list" "bitbucket"      || return
   assertIncludes "$list" "blue_submodule" || return
   assertIncludes "$list" "test_repo_11"
 }
 
 # Test matching rules for changing directory
-test_git_repo_changing_directory() {
+test_git_index_changing_directory() {
   ensureIndex
-  git_repo "github";       assertEquals "$GIT_REPO_DIR/github" "$PWD"
-  git_repo "github/";      assertEquals "$GIT_REPO_DIR/github" "$PWD"
-  git_repo "bucket";       assertEquals "$GIT_REPO_DIR/bitbucket" "$PWD"
-  git_repo "green_sub";    assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/green_submodule" "$PWD"
-  git_repo "_submod";      assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
-  git_repo "test_repo_1";  assertEquals "/tmp/test_repo_1" "$PWD"
-  git_repo "test_repo_11"; assertEquals "/tmp/test_repo_11" "$PWD"
-  git_repo "test_repo_";   assertEquals "/tmp/test_repo_11" "$PWD"
-  git_repo "github/videos/octocat/live_action"; assertEquals "$GIT_REPO_DIR/github/videos/octocat/live_action" "$PWD"
+  git_index "github";       assertEquals "$GIT_REPO_DIR/github" "$PWD"
+  git_index "github/";      assertEquals "$GIT_REPO_DIR/github" "$PWD"
+  git_index "bucket";       assertEquals "$GIT_REPO_DIR/bitbucket" "$PWD"
+  git_index "green_sub";    assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/green_submodule" "$PWD"
+  git_index "_submod";      assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
+  git_index "test_repo_1";  assertEquals "/tmp/test_repo_1" "$PWD"
+  git_index "test_repo_11"; assertEquals "/tmp/test_repo_11" "$PWD"
+  git_index "test_repo_";   assertEquals "/tmp/test_repo_11" "$PWD"
+  git_index "github/videos/octocat/live_action"; assertEquals "$GIT_REPO_DIR/github/videos/octocat/live_action" "$PWD"
 }
 
-test_git_repo_tab_completion() {
+test_git_index_tab_completion() {
   # Only run tab completion test for bash
   if [[ "$0" == *bash ]]; then
     ensureIndex
@@ -151,29 +151,29 @@ test_git_repo_tab_completion() {
 
     # Test that '--' commands have tab completion
     COMP_WORDS="--"
-    _git_repo_tab_completion
+    _git_index_tab_completion
     assertEquals "Incorrect number of tab-completed '--' commands" "5" "$(tab_completions | wc -w)"
 
     COMP_WORDS="gith"
-    _git_repo_tab_completion
+    _git_index_tab_completion
     assertIncludes "$(tab_completions)" "github/"
 
     # Test completion for project sub-directories when project ends with '/'
     COMP_WORDS="github/"
-    _git_repo_tab_completion
+    _git_index_tab_completion
     assertIncludes    "$(tab_completions)" "github/videos/"
     # Check that '.git/' is filtered from completion, but other hidden dirs are available
     assertNotIncludes "$(tab_completions)" "github/.git/"
     assertIncludes    "$(tab_completions)" "github/.im_hidden/"
 
     COMP_WORDS="github/videos/"
-    _git_repo_tab_completion
+    _git_index_tab_completion
     assertIncludes "$(tab_completions)" "github/videos/octocat/"
 
 
     # Test that completion checks for other matching projects even if one matches perfectly
     COMP_WORDS="test_repo_1"
-    _git_repo_tab_completion
+    _git_index_tab_completion
     assertIncludes "$(tab_completions)" "test_repo_1/ test_repo_11/"
   fi
 }
