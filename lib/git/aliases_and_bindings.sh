@@ -42,7 +42,7 @@ alias $git_commit_amend_alias='git commit --amend'
 # Add staged changes to latest commit without prompting for message
 alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
 
-# Git repo management alias
+# Git Index alias
 alias $git_index_alias="git_index"
 
 

@@ -5,7 +5,7 @@
 # -------------------------------------------------------
 
 # -------------------------------------------------------
-# Repository Indexing scripts for Git projects
+# Repository Index scripts for Git projects
 # -------------------------------------------------------
 
 
@@ -18,7 +18,7 @@
 #     (Scanning for git projects and submodules can take a few seconds.)
 #
 #   * Cache can be rebuilt by running:
-#       $ git_index --rebuild-index
+#       $ git_index --rebuild
 #       ('--' commands have tab completion too.)
 #
 #   * Ignores projects within an 'archive' folder.
@@ -53,7 +53,7 @@ function git_index() {
     # Just change to $GIT_REPO_DIR if no params given.
     cd $GIT_REPO_DIR
   else
-    if [ "$1" = "--rebuild-index" ]; then
+    if [ "$1" = "--rebuild" ]; then
       _rebuild_git_index
     elif [ "$1" = "--update-all" ]; then
       _git_index_git_update_all
@@ -221,7 +221,7 @@ function _git_index_tab_completion() {
     COMPREPLY=($(compgen -d "$base_path$search_path" | grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
   # Else, tab complete all the entries in .git_index, plus '--' commands
   else
-    local commands="--list\n--rebuild-index\n--update-all\n--batch-cmd\n--count-by-host"
+    local commands="--list\n--rebuild\n--update-all\n--batch-cmd\n--count-by-host"
     COMPREPLY=($(compgen -W '$(sed -e "s:.*/::" -e "s:$:/:" "$GIT_REPO_DIR/.git_index" | sort)$(echo -e "\n"$commands)' -- $curw))
   fi
   return 0

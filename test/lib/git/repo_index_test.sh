@@ -90,7 +90,7 @@ index_no_newlines() {
 #-----------------------------------------------------------------------------
 
 test_repo_index_command() {
-  git_index --rebuild-index > /dev/null
+  git_index --rebuild > /dev/null
 
   # Test that all repos are detected, and sorted alphabetically
   assertIncludes "$(index_no_newlines)" "bitbucket.*\
