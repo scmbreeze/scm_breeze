@@ -18,7 +18,7 @@
 # --------------------------------------------------------------------
 git_status_shortcuts() {
   # Run ruby script, store output
-  cmd_output=$(/usr/bin/env ruby "$gitbreezeDir/lib/git/status_shortcuts.rb" $@)
+  cmd_output=$(/usr/bin/env ruby "$scmbreezeDir/lib/git/status_shortcuts.rb" $@)
   if [[ -z "$cmd_output" ]]; then
     # Just show regular git status if ruby script returns nothing.
     git status; return 1
