@@ -1,10 +1,10 @@
-# SCM Breeze
-## Streamline your SCM workflow.
+## SCM Breeze
+### Streamline your SCM workflow.
 
 **Copyright 2011 Nathan Broadbent (http://madebynathan.com). All Rights Reserved.**
 **Released under the LGPL (GNU Lesser General Public License)**
 
-# -------------------------------------------------------
+-------------------------------------------------------
 
 This is a collection of simple shell scripts (for `bash` and `zsh`) that enhance interaction with your SCM software.
 
@@ -61,7 +61,7 @@ gco 5
 
 And if you want to be really fast, you can use keyboard shortcuts like this:
 
-```bash
+```
 1 4..7 <CTRL>+<x>+<c>
 
 
