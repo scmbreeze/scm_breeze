@@ -8,5 +8,5 @@ zsh_reset(){  if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then unsetopt shw
 
 
 # Update SCM Breeze from GitHub
-update_scm_breeze() { $(cd "$scmbreezeDir"; git pull origin master); }
+update_scm_breeze() { $(cd "$scmbDir"; git pull origin master); }
 

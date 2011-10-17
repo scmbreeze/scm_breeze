@@ -7,17 +7,18 @@
 #
 # Unit tests for git shell scripts
 
-thisDir="$( cd -P "$( dirname "$0" )" && pwd )"
+scmbDir="$( cd -P "$( dirname "$0" )" && pwd )"
+
 
 # Zsh compatibility
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
 # Load test helpers
-. "$thisDir/../../support/test_helper"
+. "$scmbDir/../../support/test_helper"
 
 # Load functions to test
-. "$thisDir/../../../lib/_shared.sh"
-. "$thisDir/../../../lib/git/status_shortcuts.sh"
+. "$scmbDir/../../../lib/_shared.sh"
+. "$scmbDir/../../../lib/git/status_shortcuts.sh"
 
 
 # Setup and tear down
@@ -251,5 +252,5 @@ test_git_commit_prompt() {
 
 
 # load and run shUnit2
-. "$thisDir/../../support/shunit2"
+. "$scmbDir/../../support/shunit2"
 
