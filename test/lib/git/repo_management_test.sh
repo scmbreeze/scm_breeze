@@ -7,17 +7,17 @@
 #
 # Unit tests for git shell scripts
 
-scmbDir="$( cd -P "$( dirname "$0" )" && pwd )"
+export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../../.."
 
 # Zsh compatibility
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
 # Load test helpers
-. "$scmbDir/../../support/test_helper"
+. "$scmbDir/test/support/test_helper"
 
 # Load functions to test
-. "$scmbDir/../../../lib/_shared.sh"
-. "$scmbDir/../../../lib/git/repo_management.sh"
+. "$scmbDir/lib/_shared.sh"
+. "$scmbDir/lib/git/repo_management.sh"
 
 
 # Setup and tear down
@@ -181,5 +181,5 @@ test_git_repo_tab_completion() {
 
 # load and run shUnit2
 # Call this function to run tests
-. "$scmbDir/../../support/shunit2"
+. "$scmbDir/test/support/shunit2"
 
