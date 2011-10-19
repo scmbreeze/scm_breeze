@@ -17,13 +17,13 @@
 # 1 || staged,  2 || unmerged,  3 || unstaged,  4 || untracked
 # --------------------------------------------------------------------
 git_status_shortcuts() {
+  git_clear_vars
   # Run ruby script, store output
   cmd_output=$(/usr/bin/env ruby "$scmbDir/lib/git/status_shortcuts.rb" $@)
   if [[ -z "$cmd_output" ]]; then
     # Just show regular git status if ruby script returns nothing.
     git status; return 1
   fi
-  git_clear_vars
   # Fetch list of files from last line of script output
   files="$(echo "$cmd_output" | tail -n 1)"
   # Export numbered env variables for each file
