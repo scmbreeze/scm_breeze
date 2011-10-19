@@ -1,4 +1,4 @@
-# SCM Breeze
+# SCM Breeze [![TravisCI](http://travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 ### Streamline your SCM workflow.
 
 **Copyright 2011 Nathan Broadbent (http://madebynathan.com). All Rights Reserved.**
