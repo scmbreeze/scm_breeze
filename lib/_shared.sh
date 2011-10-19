@@ -32,7 +32,7 @@ update_scm_breeze() {
         cd $HOME
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
         if ! patch -f "$HOME/.$scm.scmbrc" $patchfile; then
-          echo "== Updates could not be applied to '~/.$scm.scmbrc'."
+          echo -e "== \e[0;31m Updates could not be applied to '\e[1m~/.$scm.scmbrc\e[0;31m'.\e[0m"
           echo -e "== Please look at the following changes and manually update '~/.$scm.scmbrc', if necessary.\n"
           cat "$HOME/.$scm.scmbrc.rej"
         fi
