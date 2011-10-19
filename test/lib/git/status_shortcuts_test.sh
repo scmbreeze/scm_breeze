@@ -9,7 +9,6 @@
 
 export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../../.."
 
-
 # Zsh compatibility
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
@@ -25,9 +24,9 @@ if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwords
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
   # Test Config
-  git_env_char="e"
-  gs_max_changes="20"
-  ga_auto_remove="yes"
+  export git_env_char="e"
+  export gs_max_changes="20"
+  export ga_auto_remove="yes"
 
   testRepo=$(mktemp -d)
 }
