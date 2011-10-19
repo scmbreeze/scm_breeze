@@ -14,8 +14,6 @@ done
 # Create '~/.*.scmbrc' files from example files
 _create_or_patch_scmbrc
 
-# Load SCM Breeze in current shell
-. "$HOME/.scm_breeze/scm_breeze.sh"
 
-echo "== SCM Breeze loaded into current shell with default settings."
+echo "== Run 'source ~/.bashrc' (or 'source ~/.zshrc') to load SCM Breeze into your current shell."
 

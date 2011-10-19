@@ -104,7 +104,7 @@ _bind(){
   if [[ $shell == "zsh" ]]; then # zsh
     bindkey -s "$1" "$2"
   else # bash
-    bind "\"$1\": \"$2\"" 2>&1 > /dev/null
+    bind "\"$1\": \"$2\""
   fi
 }
 
