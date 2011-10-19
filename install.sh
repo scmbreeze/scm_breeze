@@ -12,10 +12,10 @@ done
 
 # Set up ~/*.scmbrc files
 # ---------------------------------------------------------------------------------------------
-# Git
-if ! [[ -s "$HOME/.git.scmbrc" ]]; then
-  cp "$HOME/.scm_breeze/git.scmbrc.example" "$HOME/.git.scmbrc"
-  echo "== 'git.scmbrc.example' has been copied to '~/.git.scmbrc'.
-   Please edit this file to change SCM Breeze settings, Git aliases, and Git keyboard bindings."
-fi
+for scm in git; do
+  if ! [[ -s "$HOME/.$scm.scmbrc" ]]; then
+    cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
+    echo "== '~/.$scm.scmbrc' has been created. Please edit this file to change '$scm' settings."
+  fi
+done
 
