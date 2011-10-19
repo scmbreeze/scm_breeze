@@ -15,5 +15,5 @@ done
 _create_or_patch_scmbrc
 
 
-echo "== Run 'source ~/.bashrc' (or 'source ~/.zshrc') to load SCM Breeze into your current shell."
+echo "== Run 'source ~/.bashrc' or 'source ~/.zshrc' to load SCM Breeze into your current shell."
 
