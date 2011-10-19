@@ -25,7 +25,7 @@ update_scm_breeze() {
 _create_or_patch_scmbrc() {
   # Create or attempt to patch '~/.*.scmbrc' files.
   patchfile=$(mktemp)
-  for scm in git; do
+  for scm in git svn; do
     # Create file from example if it doesn't already exist
     if ! [ -e "$HOME/.$scm.scmbrc" ]; then
       cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
