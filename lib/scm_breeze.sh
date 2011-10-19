@@ -16,9 +16,13 @@ update_scm_breeze() {
   cd "$scmbDir"
   oldHEAD=$(git rev-parse HEAD 2> /dev/null)
   git pull origin master
-
+  # Reload latest version of '_create_or_patch_scmbrc' function
   source "$scmbDir/lib/scm_breeze.sh"
+  _create_or_patch_scmbrc
+  cd "$currDir"
+}
 
+_create_or_patch_scmbrc() {
   # Create or attempt to patch '~/.*.scmbrc' files.
   patchfile=$(mktemp)
   for scm in git; do
@@ -38,9 +42,9 @@ update_scm_breeze() {
           echo -e "== Please look at the following changes and manually update '~/.$scm.scmbrc', if necessary.\n"
           cat "$HOME/.$scm.scmbrc.rej"
         fi
+        cd "$scmbDir"
       fi
     fi
   done
-  cd "$currDir"
 }
 
