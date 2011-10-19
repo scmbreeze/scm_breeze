@@ -5,7 +5,7 @@
 # -------------------------------------------------------
 
 # -----------------------------------------------------------------
-# Misc Git Tools
+# Git Tools
 # - Please feel free to add your own git scripts, and send me a pull request
 #   at https://github.com/ndbroadbent/scm_breeze
 # -----------------------------------------------------------------
