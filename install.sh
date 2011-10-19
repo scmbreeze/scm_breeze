@@ -9,13 +9,13 @@ for rc in bashrc zshrc; do
   fi
 done
 
+# Load SCM Breeze update scripts
+. "$HOME/.scm_breeze/lib/scm_breeze.sh"
+# Create '~/.*.scmbrc' files from example files
+_create_or_patch_scmbrc
 
-# Set up ~/*.scmbrc files
-# ---------------------------------------------------------------------------------------------
-for scm in git; do
-  if ! [[ -s "$HOME/.$scm.scmbrc" ]]; then
-    cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
-    echo "== '~/.$scm.scmbrc' has been created. Please edit this file to change '$scm' settings."
-  fi
-done
+# Load SCM Breeze in current shell
+. "$HOME/.scm_breeze/scm_breeze.sh"
+
+echo "== SCM Breeze loaded into current shell with default settings."
 

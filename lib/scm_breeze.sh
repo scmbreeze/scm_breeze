@@ -18,14 +18,14 @@ update_scm_breeze() {
   git pull origin master
   # Reload latest version of '_create_or_patch_scmbrc' function
   source "$scmbDir/lib/scm_breeze.sh"
-  _create_or_patch_scmbrc
+  _create_or_patch_scmbrc $oldHEAD
   # Reload SCM Breeze
   source "$scmbDir/scm_breeze.sh"
   cd "$currDir"
 }
 
+# Create '~/.*.scmbrc' files, or attempt to patch them if passed a previous revision
 _create_or_patch_scmbrc() {
-  # Create or attempt to patch '~/.*.scmbrc' files.
   patchfile=$(mktemp)
   for scm in git; do
     # Create file from example if it doesn't already exist
@@ -33,9 +33,9 @@ _create_or_patch_scmbrc() {
       cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
       echo "== '~/.$scm.scmbrc' has been created. Please edit this file to change SCM Breeze settings for '$scm'."
     # If file exists, attempt to update it with any new settings
-    else
+    elif [ -n "$1" ]
       # Create diff of example file, substituting example file for user's config.
-      git diff $oldHEAD "$scm.scmbrc.example" | sed "s/$scm.scmbrc.example/.$scm.scmbrc/g" > $patchfile
+      git diff $1 "$scm.scmbrc.example" | sed "s/$scm.scmbrc.example/.$scm.scmbrc/g" > $patchfile
       if [ -s $patchfile ]; then  # If patchfile is not empty
         cd $HOME
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
