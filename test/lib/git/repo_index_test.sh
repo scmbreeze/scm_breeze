@@ -16,7 +16,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwords
 . "$scmbDir/test/support/test_helper"
 
 # Load functions to test
-. "$scmbDir/lib/_shared.sh"
+. "$scmbDir/lib/scm_breeze.sh"
 . "$scmbDir/lib/git/repo_index.sh"
 
 

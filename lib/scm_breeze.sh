@@ -17,6 +17,8 @@ update_scm_breeze() {
   oldHEAD=$(git rev-parse HEAD 2> /dev/null)
   git pull origin master
 
+  source "$scmbDir/lib/scm_breeze.sh"
+
   # Create or attempt to patch '~/.*.scmbrc' files.
   patchfile=$(mktemp)
   for scm in git; do

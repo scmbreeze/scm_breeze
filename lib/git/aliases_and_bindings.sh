@@ -1,7 +1,7 @@
 #
 # Set up configured aliases & keyboard shortcuts
 # --------------------------------------------------------------------
-# _alias() ignores errors if alias is not defined. (from lib/_shared.sh)
+# _alias() ignores errors if alias is not defined. (from lib/scm_breeze.sh)
 
 _alias $git_alias='git'
 

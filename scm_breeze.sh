@@ -5,7 +5,7 @@
 export scmbDir="$(dirname ${BASH_SOURCE:-$0})"
 
 # Load shared functions.
-. "$scmbDir/lib/_shared.sh"
+. "$scmbDir/lib/scm_breeze.sh"
 
 # Git
 # ------------------------------------------------------------
