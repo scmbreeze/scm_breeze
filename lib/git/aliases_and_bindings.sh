@@ -102,7 +102,7 @@ complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
 # Cross-shell key bindings
 _bind(){
   if [ -n "$1" ]; then
-    if [[ $shell == "zsh" ]]; then # zsh
+    if [[ $shell == "zsh" ]]; then
       bindkey -s "$1" "$2"
     else # bash
       bind "\"$1\": \"$2\""
@@ -112,12 +112,8 @@ _bind(){
 
 case "$TERM" in
 xterm*|rxvt*)
-    # CTRL-SPACE => $  git_status_shortcuts {ENTER}
     _bind "$git_status_shortcuts_keys" " git_status_shortcuts\n"
-    # CTRL-x-SPACE => $  git_commit_all {ENTER}
     _bind "$git_commit_all_keys" " git_commit_all\n"
-    # CTRL-x-c => $  git_add_and_commit {ENTER}
-    # 1 3 CTRL-x-c => $  git_add_and_commit 1 3 {ENTER}
     _bind "$git_add_and_commit_keys" "\e[1~ git_add_and_commit \n"
 
     # Commands are prepended with a space so that they won't be added to history.
