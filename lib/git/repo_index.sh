@@ -133,7 +133,7 @@ function _rebuild_git_index() {
   done | sort | cut -d " " -f2- > "$GIT_REPO_DIR/.git_index"
 
   if [ "$1" != "--silent" ]; then
-    echo -e "===== Cached $_bld_col$(_git_index_count)$_txt_col repos in $GIT_REPO_DIR/.git_index"
+    echo -e "===== Indexed $_bld_col$(_git_index_count)$_txt_col repos in $GIT_REPO_DIR/.git_index"
   fi
 }
 
