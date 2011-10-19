@@ -101,10 +101,12 @@ complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
 
 # Cross-shell key bindings
 _bind(){
-  if [[ $shell == "zsh" ]]; then # zsh
-    bindkey -s "$1" "$2"
-  else # bash
-    bind "\"$1\": \"$2\""
+  if [ -n "$1" ]; then
+    if [[ $shell == "zsh" ]]; then # zsh
+      bindkey -s "$1" "$2"
+    else # bash
+      bind "\"$1\": \"$2\""
+    fi
   fi
 }
 
