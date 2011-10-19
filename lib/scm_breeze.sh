@@ -33,7 +33,7 @@ _create_or_patch_scmbrc() {
       cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
       echo "== '~/.$scm.scmbrc' has been created. Please edit this file to change SCM Breeze settings for '$scm'."
     # If file exists, attempt to update it with any new settings
-    elif [ -n "$1" ]
+    elif [ -n "$1" ]; then
       # Create diff of example file, substituting example file for user's config.
       git diff $1 "$scm.scmbrc.example" | sed "s/$scm.scmbrc.example/.$scm.scmbrc/g" > $patchfile
       if [ -s $patchfile ]; then  # If patchfile is not empty
