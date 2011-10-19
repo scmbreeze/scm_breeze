@@ -25,8 +25,6 @@ update_scm_breeze() {
 }
 
 _create_or_patch_scmbrc() {
-  testfunc() { echo 'i should exist after updating'; }
-
   # Create or attempt to patch '~/.*.scmbrc' files.
   patchfile=$(mktemp)
   for scm in git; do
