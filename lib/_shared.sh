@@ -7,8 +7,38 @@ zsh_compat(){ if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then setopt shwor
 zsh_reset(){  if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then unsetopt shwordsplit; fi; }
 
 # Alias wrapper that ignores errors if alias is not defined.
-_alias(){ alias $@ 2> /dev/null; }
+_alias(){ alias "$@" 2> /dev/null; }
 
-# Update SCM Breeze from GitHub
-update_scm_breeze() { $(cd "$scmbDir"; git pull origin master); }
+
+# Updates SCM Breeze from GitHub.
+update_scm_breeze() {
+  currDir=$PWD
+  cd "$scmbDir"
+  oldHEAD=$(git rev-parse HEAD 2> /dev/null)
+  git pull origin master
+
+  # Create or attempt to patch '~/.*.scmbrc' files.
+  patchfile=$(mktemp)
+  for scm in git; do
+    # Create file from example if it doesn't already exist
+    if ! [ -e "$HOME/.$scm.scmbrc" ]; then
+      cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
+      echo "== '~/.$scm.scmbrc' has been created. Please edit this file to change SCM Breeze settings for '$scm'."
+    # If file exists, attempt to update it with any new settings
+    else
+      # Create diff of example file, substituting example file for user's config.
+      git diff $oldHEAD "$scm.scmbrc.example" | sed "s/$scm.scmbrc.example/.$scm.scmbrc/g" > $patchfile
+      if [ -s $patchfile ]; then  # If patchfile is not empty
+        cd $HOME
+        # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
+        if ! patch -f "$HOME/.$scm.scmbrc" $patchfile; then
+          echo "== Updates could not be applied to '~/.$scm.scmbrc'."
+          echo -e "== Please look at the following changes and manually update '~/.$scm.scmbrc', if necessary.\n"
+          cat "$HOME/.$scm.scmbrc.rej"
+        fi
+      fi
+    fi
+  done
+  cd "$currDir"
+}
 
