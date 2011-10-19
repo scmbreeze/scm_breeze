@@ -6,6 +6,8 @@ if [[ $shell == "zsh" ]]; then zsh_shwordsplit=$((setopt | grep -q shwordsplit) 
 zsh_compat(){ if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then setopt shwordsplit; fi; }
 zsh_reset(){  if [[ $shell == "zsh" && -z $zsh_shwordsplit ]]; then unsetopt shwordsplit; fi; }
 
+# Alias wrapper that ignores errors if alias is not defined.
+_alias(){ alias $@ 2> /dev/null; }
 
 # Update SCM Breeze from GitHub
 update_scm_breeze() { $(cd "$scmbDir"; git pull origin master); }

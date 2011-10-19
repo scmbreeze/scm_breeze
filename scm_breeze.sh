@@ -4,14 +4,14 @@
 # ------------------------------------------------------------
 export scmbDir="$(dirname ${BASH_SOURCE:-$0})"
 
+# Load shared functions.
+. "$scmbDir/lib/_shared.sh"
 
 # Git
 # ------------------------------------------------------------
 if [[ -s "$HOME/.git.scmbrc" ]]; then
   # Load config
   . "$HOME/.git.scmbrc"
-
-  . "$scmbDir/lib/_shared.sh"
   . "$scmbDir/lib/git/aliases_and_bindings.sh"
   . "$scmbDir/lib/git/status_shortcuts.sh"
   . "$scmbDir/lib/git/repo_index.sh"

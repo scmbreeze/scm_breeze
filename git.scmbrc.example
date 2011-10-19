@@ -66,6 +66,6 @@ git_show_alias="gsh"
 # Git Keyboard Shortcuts
 # ---------------------------------------------
 git_status_shortcuts_keys="\C- "   # CTRL+SPACE
-git_commit_all_keys="\C-x "        # CTRL+x SPACE
-git_add_and_commit_keys="\C-xc"    # CTRL+x c
+git_commit_all_keys="\C-x "        # CTRL+x, SPACE
+git_add_and_commit_keys="\C-xc"    # CTRL+x, c
 
