@@ -24,7 +24,7 @@ git_index_alias="s"    # The 's' stands for 'switch' or 'sourcecode'...
 
 # Git Aliases
 # ------------------------------------------------------------------------------------
-git_alias="ge"
+git_alias="g"
 
 # 1. 'SCM Breeze' functions
 git_status_shortcuts_alias="gs"
