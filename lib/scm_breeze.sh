@@ -19,6 +19,8 @@ update_scm_breeze() {
   # Reload latest version of '_create_or_patch_scmbrc' function
   source "$scmbDir/lib/scm_breeze.sh"
   _create_or_patch_scmbrc
+  # Reload SCM Breeze
+  source "$scmbDir/scm_breeze.sh"
   cd "$currDir"
 }
 
