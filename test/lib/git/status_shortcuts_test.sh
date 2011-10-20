@@ -53,6 +53,11 @@ test_git_expand_args() {
   assertEquals "$error" "one three seven" "$(git_expand_args 1 3 7)"
   assertEquals "$error" "one two three six" "$(git_expand_args 1..3 6)"
   assertEquals "$error" "seven two three four five one" "$(git_expand_args seven 2..5 1)"
+
+  # Test that any args with spaces remain quoted
+  assertEquals "$error" "-m \"Test Commit Message\" one" "$(git_expand_args -m \"Test Commit Message\" 1)"
+  assertEquals "$error" "-ma \"Test Commit Message\" Unquoted"\
+                        "$(git_expand_args -ma "Test Commit Message" "Unquoted")"
 }
 
 
