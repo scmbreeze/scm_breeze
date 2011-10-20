@@ -25,7 +25,7 @@ git_status_shortcuts() {
     git status; return 1
   fi
   # Fetch list of files from last line of script output
-  files="$(echo "$cmd_output" | grep '@@filelist@@::')"
+  files="$(echo "$cmd_output" | grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
   # Export numbered env variables for each file
   local IFS="|"
   e=1; for file in $files; do export $git_env_char$e="$file"; let e++; done
