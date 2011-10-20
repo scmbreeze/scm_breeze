@@ -156,5 +156,6 @@ end
   end
 end
 
+print "@@filelist@@::"
 puts @output_files.map{|f| File.join(@project_root, f) }.join("|")
 

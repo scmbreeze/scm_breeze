@@ -25,13 +25,13 @@ git_status_shortcuts() {
     git status; return 1
   fi
   # Fetch list of files from last line of script output
-  files="$(echo "$cmd_output" | tail -n1)"
+  files="$(echo "$cmd_output" | grep '@@filelist@@::')"
   # Export numbered env variables for each file
   local IFS="|"
   e=1; for file in $files; do export $git_env_char$e="$file"; let e++; done
 
   # Print status
-  echo "$cmd_output" | head -n-1
+  echo "$cmd_output" | grep -v '@@filelist@@::'
 }
 
 
