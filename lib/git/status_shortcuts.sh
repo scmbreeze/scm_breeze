@@ -82,7 +82,7 @@ git_silent_add_shorcuts() {
 git_show_affected_files(){
   f=0  # File count
   # Show colored revision and commit message
-  echo -n "# "; git show --oneline --name-only $@ | sed "s/\r//g" | head -n 1; echo "# "
+  echo -n "# "; git show --oneline --name-only $@ | head -n1; echo "# "
   for file in $(git show --pretty="format:" --name-only $@ | grep -v '^$'); do
     let f++
     export $git_env_char$f=$file     # Export numbered variable.
