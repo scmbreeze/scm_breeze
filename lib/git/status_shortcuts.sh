@@ -103,9 +103,7 @@ git_expand_args() {
     if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
       files="$files $(eval echo \$$git_env_char$arg)"
     elif [[ $arg =~ ^[0-9]+\.\.[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
-      for i in $(seq $(echo $arg | tr ".." " ")); do
-        files="$files $(eval echo \$$git_env_char$i)"
-      done
+      files="$files $(eval echo \$$git_env_char{$arg})"
     else   # Otherwise, treat $arg as a normal string.
       # If arg contains any spaces, (re)wrap it in double quotes
       if echo $arg | grep -q " "; then arg="\"$arg\""; fi

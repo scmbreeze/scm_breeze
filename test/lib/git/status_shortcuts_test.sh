@@ -199,7 +199,7 @@ test_git_status_shortcuts_max_changes() {
   # Add 5 untracked files
   touch a b c d e
   git_status=$(git_status_shortcuts | strip_colors)
-  for i in $(seq 1 5); do
+  for i in {1..5}; do
     assertIncludes "$git_status"  "\[$i\]" || return
   done
 
