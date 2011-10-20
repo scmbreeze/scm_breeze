@@ -28,6 +28,7 @@ _alias $git_fetch_alias='git fetch'
 _alias $git_fetch_and_rebase_alias='git fetch && git rebase'
 _alias $git_pull_alias='git pull'
 _alias $git_push_alias='git push'
+_alias $git_pull_then_push_alias="git pull && git push"
 _alias $git_status_original_alias='git status' # (Standard git status)
 _alias $git_status_short_alias='git status -s'
 _alias $git_remote_alias='git remote -v'
