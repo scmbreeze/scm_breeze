@@ -110,15 +110,18 @@ _bind(){
   fi
 }
 
-case "$TERM" in
-xterm*|rxvt*)
-    _bind "$git_status_shortcuts_keys" " git_status_shortcuts\n"
-    _bind "$git_commit_all_keys" " git_commit_all\n"
-    _bind "$git_add_and_commit_keys" "\e[1~ git_add_and_commit \n"
+# If keyboard shortcuts are enabled
+if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
+  case "$TERM" in
+  xterm*|rxvt*)
+      _bind "$git_status_shortcuts_keys" " git_status_shortcuts\n"
+      _bind "$git_commit_all_keys" " git_commit_all\n"
+      _bind "$git_add_and_commit_keys" "\e[1~ git_add_and_commit \n"
 
-    # Commands are prepended with a space so that they won't be added to history.
-    # Make sure this is turned on with:
-    # zsh:  setopt histignorespace histignoredups
-    # bash: HISTCONTROL=ignorespace:ignoredups
-esac
+      # Commands are prepended with a space so that they won't be added to history.
+      # Make sure this is turned on with:
+      # zsh:  setopt histignorespace histignoredups
+      # bash: HISTCONTROL=ignorespace:ignoredups
+  esac
+fi
 

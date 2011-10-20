@@ -65,6 +65,8 @@ git_show_alias="gsh"
 
 # Git Keyboard Shortcuts
 # ---------------------------------------------
+# Keyboard shortcuts are off by default. Set this to 'true' to enable them.
+git_keyboard_shortcuts_enabled="false"
 git_status_shortcuts_keys="\C- "   # CTRL+SPACE
 git_commit_all_keys="\C-x "        # CTRL+x, SPACE
 git_add_and_commit_keys="\C-xc"    # CTRL+x, c
