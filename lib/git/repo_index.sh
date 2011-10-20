@@ -149,6 +149,11 @@ function _git_index_count() {
   echo $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | wc -l)
 }
 
+# Returns the current git branch (returns nothing if not a git repository)
+parse_git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
+}
+
 # If the working directory is clean, update the git repository. Otherwise, show changes.
 function _git_index_pull_or_status() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
