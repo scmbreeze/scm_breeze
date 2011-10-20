@@ -106,7 +106,9 @@ git_expand_args() {
       for i in $(seq $(echo $arg | tr ".." " ")); do
         files="$files $(eval echo \$$git_env_char$i)"
       done
-    else                                    # Otherwise, treat $arg as a normal string.
+    else   # Otherwise, treat $arg as a normal string.
+      # If arg contains any spaces, (re)wrap it in double quotes
+      if echo $arg | grep -q " "; then arg="\"$arg\""; fi
       files="$files $arg"
     fi
   done
