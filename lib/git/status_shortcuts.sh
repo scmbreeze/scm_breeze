@@ -44,7 +44,7 @@ git_status_shortcuts() {
 # Should be used in conjunction with the git_status_shortcuts() function for 'git status'.
 # - 'auto git rm' behaviour can be turned off
 # -------------------------------------------------------------------------------
-git_add_shorcuts() {
+git_add_shortcuts() {
   if [ -z "$1" ]; then
     echo "Usage: ga <file>  => git add <file>"
     echo "       ga 1       => git add \$e1"
@@ -55,13 +55,13 @@ git_add_shorcuts() {
       echo "      To turn off this behaviour, change the 'auto_remove' option."
     fi
   else
-    git_silent_add_shorcuts "$@"
+    git_silent_add_shortcuts "$@"
     # Makes sense to run 'git status' after this command.
     git_status_shortcuts
   fi
 }
 # Does nothing if no args are given.
-git_silent_add_shorcuts() {
+git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
     for file in $(git_expand_args "$@"); do
@@ -180,7 +180,7 @@ git_commit_all() {
 
 # Add paths or expanded args if any given, then commit all staged changes.
 git_add_and_commit() {
-  git_silent_add_shorcuts "$@"
+  git_silent_add_shortcuts "$@"
   changes=$(git diff --cached --numstat | wc -l)
   if [ "$changes" -gt 0 ]; then
     git_status_shortcuts 1  # only show staged changes
