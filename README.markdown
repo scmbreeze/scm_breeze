@@ -25,7 +25,7 @@ You can configure the variable prefix, which is 'e' by default.
 <div class="centered">
 <img src="http://madebynathan.com/images/posts/2011/10/status_with_shortcuts-resized-post.png" width="590" alt="Git Status With Shortcuts" />
 </div>
-<br/><br/>
+<br/>
 
 These numbers (or ranges of numbers) can be used with any SCM or system command.
 
@@ -148,7 +148,7 @@ Then you'll be able to switch between your projects, or show the list of indexed
 <div class="centered">
 <img src="http://madebynathan.com/images/posts/2011/10/source_list-resized-post.png" alt="Git Status With Shortcuts" />
 </div>
-<br/><br/>
+<br/>
 
 To switch to a project directory, you don't need to type the full project name. For example,
 to switch to the `errbit` project, you could type any of the following:
