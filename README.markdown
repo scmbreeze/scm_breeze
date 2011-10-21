@@ -20,7 +20,7 @@ Whenever you view your SCM status, each modified path is stored in a numbered en
 You can configure the variable prefix, which is 'e' by default.
 
 
-### `git_status_shortcuts`:
+### git_status_shortcuts():
 
 <div class="centered">
 <img src="http://madebynathan.com/images/posts/2011/10/status_with_shortcuts-resized-post.png" width="590" alt="Git Status With Shortcuts" />
