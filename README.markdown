@@ -151,23 +151,23 @@ Then you'll be able to switch between your projects, or show the list of indexed
 <br/>
 
 To switch to a project directory, you don't need to type the full project name. For example,
-to switch to the `errbit` project, you could type any of the following:
+to switch to the `capistrano` project, you could type any of the following:
 
 ```bash
-$ s errbit
-$ s err
-$ s rbit
+$ s capistrano
+$ s cap
+$ s istra
 ```
 
-Or if you wanted to go straight to a subdirectory within `errbit`:
+Or if you wanted to go straight to a subdirectory within `capistrano`:
 
 ```bash
-$ s err<TAB>
-$ s errbit/<TAB>
-# => app/       autotest/  config/    db/    ...
-$ s errbit/conf<TAB>
-$ s errbit/config/
-# => cd ~/src/rails/errbit/config
+$ s cap<TAB>
+$ s capistrano/<TAB>
+# => bin/   lib/   test/ 
+$ s capistrano/l<TAB>
+$ s capistrano/lib/
+# => cd ~/src/gems/capistrano/lib
 ```
 
 
