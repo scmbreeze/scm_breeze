@@ -191,7 +191,7 @@ source ~/.bashrc   # or source ~/.zshrc
 
 (The install script simply appends the following line to your `.bashrc` or `.zshrc`):
 
-`[[ -s "$HOME/.scm_breeze/scm_breeze.sh" ]] && . "$HOME/.scm_breeze/scm_breeze.sh")`
+`[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && . "$HOME/.scm_breeze/scm_breeze.sh")`
 
 
 # Configuration
