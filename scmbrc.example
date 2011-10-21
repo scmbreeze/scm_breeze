@@ -1,0 +1,13 @@
+#
+# Design Assets Management Config
+# ----------------------------------------------------------------
+# Directory where design assets are stored
+export root_design_dir="$HOME/Dropbox/Design"
+# Directory where symlinks are created within each project
+export project_design_dir="design_assets"
+# Directories for per-project design assets
+export design_base_dirs="Images Backgrounds Logos Icons Mockups Screenshots"
+export design_av_dirs="Animations Videos Flash Music Samples"
+# Directories for global design assets (not symlinked into projects)
+export design_ext_dirs="Fonts IconSets"
+

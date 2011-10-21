@@ -4,13 +4,18 @@
 # ------------------------------------------------------------
 export scmbDir="$(dirname ${BASH_SOURCE:-$0})"
 
-# Load shared functions.
+# Load config
+. "$HOME/.scmbrc"
+
+# Shared functions
 . "$scmbDir/lib/scm_breeze.sh"
+# Design assets management
+. "$scmbDir/lib/design.sh"
 
 # Git
 # ------------------------------------------------------------
 if [[ -s "$HOME/.git.scmbrc" ]]; then
-  # Load config
+  # Load git config
   . "$HOME/.git.scmbrc"
   . "$scmbDir/lib/git/aliases_and_bindings.sh"
   . "$scmbDir/lib/git/status_shortcuts.sh"

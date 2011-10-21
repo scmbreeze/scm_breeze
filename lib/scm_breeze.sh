@@ -5,6 +5,9 @@ if [ $shell = "zsh" ]; then zsh_shwordsplit=$( (setopt | grep -q shwordsplit) &&
 # Switch on/off shwordsplit for functions that require it.
 zsh_compat(){ if [ $shell = "zsh" ] && [ -z $zsh_shwordsplit ]; then setopt shwordsplit; fi; }
 zsh_reset(){  if [ $shell = "zsh" ] && [ -z $zsh_shwordsplit ]; then unsetopt shwordsplit; fi; }
+# Enable/disable nullglob for zsh or bash
+enable_nullglob()  { if [ $shell = "zsh" ]; then setopt NULL_GLOB;   else shopt -s nullglob; fi; }
+disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt -u nullglob; fi; }
 
 # Alias wrapper that ignores errors if alias is not defined.
 _alias(){ alias "$@" 2> /dev/null; }
@@ -27,22 +30,23 @@ update_scm_breeze() {
 # Create '~/.*.scmbrc' files, or attempt to patch them if passed a previous revision
 _create_or_patch_scmbrc() {
   patchfile=$(mktemp -t tmp.XXXXXXXXXX)
-  for scm in git; do
+  # Process '~/.scmbrc' and '~/.*.scmbrc'
+  for prefix in "" "git."; do
     # Create file from example if it doesn't already exist
-    if ! [ -e "$HOME/.$scm.scmbrc" ]; then
-      cp "$scmbDir/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
-      printf "== '~/.$scm.scmbrc' has been created. Please edit this file to change SCM Breeze settings for '$scm'.\n"
+    if ! [ -e "$HOME/.$prefix""scmbrc" ]; then
+      cp "$scmbDir/$prefix""scmbrc.example" "$HOME/.$prefix""scmbrc"
+      printf "== '~/.$prefix""scmbrc' has been created. Please edit this file to change SCM Breeze settings.\n"
     # If file exists, attempt to update it with any new settings
     elif [ -n "$1" ]; then
       # Create diff of example file, substituting example file for user's config.
-      git diff $1 "$scm.scmbrc.example" | sed "s/$scm.scmbrc.example/.$scm.scmbrc/g" > $patchfile
+      git diff $1 "$prefix""scmbrc.example" | sed "s/$prefix""scmbrc.example/.$prefix""scmbrc/g" > $patchfile
       if [ -s $patchfile ]; then  # If patchfile is not empty
         cd $HOME
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
-        if ! patch -f "$HOME/.$scm.scmbrc" $patchfile; then
-          printf "== \e[0;31mUpdates could not be applied to '\e[1m~/.$scm.scmbrc\e[0;31m'.\e[0m\n"
-          printf "== Please look at the following changes and manually update '~/.$scm.scmbrc', if necessary.\n\n"
-          cat "$HOME/.$scm.scmbrc.rej"
+        if ! patch -f "$HOME/.$prefix""scmbrc" $patchfile; then
+          printf "== \e[0;31mUpdates could not be applied to '\e[1m~/.$prefix""scmbrc\e[0;31m'.\e[0m\n"
+          printf "== Please look at the following changes and manually update '~/.$prefix""scmbrc', if necessary.\n\n"
+          cat "$HOME/.$prefix""scmbrc.rej"
         fi
         cd "$scmbDir"
       fi
