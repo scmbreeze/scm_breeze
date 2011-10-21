@@ -41,7 +41,7 @@ You can type this instead:
 $ ga $e2 $e3 $e11
 ```
 
-But SCM Breeze aliases `ga` to it's `git_add_shorcuts` function
+But SCM Breeze aliases `ga` to the `git_add_shorcuts` function,
 which is smart enough to expand integers and ranges, so all you need to type is:
 
 ```bash
