@@ -56,9 +56,9 @@ function git_index() {
     if [ "$1" = "--rebuild" ]; then
       _rebuild_git_index
     elif [ "$1" = "--update-all" ]; then
-      _git_index_git_update_all
+      _git_index_update_all
     elif [ "$1" = "--batch-cmd" ]; then
-      _git_index_git_batch_cmd "${@:2:$(($#-1))}" # Pass all args except $1
+      _git_index_batch_cmd "${@:2:$(($#-1))}" # Pass all args except $1
     elif [ "$1" = "--list" ] || [ "$1" = "-l" ]; then
       echo -e "$_bld_col$(_git_index_count)$_txt_col Git repositories in $_bld_col$GIT_REPO_DIR$_txt_col:\n"
       for repo in $(_git_index_dirs_without_home); do
