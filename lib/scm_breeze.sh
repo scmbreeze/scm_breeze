@@ -30,7 +30,7 @@ _create_or_patch_scmbrc() {
   for scm in git; do
     # Create file from example if it doesn't already exist
     if ! [ -e "$HOME/.$scm.scmbrc" ]; then
-      cp "$HOME/.scm_breeze/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
+      cp "$scmbDir/$scm.scmbrc.example" "$HOME/.$scm.scmbrc"
       printf "== '~/.$scm.scmbrc' has been created. Please edit this file to change SCM Breeze settings for '$scm'.\n"
     # If file exists, attempt to update it with any new settings
     elif [ -n "$1" ]; then
