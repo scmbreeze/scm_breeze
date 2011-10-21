@@ -1,5 +1,4 @@
 #!/bin/sh
-
 #locate the dir where this script is stored
 export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )"
 # This loads SCM Breeze into the shell session.
