@@ -21,16 +21,27 @@ git_status_shortcuts() {
   git_clear_vars
   # Run ruby script, store output
   cmd_output=$(/usr/bin/env ruby "$scmbDir/lib/git/status_shortcuts.rb" $@)
+  # Print debug information if $scmbDebug = "true"
+  if [ "$scmbDebug" = "true" ]; then 
+    printf "status_shortcuts.rb output => \n$cmd_output\n------------------------\n"
+  fi
   if [[ -z "$cmd_output" ]]; then
     # Just show regular git status if ruby script returns nothing.
     git status; return 1
   fi
   # Fetch list of files from last line of script output
   files="$(echo "$cmd_output" | grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
+  if [ "$scmbDebug" = "true" ]; then echo "filelist => $files"; fi
   # Export numbered env variables for each file
   local IFS="|"
-  e=1; for file in $files; do export $git_env_char$e="$file"; let e++; done
+  local e=1
+  for file in $files; do
+    export $git_env_char$e="$file"
+    if [ "$scmbDebug" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+    let e++
+  done
 
+  if [ "$scmbDebug" = "true" ]; then echo "------------------------"; fi
   # Print status
   echo "$cmd_output" | grep -v '@@filelist@@::'
   zsh_reset # Reset zsh environment to default
