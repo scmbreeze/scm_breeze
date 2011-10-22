@@ -58,7 +58,7 @@ design() {
   if [ "$1" = "init" ]; then
     create_dirs="$design_base_dirs"
     if [ "$2" = "--av" ]; then create_dirs+=" $design_av_dirs"; fi
-    echo "Creating the following design directories for $project: $create_dirs"
+    echo "Creating design directories for '$project': $create_dirs"
     # Create and symlink each directory
     for dir in $create_dirs; do
       mkdir -p "$root_design_dir/projects/$project/$dir"
