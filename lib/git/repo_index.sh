@@ -195,8 +195,10 @@ function _git_index_update_all() {
 
 # Runs a command for all git repos
 function _git_index_batch_cmd() {
+  cwd="$PWD"
   if [ -n "$1" ]; then
     echo -e "== Running command for $_bld_col$(_git_index_count)$_txt_col repos...\n"
+    unset IFS
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
       cd "$base_path"
       $@
@@ -204,6 +206,7 @@ function _git_index_batch_cmd() {
   else
     echo "Please give a command to run for all repos. (It may be useful to write your command as a function or script.)"
   fi
+  cd "$cwd"
 }
 
 
