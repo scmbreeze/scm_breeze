@@ -62,10 +62,6 @@ design() {
     # Create and symlink each directory
     for dir in $create_dirs; do
       mkdir -p "$root_design_dir/projects/$project/$dir"
-      # Initialize git repo for each design dir, if you want to version control your assets
-      cd "$root_design_dir/projects/$project"
-      git init
-      cd - > /dev/null
       if [ ! -e ./$project_design_dir ]; then ln -sf "$root_design_dir/projects/$project" $project_design_dir; fi
     done
     _design_add_git_exclude $PWD
