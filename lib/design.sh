@@ -34,14 +34,17 @@ design() {
   local all_project_dirs="$design_base_dirs $design_av_dirs"
   # Ensure design dir contains all subdirectories
   unset IFS
-  for dir in $design_ext_dirs $design_base_dirs $design_av_dirs; do mkdir -p "$root_design_dir/$dir"; done
+  # Create root design dirs
+  for dir in $design_ext_dirs; do mkdir -p "$root_design_dir/$dir"; done
+  # Create project design dirs
+  mkdir -p "$root_design_dir/projects"
 
   if [ -z "$1" ]; then
     echo "design: Manage design directories for project assets that are external to source control."
     echo
     echo "  Examples:"
     echo
-    echo "    $ design init        # Creates default directory structure at $root_design_dir/**/$project and symlinks into project."
+    echo "    $ design init        # Creates default directory structure at $root_design_dir/projects/$project and symlinks into project."
     echo "                           ($design_base_dirs)"
     echo "    $ design link        # Links existing design directories into existing repos"
     echo "    $ design init --av   # Adds extra directories for audio/video assets"
@@ -56,43 +59,43 @@ design() {
     create_dirs="$design_base_dirs"
     if [ "$2" = "--av" ]; then create_dirs+=" $design_av_dirs"; fi
     echo "Creating the following design directories for $project: $create_dirs"
-    mkdir -p "$project_design_dir"
     # Create and symlink each directory
     for dir in $create_dirs; do
-      mkdir -p "$root_design_dir/$dir/$project"
-      if [ ! -e ./$project_design_dir/$dir ]; then ln -sf "$root_design_dir/$dir/$project" $project_design_dir/$dir; fi
+      mkdir -p "$root_design_dir/projects/$project/$dir"
+      # Initialize git repo for each design dir, if you want to version control your assets
+      cd "$root_design_dir/projects/$project"
+      git init
+      cd - > /dev/null
+      if [ ! -e ./$project_design_dir ]; then ln -sf "$root_design_dir/projects/$project" $project_design_dir; fi
     done
     _design_add_git_exclude $PWD
 
   elif [ "$1" = "link" ]; then
     enable_nullglob
     echo "== Linking existing Design directories into existing repos..."
-    for dir in $all_project_dirs; do
-      for design_path in $root_design_dir/$dir/*; do
-        proj=$(basename $design_path)
-        repo_path=$(grep "/$proj$" $GIT_REPO_DIR/.git_index)
-        if [ -n "$repo_path" ]; then
-          mkdir -p "$repo_path/$project_design_dir"
-          if [ -e "$repo_path/$project_design_dir/*" ]; then rm $repo_path/$project_design_dir/*; fi
-          _design_add_git_exclude $repo_path
-          if ! [ -e "$repo_path/$project_design_dir/$dir" ]; then ln -fs "$design_path" "$repo_path/$project_design_dir/$dir"; fi
-          echo "=> $repo_path/$project_design_dir/$dir"
+    for design_project in $root_design_dir/projects/*; do
+      proj=$(basename $design_project)
+      repo_path=$(grep "/$proj$" $GIT_REPO_DIR/.git_index)
+      if [ -n "$repo_path" ]; then
+        if ! [ -e "$repo_path/$project_design_dir" ]; then
+          ln -fs "$design_project" "$repo_path/$project_design_dir"
+          _design_add_git_exclude "$repo_path"
         fi
-      done
+        echo "=> $repo_path/$project_design_dir"
+      fi
     done
     disable_nullglob
 
   elif [ "$1" = "rm" ]; then
     echo "Removing all design directories for $project..."
-    for dir in $all_project_dirs; do rm -rf "$root_design_dir/$dir/$project"; done
-    rm -rf $project_design_dir
+    rm -rf "$root_design_dir/projects/$project" "$project_design_dir"
 
   elif [ "$1" = "trim" ]; then
     echo "Trimming empty design directories for $project..."
-    for dir in $(find -L $project_design_dir/ -type d -empty); do
+    for dir in $(find $project_design_dir/ -type d -empty); do
       asset=$(basename $dir)
-      rm -rf "$root_design_dir/$asset/$project"
-      rm -f $project_design_dir/$asset
+      rm -rf "$root_design_dir/$project/$asset"
+      rm -rf $project_design_dir/$asset
     done
     # Remove design dir from project if there's nothing in it.
     if find $project_design_dir -type d -empty | grep -q $project_design_dir; then

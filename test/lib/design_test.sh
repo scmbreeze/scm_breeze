@@ -49,34 +49,34 @@ test_design() {
     assertTrue "Root design dir not created! ($dir)" "[ -d $root_design_dir/$dir ]" || return
   done
   for dir in $design_base_dirs; do
-    assertTrue "Root design dir not created! ($dir)" "[ -d $root_design_dir/$dir/$project_name ]" || return
-    assertTrue "Project design dir not created! ($dir)" "[ -d $project_dir/design/$dir ]" || return
+    assertTrue "Design dir not created! ($dir)" "[ -d $root_design_dir/projects/$project_name/$dir ]" || return
+    assertTrue "Project design dir not symlinked! ($dir)" "[ -d $project_dir/design/$dir ]" || return
   done
 
   # Test creation of 'av' design directories
   design init --av > /dev/null
   for dir in $design_base_dirs $design_av_dirs; do
-    assertTrue "Root design dir not created! ($dir)" "[ -d $root_design_dir/$dir/$project_name ]" || return
-    assertTrue "Project design dir not created! ($dir)" "[ -d $project_dir/design/$dir ]" || return
+    assertTrue "Design dir not created! ($dir)" "[ -d $root_design_dir/projects/$project_name/$dir ]" || return
+    assertTrue "Project design dir not symlinked! ($dir)" "[ -d $project_dir/design/$dir ]" || return
   done
 
   # Test that 'design trim' removes empty directories, but doesn't touch non-empty directories
   touch design/a/testfile design/c/testfile
   design trim > /dev/null
-  assertTrue  "[ -d $project_dir/design/a ] && [ -d $root_design_dir/a/$project_name ]"
-  assertFalse "[ -d $project_dir/design/b ] || [ -d $root_design_dir/b/$project_name ]"
-  assertTrue  "[ -d $project_dir/design/c ] && [ -d $root_design_dir/c/$project_name ]"
-  assertFalse "[ -d $project_dir/design/d ] || [ -d $root_design_dir/d/$project_name ]"
-  assertFalse "[ -d $project_dir/design/e ] || [ -d $root_design_dir/e/$project_name ]"
+  assertTrue  "[ -d $project_dir/design/a ] && [ -d $root_design_dir/projects/$project_name/a ]"
+  assertFalse "[ -d $project_dir/design/b ] || [ -d $root_design_dir/projects/$project_name/b ]"
+  assertTrue  "[ -d $project_dir/design/c ] && [ -d $root_design_dir/projects/$project_name/c ]"
+  assertFalse "[ -d $project_dir/design/d ] || [ -d $root_design_dir/projects/$project_name/d ]"
+  assertFalse "[ -d $project_dir/design/e ] || [ -d $root_design_dir/projects/$project_name/e ]"
 
   # Test that 'design rm' removes all directories
   touch design/a/testfile design/c/testfile
   design rm > /dev/null
-  assertFalse "[ -d $project_dir/design/a ] || [ -d $root_design_dir/a/$project_name ]"
-  assertFalse "[ -d $project_dir/design/b ] || [ -d $root_design_dir/b/$project_name ]"
-  assertFalse "[ -d $project_dir/design/c ] || [ -d $root_design_dir/c/$project_name ]"
-  assertFalse "[ -d $project_dir/design/d ] || [ -d $root_design_dir/d/$project_name ]"
-  assertFalse "[ -d $project_dir/design/e ] || [ -d $root_design_dir/e/$project_name ]"
+  assertFalse "[ -d $project_dir/design/a ] || [ -d $root_design_dir/projects/$project_name/a ]"
+  assertFalse "[ -d $project_dir/design/b ] || [ -d $root_design_dir/projects/$project_name/b ]"
+  assertFalse "[ -d $project_dir/design/c ] || [ -d $root_design_dir/projects/$project_name/c ]"
+  assertFalse "[ -d $project_dir/design/d ] || [ -d $root_design_dir/projects/$project_name/d ]"
+  assertFalse "[ -d $project_dir/design/e ] || [ -d $root_design_dir/projects/$project_name/e ]"
 }
 
 
