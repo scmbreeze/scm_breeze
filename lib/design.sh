@@ -90,11 +90,11 @@ design() {
     echo "Trimming empty design directories for $project..."
     for dir in $(find $project_design_dir/ -type d -empty); do
       asset=$(basename $dir)
-      rm -rf "$root_design_dir/$project/$asset" "$project_design_dir/$asset"
+      rm -rf "$project_design_dir/$asset"
     done
     # Remove design dir from project if there's nothing in it.
-    if find $project_design_dir -type d -empty | grep -q $project_design_dir; then
-      rm -rf $project_design_dir
+    if find $project_design_dir/ -type d -empty | grep -q $project_design_dir; then
+      rm -rf "$project_design_dir" "$root_design_dir/projects/$project"
     fi
 
   else
