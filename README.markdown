@@ -164,11 +164,98 @@ Or if you wanted to go straight to a subdirectory within `capistrano`:
 ```bash
 $ s cap<TAB>
 $ s capistrano/<TAB>
-# => bin/   lib/   test/ 
+# => bin/   lib/   test/
 $ s capistrano/l<TAB>
 $ s capistrano/lib/
 # => cd ~/src/gems/capistrano/lib
 ```
+
+## Scripts for Linking Project Design Assets
+
+When you're creating logos or icons for a project that uses `git`,
+have you ever wondered where you should store those `.psd` or `.xcf` files?
+Do you commit all of your raw design files, or does it put you off that any changes to those files
+will bloat your repository?
+
+Here were my goals when I set out to find a solution:
+
+* I wanted a design directory for each of my projects
+* I didn't want the design directory to be checked in to the git repository
+* The design directory needed to be synchronized across all of my machines
+
+The simplest way for me to synchronize files was via my Dropbox account.
+However, if you work with a larger team, you could set up a shared design directory on one
+of your servers and synchronize it with `rsync`.
+
+
+### 1) Create and configure a root design directory
+
+I created my root design directory at `~/Dropbox/Design`.
+
+After you've created your root design directory, edit `~/.scmbrc` and set `root_design_dir`
+to the directory you just created.
+You can also configure the design directory that's created in each of your projects
+(default: `design_assets`), as well as the subdirectories you would like to use.
+The default base subdirectories are: Images, Backgrounds, Logos, Icons, Mockups, and Screenshots.
+
+After you have changed these settings, remember to run `source ~/.bashrc` or `source ~/.zshrc`.
+
+
+### 2) Initialize design directories for your projects
+
+To set up the design directories and symlinks, go to a project's directory and run:
+
+{% highlight bash %}
+design init
+{% endhighlight %}
+
+If your root directory is `~/Dropbox/Design`, directories will be created at
+`~/Dropbox/Design/projects/my_project/Backgrounds`, `~/Dropbox/Design/projects/my_project/Icons`, etc.
+
+It will then symlink the project from your root design directory into your project's design directory,
+so you end up with:
+
+* `my_project/design_assets` -> `~/Dropbox/Design/projects/my_project`
+
+It also adds this directory to `.git/info/exclude` so that git ignores it.
+
+
+If you use the git repository index,
+you can run the following batch command to set up these directories for all of your git repos at once:
+
+{% highlight bash %}
+git_index --batch-cmd design init
+{% endhighlight %}
+
+
+If you want to remove any empty design directories, run:
+
+{% highlight bash %}
+design trim
+{% endhighlight %}
+
+And if you want to remove all of a project's design directories, even if they contain files:
+
+{% highlight bash %}
+design rm
+{% endhighlight %}
+
+
+### 3) Link existing design directories into your projects
+
+If you've set up your design directories on one machine, you'll want them
+to be synchronized across all of your other development machines.
+
+Just run the following command on your other machines after following steps 1 and 2:
+
+{% highlight bash %}
+design link
+{% endhighlight %}
+
+This uses your git index (from SCM Breeze) to figure out where to create the symlinks.
+If you don't use the git index, the same outcome could be achieved by running 'design init'
+for each of the projects.
+
 
 
 ## Anything else?
@@ -222,3 +309,4 @@ for Mercurial, SVN, etc.
 
 
 ## Enjoy!
+
