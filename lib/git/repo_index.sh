@@ -93,7 +93,7 @@ function git_index() {
         unset IFS
         eval cd "$base_path"   # eval turns ~ into $HOME
         # Run git callback (either update or show changes), if we are in the root directory
-        if [ -z "${sub_path%/}" ]; then _git_index_pull_or_status; fi
+        if [ -z "${sub_path%/}" ]; then _git_index_update_or_status; fi
       else
         echo -e "$_wrn_col'$1' did not match any git repos in $GIT_REPO_DIR$_txt_col"
       fi
@@ -155,7 +155,7 @@ parse_git_branch() {
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
-function _git_index_pull_or_status() {
+function _git_index_update_or_status() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
     # Fall back to 'git status' if git status alias isn't configured
     if type $git_status_command 2>&1 | grep -qv "not found"; then
@@ -166,32 +166,31 @@ function _git_index_pull_or_status() {
   else
     # Check that a local 'origin' remote exists.
     if (git remote -v | grep -q origin); then
-      branch=`parse_git_branch`
       # Only update the git repo if it hasn't been touched for at least 6 hours.
       if $(find ".git" -maxdepth 0 -type d -mmin +360 | grep -q "\.git"); then
-        # If we aren't on any branch, checkout master.
-        if [ "$branch" = "(no branch)" ]; then
-          echo -e "=== Checking out$_git_col master$_txt_col branch."
-          git checkout master
-          branch="master"
-        fi
-        echo -e "=== Updating '$branch' branch in $_bld_col$base_path$_txt_col from$_git_col origin$_txt_col... (Press Ctrl+C to cancel)"
-        # Pull the latest code from the server
-        git pull origin $branch
+        _git_index_update_branch_or_master
       fi
     fi
   fi
 }
 
+_git_index_update_branch_or_master() {
+  branch=$(parse_git_branch)
+  # If we aren't on any branch, checkout master.
+  if [ "$branch" = "(no branch)" ]; then
+    echo -e "=== Checking out$_git_col master$_txt_col branch."
+    git checkout master
+    branch="master"
+  fi
+  echo -e "=== Updating '$branch' branch in $_bld_col$base_path$_txt_col from$_git_col origin$_txt_col... (Press Ctrl+C to cancel)"
+  # Pull the latest code from the server
+  git pull origin $branch
+}
+
 # Updates all git repositories with clean working directories.
 function _git_index_update_all() {
   echo -e "== Updating code in $_bld_col$(_git_index_count)$_txt_col repos...\n"
-  unset IFS
-  for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
-    echo -e "===== Updating code in \e[1;32m$base_path\e[0m...\n"
-    cd "$base_path"
-    _git_index_pull_or_status
-  done
+  _git_index_batch_cmd _git_index_update_branch_or_master
 }
 
 # Runs a command for all git repos
