@@ -252,7 +252,7 @@ Just run the following command on your other machines after you've configured th
 design link
 ```
 
-This uses your git index (from SCM Breeze) to figure out where to create the symlinks.
+This uses your git index to figure out where to create the symlinks.
 If you don't use the git index, the same outcome could be achieved by running 'design init'
 for each of the projects.
 
