@@ -170,7 +170,7 @@ $ s capistrano/lib/
 # => cd ~/src/gems/capistrano/lib
 ```
 
-## Scripts for Linking Project Design Assets
+## Linking External Project Design Directories
 
 When you're creating logos or icons for a project that uses `git`,
 have you ever wondered where you should store those `.psd` or `.xcf` files?
