@@ -246,7 +246,7 @@ design rm
 If you've set up your design directories on one machine, you'll want them
 to be synchronized across all of your other development machines.
 
-Just run the following command on your other machines after following steps 1 and 2:
+Just run the following command on your other machines after you've configured the root design directory:
 
 ```bash
 design link
