@@ -186,6 +186,7 @@ function _git_index_pull_or_status() {
 # Updates all git repositories with clean working directories.
 function _git_index_update_all() {
   echo -e "== Updating code in $_bld_col$(_git_index_count)$_txt_col repos...\n"
+  unset IFS
   for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
     echo -e "===== Updating code in \e[1;32m$base_path\e[0m...\n"
     cd "$base_path"
