@@ -91,7 +91,7 @@ function git_index() {
       # Go to our base path
       if [ -n "$base_path" ]; then
         unset IFS
-        eval cd "$base_path"   # eval turns ~ into $HOME
+        eval cd \"$base_path\"   # eval turns ~ into $HOME
         # Run git callback (either update or show changes), if we are in the root directory
         if [ -z "${sub_path%/}" ]; then _git_index_update_or_status; fi
       else
