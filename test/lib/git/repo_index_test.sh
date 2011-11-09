@@ -23,14 +23,16 @@ if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwords
 # Setup and tear down
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
-  GIT_REPO_DIR=$(mktemp -d)
+  GIT_REPO_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
   GIT_REPOS="/tmp/test_repo_1:/tmp/test_repo_11"
   git_status_command="git status"
 
   git_index_file="$GIT_REPO_DIR/.git_index"
 
   silentGitCommands
-
+  
+  echo "Using repo dir $GIT_REPO_DIR"
+  
   cd $GIT_REPO_DIR
   # Setup test repos in temp repo dir
   for repo in github bitbucket source_forge; do
@@ -91,7 +93,7 @@ index_no_newlines() {
 
 test_repo_index_command() {
   git_index --rebuild > /dev/null
-
+  
   # Test that all repos are detected, and sorted alphabetically
   assertIncludes "$(index_no_newlines)" "bitbucket.*\
 blue_submodule.*\
