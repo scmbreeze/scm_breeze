@@ -91,7 +91,11 @@ function git_index() {
       # Go to our base path
       if [ -n "$base_path" ]; then
         unset IFS
-        eval cd \"$base_path\"   # eval turns ~ into $HOME
+        # evaluate ~ if necessary
+        if [[ "$base_path" == "~"* ]]; then
+          base_path=$(eval echo ${base_path%%/*})/${base_path#*/}
+        fi
+        cd "$base_path"
         # Run git callback (either update or show changes), if we are in the root directory
         if [ -z "${sub_path%/}" ]; then _git_index_update_or_status; fi
       else
@@ -128,7 +132,7 @@ function _rebuild_git_index() {
   if [ "$1" != "--silent" ]; then echo -e "== Scanning $GIT_REPO_DIR for git repos & submodules..."; fi
   # Get repos from src dir and custom dirs, then sort by basename
   local IFS=$'\n'
-  for repo in $(echo -e "$(_find_git_repos)\n$(echo $GIT_REPOS | sed "s/:/\n/g")"); do
+  for repo in $(echo -e "$(_find_git_repos)\n$(echo $GIT_REPOS | sed "s/:/\\\\n/g")"); do
     echo $(basename $repo | sed "s/ /_/g") $repo
   done | sort | cut -d " " -f2- > "$GIT_REPO_DIR/.git_index"
 
