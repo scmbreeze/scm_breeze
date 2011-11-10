@@ -28,7 +28,7 @@ oneTimeSetUp() {
   export gs_max_changes="20"
   export ga_auto_remove="yes"
 
-  testRepo=$(mktemp -d)
+  testRepo=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
 }
 
 oneTimeTearDown() {
@@ -55,8 +55,8 @@ test_git_expand_args() {
   assertEquals "$error" "seven two three four five one" "$(git_expand_args seven 2..5 1)"
 
   # Test that any args with spaces remain quoted
-  assertEquals "$error" "-m \"Test Commit Message\" one" "$(git_expand_args -m \"Test Commit Message\" 1)"
-  assertEquals "$error" "-ma \"Test Commit Message\" Unquoted"\
+  assertEquals "$error" "-m Test\ Commit\ Message one" "$(git_expand_args -m "Test Commit Message" 1)"
+  assertEquals "$error" "-ma Test\ Commit\ Message Unquoted"\
                         "$(git_expand_args -ma "Test Commit Message" "Unquoted")"
 }
 
@@ -95,7 +95,7 @@ test_git_status_shortcuts() {
   assertNotIncludes "$git_status3" "Untracked files"
 
   # Run command in shell, load output from temp file into variable
-  temp_file=$(mktemp)
+  temp_file=$(mktemp -t scm_breeze.XXXXXXXXXX)
   git_status_shortcuts > $temp_file
   git_status=$(cat $temp_file | strip_colors)
 
@@ -232,7 +232,7 @@ test_git_commit_prompt() {
   commit_msg="\"Nathan's git commit prompt function!\""
   dbl_escaped_msg="\\\\\"Nathan's git commit prompt function\"'"'!'"'\"\\\\\""
   # Create temporary history file
-  HISTFILE=$(mktemp)
+  HISTFILE=$(mktemp -t scm_breeze.XXXXXXXXXX)
   HISTFILESIZE=1000
   HISTSIZE=1000
 

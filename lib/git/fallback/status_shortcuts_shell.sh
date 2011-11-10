@@ -134,7 +134,9 @@ _gs_output_file_group() {
 $pad$c_dark [$c_rst$e$c_dark] $c_group$relative$c_rst"
     # Export numbered variables in the order they are displayed.
     # (Exports full path, but displays relative path)
-    export $git_env_char$e="$project_root/${stat_file[$i]}"
+    # fetch first file (in the case of oldFile -> newFile) and remove quotes
+    local filename=$(eval echo $(echo ${stat_file[$i]} | egrep -o '^"([^\\"]*(\\.[^"]*)*)"|^[^ ]+'))
+    export $git_env_char$e="$project_root/$filename"
     let e++
   done
   echo -e "$c_hash#$c_rst"

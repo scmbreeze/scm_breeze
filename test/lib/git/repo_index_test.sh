@@ -23,7 +23,7 @@ if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwords
 # Setup and tear down
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
-  GIT_REPO_DIR=$(mktemp -d)
+  GIT_REPO_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
   GIT_REPOS="/tmp/test_repo_1:/tmp/test_repo_11"
   git_status_command="git status"
 

@@ -131,7 +131,12 @@ def output_file_group(group)
     puts "#{c_group}##{@c[:rst]}     #{@c[h[:col]]}#{h[:msg]}:\
 #{padding}#{@c[:dark]} [#{@c[:rst]}#{@e}#{@c[:dark]}] #{c_group}#{rel_file}#{@c[:rst]}"
     # Save the ordered list of output files
-    @output_files << h[:file]
+    # fetch first file (in the case of oldFile -> newFile) and remove quotes
+    @output_files << if h[:file] =~ /^"([^\\"]*(\\.[^"]*)*)"/
+      $1.gsub(/\\(.)/,'\1')
+    else
+      h[:file].match(/^[^ ]*/)[0]
+    end
   end
 
   puts "#{c_group}##{@c[:rst]}" # Extra '#'
