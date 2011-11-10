@@ -30,9 +30,7 @@ oneTimeSetUp() {
   git_index_file="$GIT_REPO_DIR/.git_index"
 
   silentGitCommands
-  
-  echo "Using repo dir $GIT_REPO_DIR"
-  
+
   cd $GIT_REPO_DIR
   # Setup test repos in temp repo dir
   for repo in github bitbucket source_forge; do
@@ -93,7 +91,7 @@ index_no_newlines() {
 
 test_repo_index_command() {
   git_index --rebuild > /dev/null
-  
+
   # Test that all repos are detected, and sorted alphabetically
   assertIncludes "$(index_no_newlines)" "bitbucket.*\
 blue_submodule.*\

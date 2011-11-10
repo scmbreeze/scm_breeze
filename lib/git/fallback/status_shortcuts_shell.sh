@@ -120,7 +120,7 @@ _gs_output_file_group() {
   for i in ${stat_grp[$1]}; do
     # Print colored hashes & files based on modification groups
     local c_group="\e[0;$(eval echo -e \$c_grp_$1)"
-    
+
     # Deduce relative path based on current working directory
     if [ -z "$project_root" ]; then
       relative="${stat_file[$i]}"
@@ -128,7 +128,7 @@ _gs_output_file_group() {
       dest="$project_root/${stat_file[$i]}"
       relative="$(_gs_relative_path "$PWD" "$dest" )"
     fi
-    
+
     if [[ $f -gt 10 && $e -lt 10 ]]; then local pad=" "; else local pad=""; fi   # (padding)
     echo -e "$c_hash#$c_rst     ${stat_col[$i]}${stat_msg[$i]}:\
 $pad$c_dark [$c_rst$e$c_dark] $c_group$relative$c_rst"
