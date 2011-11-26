@@ -29,3 +29,14 @@ git_remove_history() {
   rm -rf .git/refs/original/ && git reflog expire --all &&  git gc --aggressive --prune
 }
 
+
+# Set default remote and merge for a git branch (pull and push)
+# Usage: git_set_default_remote(branch = master, remote = origin)
+git_set_default_remote() {
+  if [ -n "$1" ]; then branch="$1"; else branch="master"; fi
+  if [ -n "$2" ]; then remote="$2"; else remote="origin"; fi
+  echo "branch.$branch.remote: $remote"
+  echo "branch.$branch.merge: refs/heads/$branch"
+  git config branch.$branch.remote $remote
+  git config branch.$branch.merge refs/heads/$branch
+}
