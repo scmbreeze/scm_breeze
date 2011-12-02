@@ -40,3 +40,16 @@ git_set_default_remote() {
   git config branch.$branch.remote $remote
   git config branch.$branch.merge refs/heads/$branch
 }
+
+# Add one git ignore rule, global by default
+# Usage: git_ignore [rule] [ignore_file=.gitignore]
+git_ignore() {
+  if [ -n "$2" ]; then local f="$2"; else local f=".gitignore"; fi
+  if [ -n "$1" ] && [ -e $f ] && ! grep -q "$1" $f; then echo "$1" >> $f; fi
+}
+
+# Add one git ignore rule, just for your machine
+# Usage: git_exclude [rule]
+git_exclude() {
+  git_ignore "$1" ".git/info/exclude"
+}
