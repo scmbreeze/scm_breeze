@@ -29,6 +29,9 @@
 #     - Produce a count of repos for each host: 'git_index --count-by-host'
 #     - Run a custom command for each repo: 'git_index --batch-cmd <command>'
 #
+#   * You can also change to a top-level directory within $GIT_REPO_DIR by prefixing the argument
+#     with '/'
+#
 # Examples:
 #
 #     $ git_index --list
@@ -52,7 +55,7 @@ function git_index() {
   if [ -z "$1" ]; then
     # Just change to $GIT_REPO_DIR if no params given.
     cd $GIT_REPO_DIR
-  else
+  else 
     if [ "$1" = "--rebuild" ]; then
       _rebuild_git_index
     elif [ "$1" = "--update-all" ]; then
@@ -71,6 +74,12 @@ function git_index() {
       sed -e "s/\(\([^/]*\/\/\)\?\([^@]*@\)\?\([^:/]*\)\).*/\1/" |
       sort | uniq -c
       echo
+    
+    # If $1 starts with '/', change to top-level directory within $GIT_REPO_DIR
+    elif ([ $shell = "bash" ] && [ "${1:0:1}" = "/" ]) || \
+         ([ $shell = "zsh" ]  && [ "${1[1]}"  = "/" ]); then
+			if [ -d "$GIT_REPO_DIR$1" ]; then cd "$GIT_REPO_DIR$1"; fi
+
     else
       _check_git_index
       # Figure out which directory we need to change to.
@@ -231,7 +240,13 @@ function _git_index_tab_completion() {
   if [[ -n "$base_path" && $curw == */* ]]; then
     local search_path=$(echo "$curw" | sed "s:^${project/\\/\\\\\\}::")
     COMPREPLY=($(compgen -d "$base_path$search_path" | grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
-  # Else, tab complete all the entries in .git_index, plus '--' commands
+    
+	# If curr string starts with /, tab complete top-level directories in root project dir
+	elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
+			 ([ $shell = "zsh" ]  && [ "${curw[1]}"  = "/" ]); then
+		COMPREPLY=($(compgen -d "$GIT_REPO_DIR$curw" | sed -e "s:$GIT_REPO_DIR/::" -e "s:^:/:"))
+	
+  # Else, tab complete the entries in .git_index, plus '--' commands
   else
     local commands="--list\n--rebuild\n--update-all\n--batch-cmd\n--count-by-host"
     COMPREPLY=($(compgen -W '$(sed -e "s:.*/::" -e "s:$:/:" "$GIT_REPO_DIR/.git_index" | sort)$(echo -e "\n"$commands)' -- $curw))

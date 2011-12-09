@@ -179,6 +179,14 @@ test_git_index_tab_completion() {
 }
 
 
+# Test changing to top-level directory (when arg begins with '/')
+test_changing_to_top_level_directory() {
+  mkdir "$GIT_REPO_DIR/gems"
+  git_index "/gems"
+  assertEquals "$GIT_REPO_DIR/gems" "$PWD"
+}
+
+
 # load and run shUnit2
 # Call this function to run tests
 . "$scmbDir/test/support/shunit2"
