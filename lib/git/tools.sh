@@ -53,3 +53,25 @@ git_ignore() {
 git_exclude() {
   git_ignore "$1" ".git/info/exclude"
 }
+
+
+# Use git bisect to find where text was removed from a file.
+#
+# Example:
+#
+# - Locate the commit where the text "strawberry" was removed from the file 'FRUITS'.
+#   - The text was not present in 992048f
+#
+#  git_bisect_grep 992048f "strawberry" FRUITS
+#
+git_bisect_grep() {
+  if [ -z "$2" ]; then
+    echo "Usage: git_bisect_grep <good_revision> <string>";
+    exit 1
+  fi
+  if [ -n "$3" ]; then search_path="$3"; else search_path="."; fi
+  git bisect start
+  git bisect good $1
+  git bisect bad
+  git bisect run grep -qvRE "$2" $search_path
+}
