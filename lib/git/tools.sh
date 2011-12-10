@@ -73,5 +73,5 @@ git_bisect_grep() {
   git bisect start
   git bisect good $1
   git bisect bad
-  git bisect run grep -qvRE "$2" $search_path
+  git bisect run grep -qRE "$2" $search_path
 }
