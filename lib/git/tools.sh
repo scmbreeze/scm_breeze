@@ -33,7 +33,8 @@ git_remove_history() {
 # Set default remote and merge for a git branch (pull and push)
 # Usage: git_set_default_remote(branch = master, remote = origin)
 git_set_default_remote() {
-  if [ -n "$1" ]; then branch="$1"; else branch="master"; fi
+  curr_branch=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  if [ -n "$1" ]; then branch="$1"; else branch="$curr_branch"; fi
   if [ -n "$2" ]; then remote="$2"; else remote="origin"; fi
   echo "branch.$branch.remote: $remote"
   echo "branch.$branch.merge: refs/heads/$branch"
