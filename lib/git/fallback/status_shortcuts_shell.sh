@@ -16,7 +16,7 @@
 # --------------------------------------------------------------------
 git_status_shortcuts() {
   zsh_compat # Ensure shwordsplit is on for zsh
-  local IFS=$'\n'
+  IFS=$'\n'
   local git_status="$(git status --porcelain 2> /dev/null)"
 
   if [ -n "$git_status" ] && [[ $(echo "$git_status" | wc -l) -le $gs_max_changes ]]; then
@@ -113,6 +113,7 @@ git_status_shortcuts() {
     # so just use plain 'git status'
     git status
   fi
+  unset IFS
   zsh_reset # Reset zsh environment to default
 }
 # Template function for 'git_status_shortcuts'.

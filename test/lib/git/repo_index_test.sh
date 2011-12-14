@@ -59,7 +59,7 @@ EOF
   done
 
   # Setup some custom repos outside the main repo dir
-  local IFS=":"
+  IFS=":"
   for dir in $GIT_REPOS; do
     mkdir -p $dir; cd $dir; git init;
   done
@@ -72,8 +72,9 @@ EOF
 
 oneTimeTearDown() {
   rm -rf "${GIT_REPO_DIR}"
-  local IFS=":"
+  IFS=":"
   for dir in $GIT_REPOS; do rm -rf $dir; done
+  unset IFS
 }
 
 ensureIndex() {

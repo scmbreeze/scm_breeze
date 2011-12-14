@@ -51,11 +51,11 @@
 
 
 function git_index() {
-  local IFS=$'\n'
+  IFS=$'\n'
   if [ -z "$1" ]; then
     # Just change to $GIT_REPO_DIR if no params given.
     cd $GIT_REPO_DIR
-  else 
+  else
     if [ "$1" = "--rebuild" ]; then
       _rebuild_git_index
     elif [ "$1" = "--update-all" ]; then
@@ -74,11 +74,11 @@ function git_index() {
       sed -e "s/\(\([^/]*\/\/\)\?\([^@]*@\)\?\([^:/]*\)\).*/\1/" |
       sort | uniq -c
       echo
-    
+
     # If $1 starts with '/', change to top-level directory within $GIT_REPO_DIR
     elif ([ $shell = "bash" ] && [ "${1:0:1}" = "/" ]) || \
          ([ $shell = "zsh" ]  && [ "${1[1]}"  = "/" ]); then
-			if [ -d "$GIT_REPO_DIR$1" ]; then cd "$GIT_REPO_DIR$1"; fi
+      if [ -d "$GIT_REPO_DIR$1" ]; then cd "$GIT_REPO_DIR$1"; fi
 
     else
       _check_git_index
@@ -112,6 +112,7 @@ function git_index() {
       fi
     fi
   fi
+  unset IFS
 }
 
 _git_index_dirs_without_home() {
@@ -121,11 +122,12 @@ _git_index_dirs_without_home() {
 # Recursively searches for git repos in $GIT_REPO_DIR
 function _find_git_repos() {
   # Find all unarchived projects
-  local IFS=$'\n'
+  IFS=$'\n'
   for repo in $(find "$GIT_REPO_DIR" -maxdepth 4 -name ".git" -type d \! -wholename '*/archive/*'); do
     echo ${repo%/.git}          # Return project folder, with trailing ':'
     _find_git_submodules $repo  # Detect any submodules
   done
+  unset IFS
 }
 
 # List all submodules for a git repo, if any.
@@ -140,10 +142,11 @@ function _find_git_submodules() {
 function _rebuild_git_index() {
   if [ "$1" != "--silent" ]; then echo -e "== Scanning $GIT_REPO_DIR for git repos & submodules..."; fi
   # Get repos from src dir and custom dirs, then sort by basename
-  local IFS=$'\n'
+  IFS=$'\n'
   for repo in $(echo -e "$(_find_git_repos)\n$(echo $GIT_REPOS | sed "s/:/\\\\n/g")"); do
     echo $(basename $repo | sed "s/ /_/g") $repo
   done | sort | cut -d " " -f2- > "$GIT_REPO_DIR/.git_index"
+  unset IFS
 
   if [ "$1" != "--silent" ]; then
     echo -e "===== Indexed $_bld_col$(_git_index_count)$_txt_col repos in $GIT_REPO_DIR/.git_index"
@@ -227,7 +230,7 @@ function _git_index_batch_cmd() {
 function _git_index_tab_completion() {
   _check_git_index
   local curw
-  local IFS=$'\n'
+  IFS=$'\n'
   COMPREPLY=()
   curw=${COMP_WORDS[COMP_CWORD]}
 
@@ -240,17 +243,18 @@ function _git_index_tab_completion() {
   if [[ -n "$base_path" && $curw == */* ]]; then
     local search_path=$(echo "$curw" | sed "s:^${project/\\/\\\\\\}::")
     COMPREPLY=($(compgen -d "$base_path$search_path" | grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
-    
-	# If curr string starts with /, tab complete top-level directories in root project dir
-	elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
-			 ([ $shell = "zsh" ]  && [ "${curw[1]}"  = "/" ]); then
-		COMPREPLY=($(compgen -d "$GIT_REPO_DIR$curw" | sed -e "s:$GIT_REPO_DIR/::" -e "s:^:/:"))
-	
+
+  # If curr string starts with /, tab complete top-level directories in root project dir
+  elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
+       ([ $shell = "zsh" ]  && [ "${curw[1]}"  = "/" ]); then
+    COMPREPLY=($(compgen -d "$GIT_REPO_DIR$curw" | sed -e "s:$GIT_REPO_DIR/::" -e "s:^:/:"))
+
   # Else, tab complete the entries in .git_index, plus '--' commands
   else
     local commands="--list\n--rebuild\n--update-all\n--batch-cmd\n--count-by-host"
     COMPREPLY=($(compgen -W '$(sed -e "s:.*/::" -e "s:$:/:" "$GIT_REPO_DIR/.git_index" | sort)$(echo -e "\n"$commands)' -- $curw))
   fi
+  unset IFS
   return 0
 }
 
