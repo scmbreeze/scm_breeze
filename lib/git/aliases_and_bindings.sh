@@ -22,14 +22,14 @@ _alias $git_alias='git'
 __define_git_completion () {
 eval "
 _git_$1_shortcut () {
-COMP_LINE=\"git $2\${COMP_LINE#$1}\"
+COMP_LINE=\"git $2 \${COMP_LINE/$1 }\"
 let COMP_POINT+=$((4+${#2}-${#1}))
 COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
 let COMP_CWORD+=1
 
 local cur words cword prev
 _get_comp_words_by_ref -n =: cur words cword prev
-_git_$2
+_git
 }
 "
 }
@@ -98,7 +98,7 @@ _alias $git_branch_all_alias='git branch -a'
 _alias $git_index_alias="git_index"
 
 
-# Tab completion for aliases
+# ZSH tab completion
 if [[ $shell == "zsh" ]]; then
   # Turn on support for bash completion
   autoload bashcompinit
@@ -122,19 +122,7 @@ if [[ $shell == "zsh" ]]; then
   compdef _git $git_add_shortcuts_alias=git-add
   compdef _git $git_merge_alias=git-merge
 else
-  # -- bash
-  complete -o default -o nospace -F _git          $git_alias
-  complete -o default -o nospace -F _git_pull     $git_pull_alias
-  complete -o default -o nospace -F _git_push     $git_push_alias
-  complete -o default -o nospace -F _git_fetch    $git_fetch_alias
-  complete -o default -o nospace -F _git_branch   $git_branch_alias
-  complete -o default -o nospace -F _git_rebase   $git_rebase_alias
-  complete -o default -o nospace -F _git_merge    $git_merge_alias
-  complete -o default -o nospace -F _git_log      $git_log_alias
-  complete -o default -o nospace -F _git_diff     $git_diff_alias
-  complete -o default -o nospace -F _git_checkout $git_checkout_alias
-  complete -o default -o nospace -F _git_remote   $git_remote_alias
-  complete -o default -o nospace -F _git_show     $git_show_alias
+  complete -o default -o nospace -F _git $git_alias
 fi
 
 # Git repo management & aliases.
