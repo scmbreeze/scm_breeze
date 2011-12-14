@@ -13,6 +13,41 @@ if type hub > /dev/null 2>&1; then alias git=hub; fi
 
 _alias $git_alias='git'
 
+
+# --------------------------------------------------------------------
+# Thanks to Scott Bronson for coming up the following git tab completion workaround,
+# which I've altered slightly to be more flexible.
+# https://github.com/bronson/dotfiles/blob/731bfd951be68f395247982ba1fb745fbed2455c/.bashrc#L81
+# (only works for bash)
+__define_git_completion () {
+eval "
+_git_$1_shortcut () {
+COMP_LINE=\"git $2\${COMP_LINE#$1}\"
+let COMP_POINT+=$((4+${#2}-${#1}))
+COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
+let COMP_CWORD+=1
+
+local cur words cword prev
+_get_comp_words_by_ref -n =: cur words cword prev
+_git_$2
+}
+"
+}
+
+# Define git alias with tab completion
+# Usage: __git_alias <alias> <command_prefix> <command>
+__git_alias () {
+  if [ -n "$1" ]; then
+    local alias_str="$1"; local cmd_prefix="$2"; local cmd="$3"; local cmd_args=" $4"
+    alias $alias_str="$cmd_prefix $cmd$cmd_args"
+    if [ "$shell" = "bash" ]; then
+      __define_git_completion $alias_str $cmd
+      complete -o default -o nospace -F _git_"$alias_str"_shortcut $alias_str
+    fi
+  fi
+}
+
+# --------------------------------------------------------------------
 # SCM Breeze functions
 _alias $git_status_shortcuts_alias="git_status_shortcuts"
 _alias $git_add_shortcuts_alias="git_add_shortcuts"
@@ -23,37 +58,41 @@ _alias $git_commit_all_alias='git_commit_all'
 
 # Expand numbers and ranges for commands that deal with paths
 _exp="exec_git_expand_args"
-_alias $git_checkout_alias="$_exp git checkout"
-_alias $git_commit_alias="$_exp git commit"
-_alias $git_reset_alias="$_exp git reset --"
-_alias $git_rm_alias="$_exp git rm"
-_alias $git_blame_alias="$_exp git blame"
-_alias $git_diff_alias="$_exp git diff"
-_alias $git_diff_cached_alias="$_exp git diff --cached"
+__git_alias "$git_checkout_alias"    "$_exp git" "checkout"
+__git_alias "$git_commit_alias"      "$_exp git" "commit"
+__git_alias "$git_reset_alias"       "$_exp git" "reset" "--"
+__git_alias "$git_rm_alias"          "$_exp git" "rm"
+__git_alias "$git_blame_alias"       "$_exp git" "blame"
+__git_alias "$git_diff_alias"        "$_exp git" "diff"
+__git_alias "$git_diff_cached_alias" "$_exp git" "diff" "--cached"
 
 # Standard commands
-_alias $git_clone_alias='git clone'
-_alias $git_fetch_alias='git fetch'
-_alias $git_fetch_and_rebase_alias='git fetch && git rebase'
-_alias $git_pull_alias='git pull'
-_alias $git_push_alias='git push'
+__git_alias "$git_clone_alias" "git" 'clone'
+__git_alias "$git_fetch_alias" "git" 'fetch'
+__git_alias "$git_pull_alias" "git" 'pull'
+__git_alias "$git_push_alias" "git" 'push'
+__git_alias "$git_status_original_alias" "git" 'status' # (Standard git status)
+__git_alias "$git_status_short_alias" "git" 'status' '-s'
+__git_alias "$git_remote_alias" "git" 'remote' '-v'
+__git_alias "$git_branch_alias" "git" 'branch'
+__git_alias "$git_rebase_alias" "git" 'rebase'
+__git_alias "$git_merge_alias" "git" 'merge'
+__git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
+__git_alias "$git_log_alias" "git" 'log'
+__git_alias "$git_show_alias" "git" 'show'
+
+
+# Compound/complex commands
 _alias $git_pull_then_push_alias="git pull && git push"
-_alias $git_status_original_alias='git status' # (Standard git status)
-_alias $git_status_short_alias='git status -s'
-_alias $git_remote_alias='git remote -v'
-_alias $git_branch_alias='git branch'
-_alias $git_branch_all_alias='git branch -a'
-_alias $git_rebase_alias='git rebase'
-_alias $git_merge_alias='git merge'
-_alias $git_cherry_pick_alias='git cherry-pick'
-_alias $git_log_alias='git log'
-_alias $git_log_stat_alias='git log --stat --max-count=5'
-_alias $git_log_graph_alias='git log --graph --max-count=5'
-_alias $git_show_alias='git show'
-_alias $git_add_all_alias='git add -A'
+_alias $git_fetch_and_rebase_alias='git fetch && git rebase'
 _alias $git_commit_amend_alias='git commit --amend'
 # Add staged changes to latest commit without prompting for message
 _alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
+_alias $git_log_stat_alias='git log --stat --max-count=5'
+_alias $git_log_graph_alias='git log --graph --max-count=5'
+_alias $git_add_all_alias='git add -A'
+_alias $git_branch_all_alias='git branch -a'
+
 
 # Git Index alias
 _alias $git_index_alias="git_index"
