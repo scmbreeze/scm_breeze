@@ -106,7 +106,7 @@ function git_index() {
         fi
         cd "$base_path"
         # Run git callback (either update or show changes), if we are in the root directory
-        if [ -z "${sub_path%/}" ]; then _git_index_update_or_status; fi
+        if [ -z "${sub_path%/}" ]; then _git_index_status_if_dirty; fi
       else
         echo -e "$_wrn_col'$1' did not match any git repos in $GIT_REPO_DIR$_txt_col"
       fi
@@ -171,7 +171,7 @@ parse_git_branch() {
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
-function _git_index_update_or_status() {
+function _git_index_status_if_dirty() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
     # Fall back to 'git status' if git status alias isn't configured
     if type $git_status_command 2>&1 | grep -qv "not found"; then
@@ -179,35 +179,76 @@ function _git_index_update_or_status() {
     else
       git status
     fi
-  else
-    # Check that a local 'origin' remote exists.
-    if (git remote -v | grep -q origin); then
-      # Only update the git repo if it hasn't been touched for at least 6 hours.
-      if $(find ".git" -maxdepth 0 -type d -mmin +360 | grep -q "\.git"); then
-        _git_index_update_branch_or_master
-      fi
-    fi
   fi
 }
 
-_git_index_update_branch_or_master() {
-  branch=$(parse_git_branch)
-  # If we aren't on any branch, checkout master.
-  if [ "$branch" = "(no branch)" ]; then
-    echo -e "=== Checking out$_git_col master$_txt_col branch."
-    git checkout master
-    branch="master"
+
+_git_index_update_all_branches() {
+  echo -e "\n## $base_path\n"
+
+  # Save current branch or HEAD revision
+  local orig_branch=$(parse_git_branch)
+  if [[ "$orig_branch" = "(no branch)" ]]; then
+    orig_branch=$(git rev-parse HEAD)
   fi
-  echo -e "=== Updating '$branch' branch in $_bld_col$base_path$_txt_col from$_git_col origin$_txt_col... (Press Ctrl+C to cancel)"
-  # Pull the latest code from the server
-  git pull origin $branch
+
+  # If working directory is dirty, abort
+  if [[ -n "$(git status --short 2> /dev/null)" ]]; then
+    echo "=== Working directory dirty, nothing to do."
+    return
+  fi
+
+  local remotes merges branches
+  # Get branch configuration from .git/config
+  IFS=$'\n'
+  for branch in $(git branch 2> /dev/null | sed -e 's/.\{2\}\(.*\)/\1/'); do
+    # Skip '(no branch)'
+    if [[ "$branch" = "(no branch)" ]]; then continue; fi
+
+    local remote=$(git config --get branch.$branch.remote)
+    local merge=$(git config --get branch.$branch.merge)
+
+    # Ignore branch if remote and merge is not configured
+    if [[ -n "$remote" ]] && [[ -n "$merge" ]]; then
+      branches=("${branches[@]}" "$branch")
+      remotes=("${remotes[@]}" "$remote")
+      # Get branch from merge ref (refs/heads/master => master)
+      merges=("${merges[@]}" "$(basename $merge)")
+    else
+      echo "=== Skipping $branch: remote and merge refs are not configured."
+    fi
+  done
+  unset IFS
+
+  # Update all remotes if there are any branches to update
+  if [ -n "${branches[*]}" ]; then git fetch --all 2> /dev/null; fi
+
+  local index=0
+  # Iterate over branches, and update those that can be fast-forwarded
+  for branch in $branches; do
+    branch_rev="$(git rev-parse $branch)"
+    # Local branch can be fast-forwarded if revision is ancestor of remote revision, and not the same.
+    # (see http://stackoverflow.com/a/2934062/304706)
+    if [[ "$branch_rev" != "$(git rev-parse ${remotes[$index]}/${merges[$index]})" ]] && \
+       [[ "$(git merge-base $branch_rev ${remotes[$index]}/${merges[$index]})" = "$branch_rev" ]]; then
+      echo "=== Updating '$branch' branch in $base_path from ${remotes[$index]}/${merges[$index]}..."
+      # Checkout branch if we aren't already on it.
+      if [[ "$branch" != "$(parse_git_branch)" ]]; then git checkout $branch; fi
+      git merge "${remotes[$index]}/${merges[$index]}"
+    fi
+    let index++
+  done
+
+  # Checkout original branch/revision if we aren't already on it.
+  if [[ "$orig_branch" != "$(parse_git_branch)" ]]; then git checkout "$orig_branch"; fi
 }
 
 # Updates all git repositories with clean working directories.
 function _git_index_update_all() {
-  echo -e "== Updating code in $_bld_col$(_git_index_count)$_txt_col repos...\n"
-  _git_index_batch_cmd _git_index_update_branch_or_master
+  echo -e "== Safely updating all local branches in $_bld_col$(_git_index_count)$_txt_col repos...\n"
+  _git_index_batch_cmd _git_index_update_all_branches
 }
+
 
 # Runs a command for all git repos
 function _git_index_batch_cmd() {
