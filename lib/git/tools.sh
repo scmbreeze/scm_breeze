@@ -54,6 +54,10 @@ git_ignore() {
 git_exclude() {
   git_ignore "$1" ".git/info/exclude"
 }
+# Exclude basename of file
+git_exclude_basename() {
+  git_exclude $(basename "$1")
+}
 
 
 # Use git bisect to find where text was removed from a file.
