@@ -245,7 +245,7 @@ _git_index_update_all_branches() {
 
 # Updates all git repositories with clean working directories.
 # Use the following cron configuration:
-# */6 * * * * /usr/bin/bash -c '. $HOME/.bashrc && git_index --update-all'
+# */6 * * * * /bin/bash -c '. $HOME/.bashrc && git_index --update-all'
 function _git_index_update_all() {
   echo -e "== Safely updating all local branches in $_bld_col$(_git_index_count)$_txt_col repos...\n"
   _git_index_batch_cmd _git_index_update_all_branches
