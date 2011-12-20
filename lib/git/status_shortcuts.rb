@@ -26,7 +26,7 @@
 # Exit if no changes
 exit if @git_status == ""
 git_branch = `git branch -v 2> /dev/null`
-@branch = git_branch[/^\* ([^ ]*)/, 1]
+@branch = git_branch[/^\* (\(no branch\)|[^ ]*)/, 1]
 @ahead = git_branch[/^\* [^ ]* *[^ ]* *\[ahead ?(\d+)\]/, 1]
 
 @changes = @git_status.split("\n")
