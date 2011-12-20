@@ -94,5 +94,6 @@ git_submodule_rm() {
   git config -f .git/config --remove-section "submodule.$1"
   git config -f .gitmodules --remove-section "submodule.$1"
   git add .gitmodules
+  rm -rf "$1"
   git rm --cached "$1"
 }
