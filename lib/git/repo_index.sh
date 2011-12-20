@@ -85,7 +85,7 @@ function git_index() {
       # Figure out which directory we need to change to.
       local project=$(echo $1 | cut -d "/" -f1)
       # Find base path of project
-      local base_path="$(grep "/$project$" "$GIT_REPO_DIR/.git_index")"
+      local base_path="$(grep -m1 "/$project$" "$GIT_REPO_DIR/.git_index")"
       if [ -n "$base_path" ]; then
         sub_path=$(echo $1 | sed "s:^$project::")
         # Append subdirectories to base path
