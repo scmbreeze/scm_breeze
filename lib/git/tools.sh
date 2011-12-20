@@ -80,3 +80,19 @@ git_bisect_grep() {
   git bisect bad
   git bisect run grep -qRE "$2" $search_path
 }
+
+
+# Removes a git submodule
+# (from http://stackoverflow.com/a/7646931/304706)
+# Deletes the sections from .gitmodules, .git/config,
+# and runs git rm --cached path/to/submodule.
+git_submodule_rm() {
+  if [ -z "$1" ]; then
+    echo "Usage: git_submodule_rm path/to/submodule (no trailing slash)"
+    exit 1
+  fi
+  git config -f .git/config --remove-section "submodule.$1"
+  git config -f .gitmodules --remove-section "submodule.$1"
+  git add .gitmodules
+  git rm --cached "$1"
+}
