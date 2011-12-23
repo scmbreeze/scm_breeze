@@ -73,6 +73,8 @@ __git_alias "$git_pull_alias" "git" 'pull'
 __git_alias "$git_push_alias" "git" 'push'
 __git_alias "$git_status_original_alias" "git" 'status' # (Standard git status)
 __git_alias "$git_status_short_alias" "git" 'status' '-s'
+__git_alias "$git_clean_alias" "git" "clean"
+__git_alias "$git_clean_force_alias" "git" "clean" "-fd"
 __git_alias "$git_remote_alias" "git" 'remote' '-v'
 __git_alias "$git_branch_alias" "git" 'branch'
 __git_alias "$git_rebase_alias" "git" 'rebase'
