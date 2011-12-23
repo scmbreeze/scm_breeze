@@ -150,7 +150,7 @@ git_expand_args() {
       else
         echo -n " "
       fi
-      eval printf '%q' "\$$git_env_char$arg"
+      eval printf '%s' "\$$git_env_char$arg"
     elif [[ "$arg" =~ ^[0-9]+\.\.[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
       for i in $(eval echo {$arg}); do
         if [ "$first" -eq 1 ]; then
@@ -158,7 +158,7 @@ git_expand_args() {
         else
           echo -n " "
         fi
-        eval printf '%q' "\$$git_env_char$i"
+        eval printf '%s' "\$$git_env_char$i"
       done
     else   # Otherwise, treat $arg as a normal string.
       if [ "$first" -eq 1 ]; then
@@ -166,7 +166,7 @@ git_expand_args() {
       else
         echo -n " "
       fi
-      printf '%q' "$arg"
+      printf '%s' "$arg"
     fi
   done
 }
