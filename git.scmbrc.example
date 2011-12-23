@@ -43,6 +43,7 @@ git_diff_cached_alias="gdc"
 # 3. Standard commands
 git_clone_alias="gcl"
 git_fetch_alias="gf"
+git_fetch_all_alias="gfa"
 git_fetch_and_rebase_alias="gfr"
 git_pull_alias="gpl"
 git_push_alias="gps"

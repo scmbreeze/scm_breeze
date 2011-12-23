@@ -83,6 +83,7 @@ __git_alias "$git_show_alias" "git" 'show'
 
 
 # Compound/complex commands
+_alias $git_fetch_all_alias="git fetch --all"
 _alias $git_pull_then_push_alias="git pull && git push"
 _alias $git_fetch_and_rebase_alias='git fetch && git rebase'
 _alias $git_commit_amend_alias='git commit --amend'
