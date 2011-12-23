@@ -166,7 +166,7 @@ git_expand_args() {
       else
         echo -n " "
       fi
-      printf '%s' "$arg"
+      printf '%q' "$arg"
     fi
   done
 }
