@@ -41,6 +41,7 @@ exit if @changes.size > ENV["gs_max_changes"].to_i
   :new => "\e[0;33m",
   :ren => "\e[0;34m",
   :cpy => "\e[0;33m",
+  :typ => "\e[0;35m",
   :unt => "\e[0;36m",
   :dark => "\e[2;37m",
   :branch => "\e[1m",
@@ -80,19 +81,20 @@ puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  [%s*%s]%s => $#{ENV["git_env_c
   x, y, file = change[0, 1], change[1, 1], change[3..-1]
 
   msg, col, group = case change[0..1]
-  when "DD"; ["   both deleted", :del, :unmerged]
-  when "AU"; ["    added by us", :new, :unmerged]
-  when "UD"; ["deleted by them", :del, :unmerged]
-  when "UA"; ["  added by them", :new, :unmerged]
-  when "DU"; ["  deleted by us", :del, :unmerged]
-  when "AA"; ["     both added", :new, :unmerged]
-  when "UU"; ["  both modified", :mod, :unmerged]
-  when /M./; [" modified",       :mod, :staged]
-  when /A./; [" new file",       :new, :staged]
-  when /D./; ["  deleted",       :del, :staged]
-  when /R./; ["  renamed",       :ren, :staged]
-  when /C./; ["   copied",       :cpy, :staged]
-  when "??"; ["untracked",       :unt, :untracked]
+  when "DD"; ["   both deleted",  :del, :unmerged]
+  when "AU"; ["    added by us",  :new, :unmerged]
+  when "UD"; ["deleted by them",  :del, :unmerged]
+  when "UA"; ["  added by them",  :new, :unmerged]
+  when "DU"; ["  deleted by us",  :del, :unmerged]
+  when "AA"; ["     both added",  :new, :unmerged]
+  when "UU"; ["  both modified",  :mod, :unmerged]
+  when /M./; ["  modified",       :mod, :staged]
+  when /A./; ["  new file",       :new, :staged]
+  when /D./; ["   deleted",       :del, :staged]
+  when /R./; ["   renamed",       :ren, :staged]
+  when /C./; ["    copied",       :cpy, :staged]
+  when /T./; ["typechange",       :typ, :staged]
+  when "??"; [" untracked",       :unt, :untracked]
   end
 
   # Store data
@@ -100,10 +102,12 @@ puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  [%s*%s]%s => $#{ENV["git_env_c
 
   # Work tree modification states
   if y == "M"
-    @stat_hash[:unstaged] << {:msg => " modified", :col => :mod, :file => file}
+    @stat_hash[:unstaged] << {:msg => "  modified", :col => :mod, :file => file}
   elsif y == "D" && x != "D" && x != "U"
     # Don't show deleted 'y' during a merge conflict.
-    @stat_hash[:unstaged] << {:msg => "  deleted", :col => :del, :file => file}
+    @stat_hash[:unstaged] << {:msg => "   deleted", :col => :del, :file => file}
+  elsif y == "T"
+    @stat_hash[:unstaged] << {:msg => "typechange", :col => :typ, :file => file}
   end
 end
 
@@ -126,16 +130,22 @@ def output_file_group(group)
     @e += 1
     padding = (@e < 10 && @changes.size >= 10) ? " " : ""
 
+    # Find relative path, i.e. ../../lib/path/to/file
     rel_file = relative_path(Dir.pwd, File.join(@project_root, h[:file]))
 
     puts "#{c_group}##{@c[:rst]}     #{@c[h[:col]]}#{h[:msg]}:\
 #{padding}#{@c[:dark]} [#{@c[:rst]}#{@e}#{@c[:dark]}] #{c_group}#{rel_file}#{@c[:rst]}"
     # Save the ordered list of output files
     # fetch first file (in the case of oldFile -> newFile) and remove quotes
-    @output_files << if h[:file] =~ /^"([^\\"]*(\\.[^"]*)*)"/
+    @output_files << if h[:msg] == "typechange"
+      # Only use relative paths for 'typechange' modifications.
+      "~#{rel_file}"
+    elsif h[:file] =~ /^"([^\\"]*(\\.[^"]*)*)"/
+      # Handle the regex above..
       $1.gsub(/\\(.)/,'\1')
     else
-      h[:file].match(/^[^ ]*/)[0]
+      # Else, strip file
+      h[:file].strip
     end
   end
 
@@ -162,5 +172,8 @@ end
 end
 
 print "@@filelist@@::"
-puts @output_files.map{|f| File.join(@project_root, f) }.join("|")
-
+puts @output_files.map {|f|
+  # If file starts with a '~', treat it as a relative path.
+  # This is important when dealing with symlinks
+  f.start_with?("~") ? f.sub(/~/, '') : File.join(@project_root, f)
+}.join("|")
