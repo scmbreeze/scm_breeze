@@ -75,10 +75,24 @@ puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  [%s*%s]%s => $#{ENV["git_env_c
   @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
 ]
 
+def has_modules?
+  @has_modules ||= File.exists?(File.join(@project_root, '.gitmodules'))
+end
 
 # Index modification states
 @changes.each do |change|
   x, y, file = change[0, 1], change[1, 1], change[3..-1]
+
+  # Fetch the long git status once, but only if any submodules have changed
+  if not @git_status_long and has_modules?
+    @gitmodules ||= File.read(File.join(@project_root, '.gitmodules'))
+    # If changed 'file' is actually a git submodule
+    if @gitmodules.include?(file)
+      # Parse long git status for submodule summaries
+      @git_status_long = `git status`.gsub(/\e\[[^m]*m/, "") # (strip colors)
+    end
+  end
+  
 
   msg, col, group = case change[0..1]
   when "DD"; ["   both deleted",  :del, :unmerged]
@@ -132,9 +146,16 @@ def output_file_group(group)
 
     # Find relative path, i.e. ../../lib/path/to/file
     rel_file = relative_path(Dir.pwd, File.join(@project_root, h[:file]))
+  
+    # If some submodules have changed, parse their summaries from long git status
+    sub_stat = nil
+    if @git_status_long && (sub_stat = @git_status_long[/#{h[:file]} \((.*)\)/, 1])
+      # Format summary with parantheses
+      sub_stat = "(#{sub_stat})"
+    end
 
     puts "#{c_group}##{@c[:rst]}     #{@c[h[:col]]}#{h[:msg]}:\
-#{padding}#{@c[:dark]} [#{@c[:rst]}#{@e}#{@c[:dark]}] #{c_group}#{rel_file}#{@c[:rst]}"
+#{padding}#{@c[:dark]} [#{@c[:rst]}#{@e}#{@c[:dark]}] #{c_group}#{rel_file}#{@c[:rst]} #{sub_stat}"
     # Save the ordered list of output files
     # fetch first file (in the case of oldFile -> newFile) and remove quotes
     @output_files << if h[:msg] == "typechange"
