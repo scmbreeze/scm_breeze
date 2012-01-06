@@ -72,7 +72,7 @@ git_exclude_basename() {
 git_bisect_grep() {
   if [ -z "$2" ]; then
     echo "Usage: $0 <good_revision> <string>";
-    exit 1
+    return
   fi
   if [ -n "$3" ]; then search_path="$3"; else search_path="."; fi
   git bisect start
@@ -89,7 +89,7 @@ git_bisect_grep() {
 git_submodule_rm() {
   if [ -z "$1" ]; then
     echo "Usage: $0 path/to/submodule (no trailing slash)"
-    exit 1
+    return
   fi
   git config -f .git/config --remove-section "submodule.$1"
   git config -f .gitmodules --remove-section "submodule.$1"
@@ -104,7 +104,7 @@ git_submodule_rm() {
 git_swap_remotes() {
   if [ -z "$2" ]; then
     echo "Usage: $0 remote1 remote2"
-    exit 1
+    return
   fi
   git remote rename "$1" "$1_temp"
   git remote rename "$2" "$1"
