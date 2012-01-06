@@ -71,7 +71,7 @@ git_exclude_basename() {
 #
 git_bisect_grep() {
   if [ -z "$2" ]; then
-    echo "Usage: git_bisect_grep <good_revision> <string>";
+    echo "Usage: $0 <good_revision> <string>";
     exit 1
   fi
   if [ -n "$3" ]; then search_path="$3"; else search_path="."; fi
@@ -88,7 +88,7 @@ git_bisect_grep() {
 # and runs git rm --cached path/to/submodule.
 git_submodule_rm() {
   if [ -z "$1" ]; then
-    echo "Usage: git_submodule_rm path/to/submodule (no trailing slash)"
+    echo "Usage: $0 path/to/submodule (no trailing slash)"
     exit 1
   fi
   git config -f .git/config --remove-section "submodule.$1"
@@ -97,3 +97,21 @@ git_submodule_rm() {
   rm -rf "$1"
   git rm --cached "$1"
 }
+
+
+# Swaps git remotes
+# i.e. swap origin <-> username
+git_swap_remotes() {
+  if [ -z "$2" ]; then
+    echo "Usage: $0 remote1 remote2"
+    exit 1
+  fi
+  git remote rename "$1" "$1_temp"
+  git remote rename "$2" "$1"
+  git remote rename "$1_temp" "$2"
+  echo "Swapped $1 <-> $2"
+}
+# (use git fetch tab completion)
+if [ "$shell" = "bash" ]; then
+  complete -o default -o nospace -F _git_fetch git_swap_remotes
+fi
