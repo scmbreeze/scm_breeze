@@ -91,6 +91,7 @@ _alias $git_fetch_and_rebase_alias='git fetch && git rebase'
 _alias $git_commit_amend_alias='git commit --amend'
 # Add staged changes to latest commit without prompting for message
 _alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
+_alias $git_commit_no_msg_alias='git commit -C HEAD'
 _alias $git_log_stat_alias='git log --stat --max-count=5'
 _alias $git_log_graph_alias='git log --graph --max-count=5'
 _alias $git_add_all_alias='git add -A'
