@@ -259,7 +259,7 @@ function _git_index_batch_cmd() {
     echo -e "== Running command for $_bld_col$(_git_index_count)$_txt_col repos...\n"
     unset IFS
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
-      cd "$base_path"
+      if [ -z "$NOCD" ]; then cd "$base_path"; fi
       $@
     done
   else

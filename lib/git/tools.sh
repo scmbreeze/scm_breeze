@@ -115,3 +115,29 @@ git_swap_remotes() {
 if [ "$shell" = "bash" ]; then
   complete -o default -o nospace -F _git_fetch git_swap_remotes
 fi
+
+
+# Updates cached Travis CI status if repo contains .travis.yml
+#
+# Creates and excludes TRAVIS_CI_STATUS
+# Use with SCM breeze repo index.
+# Add the following line to your crontab: (updates every 2 minutes)
+# */2 * * * * /bin/bash -c '. /home/YOUR_USERNAME/.bashrc && git_index --rebuild && NOCD=true git_index --batch-cmd git_update_travis_status'
+#
+git_update_travis_status() {
+  if [ -e "$base_path/.travis.yml" ]; then
+    if type ruby > /dev/null 2>&1 && type travis > /dev/null 2>&1; then
+      # Only use slug from origin
+      local repo=$(ruby -e "puts %x[cd $base_path && git remote -v].scan(/origin.*(?:\:|\/)([^\:\/]+\/[^\:\/]+)\.git/m).flatten.uniq")
+      local travis_output=$(travis repositories --slugs="$repo")
+      local status=""
+      case "$travis_output" in
+      *Passing*) status="Passing";;
+      *Failing*) status="Failing";;
+      *Running*) status="Running";;
+      esac
+      echo "$status" > "$base_path/TRAVIS_CI_STATUS"
+      git_ignore "TRAVIS_CI_STATUS" "$base_path/.git/info/exclude"
+    fi
+  fi
+}
