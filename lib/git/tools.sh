@@ -125,6 +125,7 @@ fi
 # */2 * * * * /bin/bash -c '. /home/YOUR_USERNAME/.bashrc && git_index --rebuild && NOCD=true git_index --batch-cmd git_update_travis_status'
 #
 git_update_travis_status() {
+  if [ -z "$base_path" ]; then local base_path=$(pwd); fi
   if [ -e "$base_path/.travis.yml" ]; then
     if type ruby > /dev/null 2>&1 && type travis > /dev/null 2>&1; then
       # Only use slug from origin
