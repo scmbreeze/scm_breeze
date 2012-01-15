@@ -13,13 +13,13 @@ export ga_auto_remove="yes"
 # Git Index Config
 # --------------------------
 # Repos will be automatically added from this directory.
-export GIT_REPO_DIR="$HOME/src"
+export GIT_REPO_DIR="$HOME/code"
 # Add the full paths of any extra repos to GIT_REPOS, separated with ':'
 # e.g. "/opt/rails/project:/opt/rails/another project:$HOME/other/repo"
 export GIT_REPOS=""
 export git_status_command="git_status_shortcuts"
 # Alias
-git_index_alias="s"    # The 's' stands for 'switch' or 'sourcecode'...
+git_index_alias="c"    # Switch to a repo in the (c)ode directory
 
 
 # Git Aliases
