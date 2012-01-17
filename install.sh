@@ -1,6 +1,12 @@
 #!/bin/sh
 #locate the dir where this script is stored
 export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )"
+
+# Symlink to ~/.scm_breeze if installing from another path
+if [ "$scmbDir" != "$HOME/.scm_breeze" ]; then
+  ln -fs "$scmbDir" "$HOME/.scm_breeze"
+fi
+
 # This loads SCM Breeze into the shell session.
 exec_string="[ -s \"$scmbDir/scm_breeze.sh\" ] && . \"$scmbDir/scm_breeze.sh\""
 
@@ -19,4 +25,3 @@ _create_or_patch_scmbrc
 
 
 echo "== Run 'source ~/.bashrc' or 'source ~/.zshrc' to load SCM Breeze into your current shell."
-
