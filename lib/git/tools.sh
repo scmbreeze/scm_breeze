@@ -137,8 +137,8 @@ git_update_travis_status() {
       *Failing*) status="Failing";;
       *Running*) status="Running";;
       esac
-      echo "$status" > "$base_path/.travis_ci_status~"
-      git_ignore ".travis_ci_status~" "$base_path/.git/info/exclude"
+      echo "$status" > "$base_path/.travis_status~"
+      git_ignore ".travis_status~" "$base_path/.git/info/exclude"
     fi
   fi
 }
