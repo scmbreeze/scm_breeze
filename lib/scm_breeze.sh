@@ -54,3 +54,5 @@ _create_or_patch_scmbrc() {
   done
 }
 
+# Update ~/.scmbrc, ~/.git.scmbrc, etc. from latest commit
+alias update_scmbrc_from_latest_commit="_create_or_patch_scmbrc HEAD~"
