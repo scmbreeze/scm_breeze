@@ -155,11 +155,10 @@ _bind(){
   fi
 }
 
-# If keyboard shortcuts are enabled
+# Keyboard shortcuts for commits
 if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
   case "$TERM" in
   xterm*|rxvt*)
-      _bind "$git_status_shortcuts_keys" " git_status_shortcuts\n"
       _bind "$git_commit_all_keys" " git_commit_all\n"
       _bind "$git_add_and_commit_keys" "\e[1~ git_add_and_commit \n"
 
@@ -170,3 +169,10 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
   esac
 fi
 
+# Bash command wrapping
+# (Tested with RVM's cd() wrapper)
+if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
+  for cmd in vim cd rm cp mv ln; do
+    alias $cmd="exec_git_expand_args $cmd"
+  done
+fi
