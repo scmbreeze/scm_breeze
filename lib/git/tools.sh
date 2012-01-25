@@ -119,7 +119,7 @@ fi
 
 # Updates cached Travis CI status if repo contains .travis.yml
 #
-# Creates and excludes TRAVIS_CI_STATUS
+# Creates and excludes .travis_status~
 # Use with SCM breeze repo index.
 # Add the following line to your crontab: (updates every 2 minutes)
 # */2 * * * * /bin/bash -c '. /home/YOUR_USERNAME/.bashrc && git_index --rebuild && NOCD=true git_index --batch-cmd git_update_travis_status'
