@@ -82,7 +82,7 @@ ensureIndex() {
 }
 
 index_no_newlines() {
-  cat $git_index_file | tr "\\n" " "
+  tr "\\n" " " < $git_index_file
 }
 
 

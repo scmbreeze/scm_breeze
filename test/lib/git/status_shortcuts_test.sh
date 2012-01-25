@@ -97,7 +97,7 @@ test_git_status_shortcuts() {
   # Run command in shell, load output from temp file into variable
   temp_file=$(mktemp -t scm_breeze.XXXXXXXXXX)
   git_status_shortcuts > $temp_file
-  git_status=$(cat $temp_file | strip_colors)
+  git_status=$(<$temp_file strip_colors)
 
   assertIncludes "$git_status"  "new file: *\[1\] *new_file"       || return
   assertIncludes "$git_status"   "deleted: *\[2\] *deleted_file"   || return
