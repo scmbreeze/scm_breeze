@@ -131,13 +131,13 @@ git_update_travis_status() {
       # Only use slug from origin
       local repo=$(ruby -e "puts %x[cd $base_path && git remote -v].scan(/origin.*(?:\:|\/)([^\:\/]+\/[^\:\/]+)\.git/m).flatten.uniq")
       local travis_output=$(travis repositories --slugs="$repo")
-      local status=""
+      local stat_file="$base_path/.travis_status~"
       case "$travis_output" in
-      *Passing*) status="Passing";;
-      *Failing*) status="Failing";;
-      *Running*) status="Running";;
+      *Passing*) echo "Passing" > "$stat_file";;
+      *Failing*) echo "Failing" > "$stat_file";;
+      *Running*) echo "Running" > "$stat_file";;
       esac
-      echo "$status" > "$base_path/.travis_status~"
+      
       git_ignore ".travis_status~" "$base_path/.git/info/exclude"
     fi
   fi
