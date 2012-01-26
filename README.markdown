@@ -51,7 +51,7 @@ $ ga 2 3 11
 And if you want to add all unstaged changes (files 1 to 10):
 
 ```bash
-$ ga 1..10
+$ ga 1-10
 ```
 
 (Note that `ga` will also remove deleted files, unlike the standard `git add` command.
@@ -76,7 +76,7 @@ $ echo $e4
 # => assets/git_breeze/git_breeze.sh
 $ ge echo 4
 # => assets/git_breeze/git_breeze.sh
-$ ge echo 1..3
+$ ge echo 1-3
 # expands to echo $e1 $e2 $e3
 # => _shared.sh assets/git_breeze/config.example.sh assets/git_breeze/config.sh
 ```
@@ -131,43 +131,45 @@ It's similar to [autojump](https://github.com/joelthelion/autojump), but it does
 and it can do SCM-specific stuff like:
 
 * Running a command for all of your repos (useful if you ever need to update a lot of remote URLs)
-* Auto-updating a repo when you switch to it and it hasn't been updated for at least 5 hours.
+* Update all of your repositories via a cron task
 
-The default alias for `git_index` is 's', which could stand for 'source' or 'switch' :)
+The default alias for `git_index` is 'c', which might stand for 'code'
 
 You will first need to configure your repository directory, and then build the index:
 
 ```bash
-$ s --rebuild
-# => == Scanning /home/ndbroadbent/src for git repos & submodules...
-# => ===== Indexed 64 repos in /home/ndbroadbent/src/.git_index
+$ c --rebuild
+# => == Scanning /home/ndbroadbent/code for git repos & submodules...
+# => ===== Indexed 64 repos in /home/ndbroadbent/code/.git_index
 ```
 
-Then you'll be able to switch between your projects, or show the list of indexed repos:
-
-<div class="centered">
-<img src="http://madebynathan.com/images/posts/2011/10/source_list-resized-post.png" alt="Git Status With Shortcuts" />
-</div>
-<br/>
+Then you'll be able to switch between your projects, or show the list of indexed repos.
 
 To switch to a project directory, you don't need to type the full project name. For example,
 to switch to the `capistrano` project, you could type any of the following:
 
 ```bash
-$ s capistrano
-$ s cap
-$ s istra
+$ c capistrano
+$ c cap
+$ c istra
 ```
 
 Or if you wanted to go straight to a subdirectory within `capistrano`:
 
 ```bash
-$ s cap<TAB>
-$ s capistrano/<TAB>
+$ c cap<TAB>
+$ c capistrano/<TAB>
 # => bin/   lib/   test/
-$ s capistrano/l<TAB>
-$ s capistrano/lib/
-# => cd ~/src/gems/capistrano/lib
+$ c capistrano/l<TAB>
+$ c capistrano/lib/
+# => cd ~/code/gems/capistrano/lib
+```
+
+Or if you want to go to a subdirectory within the `~/code` directory, prefix the first argument with a `/`:
+
+```bash
+~ $ c /gems
+~/code/gems $
 ```
 
 ## Linking External Project Design Directories
