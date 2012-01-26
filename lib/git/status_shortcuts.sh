@@ -145,27 +145,15 @@ git_expand_args() {
   first=1
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
-      if [ "$first" -eq 1 ]; then
-        first=0
-      else
-        echo -n " "
-      fi
+      if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
       eval printf '%s' "\$$git_env_char$arg"
-    elif [[ "$arg" =~ ^[0-9]+\.\.[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
-      for i in $(eval echo {$arg}); do
-        if [ "$first" -eq 1 ]; then
-          first=0
-        else
-          echo -n " "
-        fi
+    elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
+      for i in $(eval echo {${arg/-/..}}); do
+        if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
         eval printf '%s' "\$$git_env_char$i"
       done
     else   # Otherwise, treat $arg as a normal string.
-      if [ "$first" -eq 1 ]; then
-        first=0
-      else
-        echo -n " "
-      fi
+      if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
       printf '%q' "$arg"
     fi
   done

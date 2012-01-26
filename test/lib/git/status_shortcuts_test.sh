@@ -51,8 +51,8 @@ test_git_expand_args() {
   local e1="one"; local e2="two"; local e3="three"; local e4="four"; local e5="five"; local e6="six"; local e7="seven"
   local error="Args not expanded correctly"
   assertEquals "$error" "one three seven" "$(git_expand_args 1 3 7)"
-  assertEquals "$error" "one two three six" "$(git_expand_args 1..3 6)"
-  assertEquals "$error" "seven two three four five one" "$(git_expand_args seven 2..5 1)"
+  assertEquals "$error" "one two three six" "$(git_expand_args 1-3 6)"
+  assertEquals "$error" "seven two three four five one" "$(git_expand_args seven 2-5 1)"
 
   # Test that any args with spaces remain quoted
   assertEquals "$error" "-m Test\ Commit\ Message one" "$(git_expand_args -m "Test Commit Message" 1)"
@@ -218,7 +218,7 @@ test_git_add_shortcuts() {
   touch a b c d e f g h i j
   # Show git status, which sets up env variables
   git_status_shortcuts > /dev/null
-  git_add_shortcuts 2..4 7 8 > /dev/null
+  git_add_shortcuts 2-4 7 8 > /dev/null
   git_status=$(git_status_shortcuts 1 | strip_colors)
 
   for c in b c d g h; do
