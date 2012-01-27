@@ -54,7 +54,7 @@ function git_index() {
   IFS=$'\n'
   if [ -z "$1" ]; then
     # Just change to $GIT_REPO_DIR if no params given.
-    cd $GIT_REPO_DIR
+    "cd" $GIT_REPO_DIR
   else
     if [ "$1" = "--rebuild" ]; then
       _rebuild_git_index
@@ -78,7 +78,7 @@ function git_index() {
     # If $1 starts with '/', change to top-level directory within $GIT_REPO_DIR
     elif ([ $shell = "bash" ] && [ "${1:0:1}" = "/" ]) || \
          ([ $shell = "zsh" ]  && [ "${1[1]}"  = "/" ]); then
-      if [ -d "$GIT_REPO_DIR$1" ]; then cd "$GIT_REPO_DIR$1"; fi
+      if [ -d "$GIT_REPO_DIR$1" ]; then "cd" "$GIT_REPO_DIR$1"; fi
 
     else
       _check_git_index
@@ -104,7 +104,7 @@ function git_index() {
         if [[ "$base_path" == "~"* ]]; then
           base_path=$(eval echo ${base_path%%/*})/${base_path#*/}
         fi
-        cd "$base_path"
+        "cd" "$base_path"
         # Run git callback (either update or show changes), if we are in the root directory
         if [ -z "${sub_path%/}" ]; then _git_index_status_if_dirty; fi
       else
@@ -260,13 +260,13 @@ function _git_index_batch_cmd() {
     unset IFS
     local base_path
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
-      if [ -z "$NOCD" ]; then cd "$base_path"; fi
+      if [ -z "$NOCD" ]; then "cd" "$base_path"; fi
       $@
     done
   else
     echo "Please give a command to run for all repos. (It may be useful to write your command as a function or script.)"
   fi
-  cd "$cwd"
+  "cd" "$cwd"
 }
 
 
