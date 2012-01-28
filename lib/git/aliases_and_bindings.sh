@@ -171,9 +171,15 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
 fi
 
 # Bash command wrapping
-# (Tested with RVM's cd() wrapper)
+# (Works fine with RVM's cd() wrapper)
 if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
-  for cmd in vim cd rm cp mv ln; do
+  for cmd in vim cat cd rm cp mv ln; do
     alias $cmd="exec_git_expand_args $cmd"
   done
+
+  if [[ "$(type ls)" =~ "--color=auto" ]]; then
+    alias ls="exec_git_expand_args ls --color=auto"
+  else
+    alias ls="exec_git_expand_args ls"
+  fi
 fi
