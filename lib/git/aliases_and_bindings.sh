@@ -71,6 +71,7 @@ __git_alias "$git_diff_cached_alias" "$_exp git" "diff" "--cached"
 # Standard commands
 __git_alias "$git_clone_alias" "git" 'clone'
 __git_alias "$git_fetch_alias" "git" 'fetch'
+__git_alias "$git_checkout_branch_alias" "git" 'checkout' "-b"
 __git_alias "$git_pull_alias" "git" 'pull'
 __git_alias "$git_push_alias" "git" 'push'
 __git_alias "$git_status_original_alias" "git" 'status' # (Standard git status)
