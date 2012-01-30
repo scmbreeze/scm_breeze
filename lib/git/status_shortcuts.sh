@@ -77,7 +77,6 @@ git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
     for file in $(git_expand_args "$@"); do
-      file=$1
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove == "yes" ]] && ! [ -e "$file" ]; then
         echo -n "# "
