@@ -260,13 +260,13 @@ function _git_index_batch_cmd() {
     unset IFS
     local base_path
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
-      if [ -z "$NOCD" ]; then "cd" "$base_path"; fi
+      builtin cd "$base_path"
       $@
     done
   else
     echo "Please give a command to run for all repos. (It may be useful to write your command as a function or script.)"
   fi
-  "cd" "$cwd"
+  builtin cd "$cwd"
 }
 
 
