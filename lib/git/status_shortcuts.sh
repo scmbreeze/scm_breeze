@@ -114,9 +114,9 @@ git_silent_add_patch_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
     IFS=$'\n'
-    eval for file in $(git_expand_args "$@")\; do\
-      git add -p "\$file"\;\
-      echo -e "# add '\$file'"\;\
+    for file in $(git_expand_args "$@"); do
+      git add -p "$file"
+      echo -e "# add '$file'"
     done
     unset IFS
     echo "#"
