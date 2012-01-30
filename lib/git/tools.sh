@@ -46,7 +46,7 @@ git_set_default_remote() {
 # Usage: git_ignore [rule] [ignore_file=.gitignore]
 git_ignore() {
   if [ -n "$2" ]; then local f="$2"; else local f=".gitignore"; fi
-  if [ -n "$1" ] && [ -e $f ] && ! grep -q "$1" $f; then echo "$1" >> $f; fi
+  if [ -n "$1" ] && ! ([ -e $f ] && grep -q "$1" $f); then echo "$1" >> $f; fi
 }
 
 # Add one git ignore rule, just for your machine
@@ -122,22 +122,22 @@ fi
 # Creates and excludes .travis_status~
 # Use with SCM breeze repo index.
 # Add the following line to your crontab: (updates every 2 minutes)
-# */2 * * * * /bin/bash -c '. $HOME/.bashrc && git_index --rebuild && git_index --batch-cmd git_update_travis_status'
+# */2 * * * * /bin/bash -c '. $HOME/.bashrc && git_index --rebuild && git_index --batch-cmd update_travis_ci_status'
 #
-git_update_travis_status() {
+update_travis_ci_status() {
   if [ -e ".travis.yml" ]; then
     if type ruby > /dev/null 2>&1 && type travis > /dev/null 2>&1; then
       # Only use slug from origin
-      local repo=$(ruby -e "puts %x[cd $base_path && git remote -v].scan(/origin.*(?:\:|\/)([^\:\/]+\/[^\:\/]+)\.git/m).flatten.uniq")
+      local repo=$(ruby -e "puts %x[git remote -v].scan(/origin.*(?:\:|\/)([^\:\/]+\/[^\:\/]+)\.git/m).flatten.uniq")
       local travis_output=$(travis repositories --slugs="$repo")
-      local stat_file="$base_path/.travis_status~"
+      local stat_file=".travis_status~"
       case "$travis_output" in
       *Passing*) echo "Passing" > "$stat_file";;
       *Failing*) echo "Failing" > "$stat_file";;
       *Running*) echo "Running" > "$stat_file";;
       esac
       
-      git_ignore ".travis_status~" "$base_path/.git/info/exclude"
+      git_ignore ".travis_status~" ".git/info/exclude"
     fi
   fi
 }
