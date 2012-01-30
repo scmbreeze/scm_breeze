@@ -75,7 +75,8 @@ git_add_shortcuts() {
 # Does nothing if no args are given.
 git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
-    function process {
+    # Expand args and process resulting set of files.
+    for file in $(git_expand_args "$@"); do
       file=$1
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove == "yes" ]] && ! [ -e "$file" ]; then
@@ -85,10 +86,7 @@ git_silent_add_shortcuts() {
         git add "$file"
         echo -e "# add '$file'"
       fi
-    }
-
-    # Expand args and process resulting set of files.
-    eval for file in $(git_expand_args "$@")\; do process "\$file"\; done
+    done
     echo "#"
   fi
 }
