@@ -160,8 +160,24 @@ git_expand_args() {
 }
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6..12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { $(git_expand_args "$@"); }
-
+exec_git_expand_args() {
+	command=$1
+	shift
+	if [ $# -eq 0 ]; then
+		$(git_expand_args "$command")
+	elif [ $# -le 2 ]; then
+		first_path=$@
+		echo $first_path
+		#$(git_expand_args "$command" "'$first_path'")
+	else
+		first_path=${@/"[/\w\d\s]+"/" "}
+		second_path=$@
+		echo $first_path
+		echo $second_path
+		# $(git_expand_args "$command" "'$first_path'" "'$second_path'")
+	fi
+}
+# $(git_expand_args "$@");
 # Clear numbered env variables
 git_clear_vars() {
   for (( i=1; i<=$gs_max_changes; i++ )); do
