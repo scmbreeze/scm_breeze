@@ -121,23 +121,27 @@ fi
 #
 # Creates and excludes .travis_status~
 # Use with SCM breeze repo index.
+# Requires 'travis-ci' script from https://gist.github.com/1708408
 # Add the following line to your crontab: (updates every 2 minutes)
 # */2 * * * * /bin/bash -c '. $HOME/.bashrc && git_index --rebuild && git_index --batch-cmd update_travis_ci_status'
 #
 update_travis_ci_status() {
   if [ -e ".travis.yml" ]; then
-    if type ruby > /dev/null 2>&1 && type travis > /dev/null 2>&1; then
-      # Only use slug from origin
-      local repo=$(ruby -e "puts %x[git remote -v].scan(/origin.*(?:\:|\/)([^\:\/]+\/[^\:\/]+)\.git/m).flatten.uniq")
-      local travis_output=$(travis repositories --slugs="$repo")
+    if type ruby > /dev/null 2>&1 && type travis-ci > /dev/null 2>&1; then
+      # Use repo from origin remote
+      local branches=$(git branch -a | sed "s/ *remotes\/origin\///;tm;d;:m;/^HEAD/d;")
       local stat_file=".travis_status~"
-      case "$travis_output" in
-      *Passing*) echo "Passing" > "$stat_file";;
-      *Failing*) echo "Failing" > "$stat_file";;
-      *Running*) echo "Running" > "$stat_file";;
-      esac
-      
-      git_ignore ".travis_status~" ".git/info/exclude"
+      echo -n > "$stat_file"
+      for branch in $branches; do
+        local travis_output=$(travis-ci "$branch" 2>&1)
+        case "$travis_output" in
+        *built\ OK*)    echo "$branch passed"  >> "$stat_file";;
+        *failed*)       echo "$branch failed"  >> "$stat_file";;
+        *in\ progress*) echo "$branch running" >> "$stat_file";;
+        esac
+      done
+
+      git_ignore "$stat_file" ".git/info/exclude"
     fi
   fi
 }
