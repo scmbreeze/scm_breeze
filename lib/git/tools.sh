@@ -128,20 +128,50 @@ fi
 update_travis_ci_status() {
   if [ -e ".travis.yml" ]; then
     if type ruby > /dev/null 2>&1 && type travis-ci > /dev/null 2>&1; then
-      # Use repo from origin remote
-      local branches=$(git branch -a | sed "s/ *remotes\/origin\///;tm;d;:m;/^HEAD/d;")
       local stat_file=".travis_status~"
-      echo -n > "$stat_file"
+      local tmp_stat_file="$stat_file"".tmp"
+
+      # Either update all branches, or only current branch
+      if [ "$UPDATE_ALL_BRANCHES" = "true" ]; then
+        # All branches on origin remotes
+        local branches="$(git branch -a | sed "s/ *remotes\/origin\///;tm;d;:m;/^HEAD/d;")"
+        # Create a new, blank temp file
+        echo -n > "$tmp_stat_file"
+      else
+        # Only current branch
+        local branches="$(\git branch 2> /dev/null | sed "s/^\* \([^ ]*\)/\1/;tm;d;:m")"
+        # Copy current file to temp file
+        touch "$stat_file"
+        cp -f "$stat_file" "$tmp_stat_file"
+      fi
+
       for branch in $branches; do
         local travis_output=$(travis-ci "$branch" 2>&1)
+        local status=""
         case "$travis_output" in
-        *built\ OK*)    echo "$branch passed"  >> "$stat_file";;
-        *failed*)       echo "$branch failed"  >> "$stat_file";;
-        *in\ progress*) echo "$branch running" >> "$stat_file";;
+        *built\ OK*)    status="passed";;
+        *failed*)       status="failed";;
+        *in\ progress*) status="running";;
         esac
+
+        # If branch has a build status
+        if [ -n "$status" ]; then
+          if grep -q "^$branch" "$tmp_stat_file"; then
+            # Replace branch's build status
+            sed -e "s/^$branch .*/$branch $status/" -i "$tmp_stat_file"
+          else
+            # Append new line for branch
+            echo "$branch $status" >> "$tmp_stat_file"
+          fi
+        fi
       done
 
+      # Replace current stat file with finished update
+      cp -f "$tmp_stat_file" "$stat_file"
+      # Ignore stat file from git repo
       git_ignore "$stat_file" ".git/info/exclude"
+      # Remove temporary file
+      rm -f "$tmp_stat_file"
     fi
   fi
 }

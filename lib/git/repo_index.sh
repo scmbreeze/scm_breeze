@@ -167,7 +167,7 @@ function _git_index_count() {
 
 # Returns the current git branch (returns nothing if not a git repository)
 parse_git_branch() {
-  \git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
+  \git branch 2> /dev/null | sed "s/^\* \([^ ]*\)/\1/;tm;d;:m"
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
