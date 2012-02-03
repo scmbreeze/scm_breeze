@@ -134,7 +134,7 @@ update_travis_ci_status() {
       # Either update all branches, or only current branch
       if [ "$UPDATE_ALL_BRANCHES" = "true" ]; then
         # All branches on origin remotes
-        local branches="$(git branch -a | sed "s/ *remotes\/origin\///;tm;d;:m;/^HEAD/d;")"
+        local branches="$(\git branch -a | sed "s/ *remotes\/origin\///;tm;d;:m;/^HEAD/d;")"
         # Create a new, blank temp file
         echo -n > "$tmp_stat_file"
       else
