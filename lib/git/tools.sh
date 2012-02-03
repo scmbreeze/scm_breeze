@@ -171,11 +171,9 @@ update_travis_ci_status() {
       done
 
       # Replace current stat file with finished update
-      cp -f "$tmp_stat_file" "$stat_file"
+      mv -f "$tmp_stat_file" "$stat_file"
       # Ignore stat file from git repo
       git_ignore "$stat_file" ".git/info/exclude"
-      # Remove temporary file
-      rm -f "$tmp_stat_file"
     fi
   fi
 }
