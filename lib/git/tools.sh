@@ -131,6 +131,10 @@ update_travis_ci_status() {
       local stat_file=".travis_status~"
       local tmp_stat_file="$stat_file"".tmp"
 
+      # Ignore stat files from git repo
+      git_ignore "$stat_file" ".git/info/exclude"
+      git_ignore "$tmp_stat_file" ".git/info/exclude"
+
       # Either update all branches, or only current branch
       if [ "$UPDATE_ALL_BRANCHES" = "true" ]; then
         local all_branches=$(\git branch -a)
@@ -172,8 +176,6 @@ update_travis_ci_status() {
 
       # Replace current stat file with finished update
       mv -f "$tmp_stat_file" "$stat_file"
-      # Ignore stat file from git repo
-      git_ignore "$stat_file" ".git/info/exclude"
     fi
   fi
 }
