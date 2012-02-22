@@ -103,7 +103,7 @@ git_submodule_rm() {
 # i.e. swap origin <-> username
 git_swap_remotes() {
   if [ -z "$2" ]; then
-    echo "Usage: $0 remote1 remote2"
+    echo "Usage: git_swap_remotes remote1 remote2"
     return
   fi
   git remote rename "$1" "$1_temp"
@@ -115,6 +115,18 @@ git_swap_remotes() {
 if [ "$shell" = "bash" ]; then
   complete -o default -o nospace -F _git_fetch git_swap_remotes
 fi
+
+
+# Delete a git branch from local, cached remote and remote server
+git_branch_delete_all() {
+  if [ -z "$1" ]; then
+    echo "Usage: git_branch_delete_all branch"
+    return
+  fi
+  git branch -D $1
+  git branch -D -r origin/$1
+  git push origin :$1
+}
 
 
 # Updates cached Travis CI status if repo contains .travis.yml
