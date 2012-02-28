@@ -19,9 +19,8 @@
 git_status_shortcuts() {
   zsh_compat # Ensure shwordsplit is on for zsh
   git_clear_vars
-  local cmd_output
   # Run ruby script, store output
-  cmd_output=$(/usr/bin/env ruby "$scmbDir/lib/git/status_shortcuts.rb" $@)
+  local cmd_output="$(/usr/bin/env ruby "$scmbDir/lib/git/status_shortcuts.rb" $@)"
   # Print debug information if $scmbDebug = "true"
   if [ "$scmbDebug" = "true" ]; then
     printf "status_shortcuts.rb output => \n$cmd_output\n------------------------\n"
