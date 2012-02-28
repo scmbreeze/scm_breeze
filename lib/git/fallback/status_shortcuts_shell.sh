@@ -18,6 +18,7 @@ git_status_shortcuts() {
   zsh_compat # Ensure shwordsplit is on for zsh
   IFS=$'\n'
   local git_status="$(git status --porcelain 2> /dev/null)"
+  local i
 
   if [ -n "$git_status" ] && [[ $(echo "$git_status" | wc -l) -le $gs_max_changes ]]; then
     unset stat_file; unset stat_col; unset stat_msg; unset stat_grp; unset stat_x; unset stat_y
