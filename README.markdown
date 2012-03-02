@@ -82,16 +82,14 @@ $ ge echo 1-3
 ```
 
 
-## Keyboard bindings (disabled by default)
+## Keyboard bindings
 
-My most common git commands are `git status`, `git add` and `git commit`, so I wanted these
+Some of my most common git commands are `git add` and `git commit`, so I wanted these
 to be as streamlined as possible. One way of speeding up commonly used commands is by binding them to
 keyboard shortcuts.
 
-Keyboard shortcuts are turned off by default,
-but here are the default key bindings if you enable them:
+Here are the default key bindings:
 
-* `CTRL`+`SPACE` => `git_status_shortcuts` - show git status with file shortcuts
 * `CTRL`+`x` `c` => `git_add_and_commit` - add given files (if any), then commit staged changes
 * `CTRL`+`x` `SPACE` => `git_commit_all` - commit everything
 
