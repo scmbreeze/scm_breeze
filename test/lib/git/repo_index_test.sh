@@ -63,7 +63,7 @@ EOF
   for dir in $GIT_REPOS; do
     mkdir -p $dir; cd $dir; git init;
   done
-  unset IFS
+  IFS=$' \t\n'
 
   verboseGitCommands
 
@@ -74,7 +74,7 @@ oneTimeTearDown() {
   rm -rf "${GIT_REPO_DIR}"
   IFS=":"
   for dir in $GIT_REPOS; do rm -rf $dir; done
-  unset IFS
+  IFS=$' \t\n'
 }
 
 ensureIndex() {

@@ -114,7 +114,7 @@ git_status_shortcuts() {
     # so just use plain 'git status'
     git status
   fi
-  unset IFS
+  IFS=$' \t\n'
   zsh_reset # Reset zsh environment to default
 }
 # Template function for 'git_status_shortcuts'.

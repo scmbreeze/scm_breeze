@@ -40,7 +40,7 @@ git_status_shortcuts() {
     if [ "$scmbDebug" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
-  unset IFS
+  IFS=$' \t\n'
 
   if [ "$scmbDebug" = "true" ]; then echo "------------------------"; fi
   # Print status
@@ -115,7 +115,7 @@ git_silent_add_patch_shortcuts() {
       git add -p "$file"
       echo -e "# add '$file'"
     done
-    unset IFS
+    IFS=$' \t\n'
     echo "#"
   fi
 }
