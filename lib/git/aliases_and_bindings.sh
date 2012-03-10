@@ -151,7 +151,7 @@ _bind(){
     if [[ $shell == "zsh" ]]; then
       bindkey -s "$1" "$2"
     else # bash
-      bind "\"$1\": \"$2\""
+      bind "\"$1\": $2"
     fi
   fi
 }
@@ -160,8 +160,8 @@ _bind(){
 if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
   case "$TERM" in
   xterm*|rxvt*)
-      _bind "$git_commit_all_keys" " git_commit_all\n"
-      _bind "$git_add_and_commit_keys" "\e[1~ git_add_and_commit \n"
+      _bind "$git_commit_all_keys" "\" git_commit_all\n\""
+      _bind "$git_add_and_commit_keys" "\"\e[1~ git_add_and_commit \n\""
 
       # Commands are prepended with a space so that they won't be added to history.
       # Make sure this is turned on with:
