@@ -139,6 +139,12 @@ git_branch_delete_all() {
 #
 update_travis_ci_status() {
   if [ -e ".travis.yml" ]; then
+    # Ensure hub gem is installed
+    if ! gem list hub | grep -q "^hub "; then
+      echo "Installing 'hub' for current gemset"
+      gem install hub
+    fi
+
     if type ruby > /dev/null 2>&1 && type travis-ci > /dev/null 2>&1; then
       local stat_file=".travis_status~"
       local tmp_stat_file="$stat_file"".tmp"
