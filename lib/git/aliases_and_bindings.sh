@@ -161,7 +161,7 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
   case "$TERM" in
   xterm*|rxvt*)
       # Uses emacs style keybindings, so vi mode is not supported for now
-      if ! [[ $shell == "bash" ]] || set -o | grep -q '^vi .*on$'; then
+      if ! [[ $shell == "bash" ]] || ! set -o | grep -q '^vi .*on$'; then
         _bind "$git_commit_all_keys" "\" git_commit_all\n\""
         _bind "$git_add_and_commit_keys" "\"\e[1~ git_add_and_commit \n\""
       fi
@@ -179,7 +179,7 @@ fi
   #~ for cmd in vim cat cd rm cp mv ln; do
     #~ alias $cmd="exec_git_expand_args $cmd"
   #~ done
-#~ 
+#~
   #~ if [[ "$(type ls)" =~ "--color=auto" ]]; then
     #~ alias ls="exec_git_expand_args ls --color=auto"
   #~ else
