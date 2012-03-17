@@ -158,8 +158,8 @@ _bind(){
 
 # Keyboard shortcuts for commits
 if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
-  case "$TERM" in
-  xterm*|rxvt*)
+  case "$-" in
+  *i*)
       # Uses emacs style keybindings, so vi mode is not supported for now
       if ! [[ $shell == "bash" ]] || ! set -o | grep -q '^vi .*on$'; then
         _bind "$git_commit_all_keys" "\" git_commit_all\n\""
