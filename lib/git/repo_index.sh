@@ -231,10 +231,14 @@ _git_index_update_all_branches() {
     # (see http://stackoverflow.com/a/2934062/304706)
     if [[ "$branch_rev" != "$(git rev-parse ${remotes[$index]}/${merges[$index]})" ]] && \
        [[ "$(git merge-base $branch_rev ${remotes[$index]}/${merges[$index]})" = "$branch_rev" ]]; then
-      echo "=== Updating '$branch' branch in $base_path from ${remotes[$index]}/${merges[$index]}..."
+      echo "=== Updating $branch branch in $base_path from ${remotes[$index]}/${merges[$index]}..."
       # Checkout branch if we aren't already on it.
       if [[ "$branch" != "$(parse_git_branch)" ]]; then git checkout $branch; fi
       git merge "${remotes[$index]}/${merges[$index]}"
+      # Send UI notification of update
+      if [ "$NOTIFY" = "true" ]; then
+        notify-send "Updated $(basename $base_path) [$branch]" "from ${remotes[$index]}/${merges[$index]}"
+      fi
     fi
     let index++
   done
