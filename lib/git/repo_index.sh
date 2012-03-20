@@ -225,7 +225,7 @@ _git_index_update_all_branches() {
 
   local index=0
   # Iterate over branches, and update those that can be fast-forwarded
-  for branch in $branches; do
+  for branch in ${branches[@]}; do
     branch_rev="$(git rev-parse $branch)"
     # Local branch can be fast-forwarded if revision is ancestor of remote revision, and not the same.
     # (see http://stackoverflow.com/a/2934062/304706)
