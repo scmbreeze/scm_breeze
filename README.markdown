@@ -276,14 +276,17 @@ git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
 source ~/.bashrc   # or source ~/.zshrc
 ```
 
-(The install script simply appends the following line to your `.bashrc` or `.zshrc`):
+The install script just adds the following line to your `.bashrc` or `.zshrc`:
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
 # Uninstall
-~/.scm_breeze/uninstall.sh
 
-(The install script simply remove the add line from your `.bashrc` or `.zshrc`):
+```bash
+~/.scm_breeze/uninstall.sh
+```
+
+The uninstall script removes the following line from your `.bashrc` or `.zshrc`:
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
