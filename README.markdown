@@ -280,6 +280,12 @@ source ~/.bashrc   # or source ~/.zshrc
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && . "$HOME/.scm_breeze/scm_breeze.sh"`
 
+# Uninstall
+~/.scm_breeze/uninstall.sh
+
+(The install script simply remove the add line from your `.bashrc` or `.zshrc`):
+
+`[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && . "$HOME/.scm_breeze/scm_breeze.sh"`
 
 # Configuration
 
