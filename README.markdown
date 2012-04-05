@@ -278,14 +278,14 @@ source ~/.bashrc   # or source ~/.zshrc
 
 (The install script simply appends the following line to your `.bashrc` or `.zshrc`):
 
-`[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && . "$HOME/.scm_breeze/scm_breeze.sh"`
+`[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
 # Uninstall
 ~/.scm_breeze/uninstall.sh
 
 (The install script simply remove the add line from your `.bashrc` or `.zshrc`):
 
-`[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && . "$HOME/.scm_breeze/scm_breeze.sh"`
+`[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
 # Configuration
 
