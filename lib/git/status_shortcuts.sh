@@ -30,7 +30,7 @@ git_status_shortcuts() {
     git status; return 1
   fi
   # Fetch list of files from last line of script output
-  files="$(echo "$cmd_output" | grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
+  files="$(echo "$cmd_output" | command grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
   if [ "$scmbDebug" = "true" ]; then echo "filelist => $files"; fi
   # Export numbered env variables for each file
   IFS="|"
