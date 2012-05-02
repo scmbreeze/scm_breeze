@@ -290,7 +290,7 @@ function _git_index_tab_completion() {
   # If matching project path was found and curr string contains a /, then complete project sub-directories
   if [[ -n "$base_path" && $curw == */* ]]; then
     local search_path=$(echo "$curw" | sed "s:^${project/\\/\\\\\\}::")
-    COMPREPLY=($(compgen -d "$base_path$search_path" | grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
+    COMPREPLY=($(compgen -d "$base_path$search_path" | command grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
 
   # If curr string starts with /, tab complete top-level directories in root project dir
   elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
