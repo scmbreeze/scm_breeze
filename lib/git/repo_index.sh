@@ -69,7 +69,7 @@ function git_index() {
       done | sort | column -t -s ':'
     elif [ "$1" = "--count-by-host" ]; then
       echo -e "=== Producing a report of the number of repos per host...\n"
-      _git_index_batch_cmd git remote -v | grep "origin.*(fetch)" |
+      _git_index_batch_cmd git remote -v | command grep "origin.*(fetch)" |
       sed -e "s/origin\s*//" -e "s/(fetch)//" |
       sed -e "s/\(\([^/]*\/\/\)\?\([^@]*@\)\?\([^:/]*\)\).*/\1/" |
       sort | uniq -c
@@ -85,7 +85,7 @@ function git_index() {
       # Figure out which directory we need to change to.
       local project=$(echo $1 | cut -d "/" -f1)
       # Find base path of project
-      local base_path="$(grep -m1 "/$project$" "$GIT_REPO_DIR/.git_index")"
+      local base_path="$(command grep -m1 "/$project$" "$GIT_REPO_DIR/.git_index")"
       if [ -n "$base_path" ]; then
         sub_path=$(echo $1 | sed "s:^$project::")
         # Append subdirectories to base path
@@ -93,9 +93,9 @@ function git_index() {
       fi
       # Try partial matches
       # - string at beginning of project
-      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | grep -m1 "/$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | command grep -m1 "/$project"); fi
       # - string anywhere in project
-      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | grep -m1 "$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | command grep -m1 "$project"); fi
       # --------------------
       # Go to our base path
       if [ -n "$base_path" ]; then
@@ -133,7 +133,7 @@ function _find_git_repos() {
 # List all submodules for a git repo, if any.
 function _find_git_submodules() {
   if [ -e "$1/../.gitmodules" ]; then
-    grep "\[submodule" "$1/../.gitmodules" | sed "s%\[submodule \"%${1%/.git}/%g" | sed "s/\"]//g"
+    command grep "\[submodule" "$1/../.gitmodules" | sed "s%\[submodule \"%${1%/.git}/%g" | sed "s/\"]//g"
   fi
 }
 
@@ -162,7 +162,7 @@ function _check_git_index() {
 
 # Produces a count of repos in the tab completion index (excluding commands)
 function _git_index_count() {
-  echo $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | wc -l)
+  echo $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | command grep . | wc -l)
 }
 
 # Returns the current git branch (returns nothing if not a git repository)
@@ -174,7 +174,7 @@ parse_git_branch() {
 function _git_index_status_if_dirty() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
     # Fall back to 'git status' if git status alias isn't configured
-    if type $git_status_command 2>&1 | grep -qv "not found"; then
+    if type $git_status_command 2>&1 | command grep -qv "not found"; then
       eval $git_status_command
     else
       git status
@@ -263,7 +263,7 @@ function _git_index_batch_cmd() {
     echo -e "== Running command for $_bld_col$(_git_index_count)$_txt_col repos...\n"
     IFS=$' \t\n'
     local base_path
-    for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | grep . | sort); do
+    for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | command grep . | sort); do
       builtin cd "$base_path"
       $@
     done
@@ -285,12 +285,12 @@ function _git_index_tab_completion() {
   # If the first part of $curw matches a high-level directory,
   # then match on sub-directories for that project
   local project=$(echo "$curw" | cut -d "/" -f1)
-  local base_path=$(grep "/$project$" "$GIT_REPO_DIR/.git_index" | sed 's/ /\\ /g')
+  local base_path=$(command grep "/$project$" "$GIT_REPO_DIR/.git_index" | sed 's/ /\\ /g')
 
   # If matching project path was found and curr string contains a /, then complete project sub-directories
   if [[ -n "$base_path" && $curw == */* ]]; then
     local search_path=$(echo "$curw" | sed "s:^${project/\\/\\\\\\}::")
-    COMPREPLY=($(compgen -d "$base_path$search_path" | grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
+    COMPREPLY=($(compgen -d "$base_path$search_path" | command grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
 
   # If curr string starts with /, tab complete top-level directories in root project dir
   elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
