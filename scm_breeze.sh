@@ -5,7 +5,7 @@
 export scmbDir="$(dirname ${BASH_SOURCE:-$0})"
 
 # Load config
-. "$HOME/.scmbrc"
+[ -s "$HOME/.scmbrc" ] && . "$HOME/.scmbrc"
 
 # Shared functions
 . "$scmbDir/lib/scm_breeze.sh"
