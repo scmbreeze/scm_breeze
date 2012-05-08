@@ -60,8 +60,8 @@ git_add_shortcuts() {
   if [ -z "$1" ]; then
     echo "Usage: ga <file>  => git add <file>"
     echo "       ga 1       => git add \$e1"
-    echo "       ga 2..4    => git add \$e2 \$e3 \$e4"
-    echo "       ga 2 5..7  => git add \$e2 \$e5 \$e6 \$e7"
+    echo "       ga 2-4    => git add \$e2 \$e3 \$e4"
+    echo "       ga 2 5-7  => git add \$e2 \$e5 \$e6 \$e7"
     if [[ $ga_auto_remove == "yes" ]]; then
       echo -e "\nNote: Deleted files will also be staged using this shortcut."
       echo "      To turn off this behaviour, change the 'auto_remove' option."
@@ -98,8 +98,8 @@ git_add_patch_shortcuts() {
   if [ -z "$1" ]; then
     echo "Usage: gap <file>  => git add -p <file>"
     echo "       gap 1       => git add -p \$e1"
-    echo "       gap 2..4    => git add -p \$e2 \$e3 \$e4"
-    echo "       gap 2 5..7  => git add -p \$e2 \$e5 \$e6 \$e7"
+    echo "       gap 2-4    => git add -p \$e2 \$e3 \$e4"
+    echo "       gap 2 5-7  => git add -p \$e2 \$e5 \$e6 \$e7"
   else
     git_silent_add_patch_shortcuts "$@"
     # Makes sense to run 'git status' after this command.
@@ -155,7 +155,7 @@ git_expand_args() {
     fi
   done
 }
-# Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6..12
+# Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_git_expand_args() { $(git_expand_args "$@"); }
 
