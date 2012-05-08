@@ -30,7 +30,7 @@ git_status_shortcuts() {
     git status; return 1
   fi
   # Fetch list of files from last line of script output
-  files="$(echo "$cmd_output" | command grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
+  files="$(echo "$cmd_output" | \grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
   if [ "$scmbDebug" = "true" ]; then echo "filelist => $files"; fi
   # Export numbered env variables for each file
   IFS="|"
@@ -44,7 +44,7 @@ git_status_shortcuts() {
 
   if [ "$scmbDebug" = "true" ]; then echo "------------------------"; fi
   # Print status
-  echo "$cmd_output" | command grep -v '@@filelist@@::'
+  echo "$cmd_output" | \grep -v '@@filelist@@::'
   zsh_reset # Reset zsh environment to default
 }
 
@@ -126,7 +126,7 @@ git_show_affected_files(){
   f=0  # File count
   # Show colored revision and commit message
   echo -n "# "; git show --oneline --name-only $@ | head -n1; echo "# "
-  for file in $(git show --pretty="format:" --name-only $@ | command grep -v '^$'); do
+  for file in $(git show --pretty="format:" --name-only $@ | \grep -v '^$'); do
     let f++
     export $git_env_char$f=$file     # Export numbered variable.
     echo -e "#     \e[2;37m[\e[0m$f\e[2;37m]\e[0m $file"
