@@ -23,8 +23,9 @@
 
 # Add ignore rule to .git/info/exclude if not already present
 _design_add_git_exclude(){
-  if [ -e "$1/.git/info/exclude" ] && ! $(grep -q "$project_design_dir" "$1/.git/info/exclude"); then
-    echo "$project_design_dir" >> "$1/.git/info/exclude"
+  local git_dir="$(cd $1 && readlink -m $(git rev-parse --git-dir))"
+  if [ -e "$git_dir/info/exclude" ] && ! $(grep -q "$project_design_dir" "$git_dir/info/exclude"); then
+    echo "$project_design_dir" >> "$git_dir/info/exclude"
   fi
 }
 
