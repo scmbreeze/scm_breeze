@@ -4,7 +4,7 @@
 # _alias() ignores errors if alias is not defined. (from lib/scm_breeze.sh)
 
 # Print formatted alias index
-list_aliases() { alias -p | grep "$*" --color=never | sed -e 's/alias //' -e "s/='/::/" -e "s/'//g" | awk -F "::" '{ printf "\033[1;36m%15s  \033[2;37m=>\033[0m  %-8s\n",$1,$2}'; }
+list_aliases() { alias | grep "$*" --color=never | sed -e 's/alias //' -e "s/=/::/" -e "s/'//g" | awk -F "::" '{ printf "\033[1;36m%15s  \033[2;37m=>\033[0m  %-8s\n",$1,$2}'; }
 alias git_aliases="list_aliases git"
 
 # Wrap git with the 'hub' github wrapper, if installed
