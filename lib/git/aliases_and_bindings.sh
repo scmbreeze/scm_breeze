@@ -110,7 +110,7 @@ _alias $git_index_alias="git_index"
 # ZSH tab completion
 if [[ $shell == "zsh" ]]; then
   # Turn on support for bash completion
-  autoload bashcompinit
+  autoload -Uz bashcompinit
   bashcompinit
 
   # -- zsh
