@@ -72,7 +72,7 @@ design() {
     echo "== Linking existing Design directories into existing repos..."
     for design_project in $root_design_dir/projects/*; do
       proj=$(basename $design_project)
-      repo_path=$(grep "/$proj$" $GIT_REPO_DIR/.git_index)
+      repo_path=$(grep -m1 "/$proj$" $GIT_REPO_DIR/.git_index)
       if [ -n "$repo_path" ]; then
         if ! [ -e "$repo_path/$project_design_dir" ]; then
           ln -fs "$design_project" "$repo_path/$project_design_dir"
