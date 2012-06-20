@@ -85,7 +85,9 @@ __git_alias "$git_rebase_alias_continue" "git" 'rebase' "--continue"
 __git_alias "$git_rebase_alias_abort" "git" 'rebase' "--abort"
 __git_alias "$git_merge_alias" "git" 'merge'
 __git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
-__git_alias "$git_log_alias" "git" 'log'
+
+git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+__git_alias "$git_log_alias" "git" "$git_log_command"
 __git_alias "$git_show_alias" "git" 'show'
 
 
