@@ -128,7 +128,8 @@ _gs_output_file_group() {
       relative="${stat_file[$i]}"
     else
       dest="$project_root/${stat_file[$i]}"
-      relative="$(_gs_relative_path "$PWD" "$dest" )"
+		local pwd=$(readlink -f "$PWD")
+		relative="$(_gs_relative_path "$pwd" "$dest" )"
     fi
 
     if [[ $f -gt 10 && $e -lt 10 ]]; then local pad=" "; else local pad=""; fi   # (padding)
