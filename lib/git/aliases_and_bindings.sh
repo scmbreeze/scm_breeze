@@ -51,7 +51,6 @@ __git_alias () {
 # SCM Breeze functions
 _alias $git_status_shortcuts_alias="git_status_shortcuts"
 _alias $git_add_shortcuts_alias="git_add_shortcuts"
-_alias $git_add_patch_shortcuts_alias="git_add_patch_shortcuts"
 _alias $exec_git_expand_args_alias="exec_git_expand_args"
 _alias $git_show_files_alias="git_show_affected_files"
 _alias $git_commit_all_alias='git_commit_all'
@@ -67,6 +66,7 @@ __git_alias "$git_rm_alias"          "$_exp git" "rm"
 __git_alias "$git_blame_alias"       "$_exp git" "blame"
 __git_alias "$git_diff_alias"        "$_exp git" "diff"
 __git_alias "$git_diff_cached_alias" "$_exp git" "diff" "--cached"
+__git_alias "$git_add_patch_alias"   "$_exp git" "add" "-p"
 
 # Standard commands
 __git_alias "$git_clone_alias" "git" 'clone'
