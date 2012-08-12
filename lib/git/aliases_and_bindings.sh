@@ -128,12 +128,12 @@ fi
 # Tab completion
 if [ $shell = "bash" ]; then
   complete -o default -o nospace -F _git $git_alias
-fi
 
-# Git repo management & aliases.
-# If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
-complete -o nospace -o filenames -F _git_index_tab_completion git_index
-complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
+  # Git repo management & aliases.
+  # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
+  complete -o nospace -o filenames -F _git_index_tab_completion git_index
+  complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
+fi
 
 
 # Keyboard Bindings
