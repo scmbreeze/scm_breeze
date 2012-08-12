@@ -295,13 +295,36 @@ The uninstall script removes the following line from your `.bashrc` or `.zshrc`:
 SCM Breeze is configured via automatically installed `~/.*.scmbrc` files.
 To change git configuration, edit `~/.git.scmbrc`.
 
-**Note:** After changing any settings, you will need to run `source ~/.bashrc` (or `source ~/.zshrc`)
-
-I know we grow attached to the aliases we use every day, so I've made them completely customizable.
-Just change any aliases in `~/.git.scmbrc`. You can also change or remove any keyboard shortcuts.
-
 Each feature is modular, so you are free to ignore the parts you don't want to use.
 Just comment out the relevant line in `~/.scm_breeze/scm_breeze.sh`.
+
+**Note:** After changing any settings, you will need to run `source ~/.bashrc` (or `source ~/.zshrc`)
+
+I know we grow attached to the aliases we use every day, so I've made the alias system completely customizable.
+You have two options when it comes to aliases:
+
+### 1) Configure and use the provided SCM Breeze aliases
+
+Just tweak the aliases in `~/.git.scmbrc`. You can also change or remove any keyboard shortcuts.
+These aliases also come with tab completion, so you can type `gco <tab>` to tab complete your list of branches.
+
+### 2) Use your own aliases
+
+Make sure your git aliases are being defined before you load SCM Breeze.
+Then, in the `git.scmbrc` config file, just set the `git_augment_current_aliases` option to `yes`.
+Your existing git aliases will then be parsed and wrapped with a SCM Breeze function wrapper, so that you can
+use the numeric shortcuts feature.
+
+A few aliases will still be defined for the central SCM Breeze features, such as `gs` for the extended `git status`, 
+and `ga` for the `git add` function.
+
+For example, if you already have an alias like `alias gco="git checkout"`, 
+then SCM Breeze will automatically redefine it to `alias gco="exec_git_expand_args git checkout"`.
+This means you can type `gco 1` to checkout the first file in the output of SCM Breeze's `git status`.
+
+Note: If you wrap your own aliases, SCM Breeze will **not** set up tab completion for your aliases if you haven't
+set that up yourself.
+
 
 # Updating
 
