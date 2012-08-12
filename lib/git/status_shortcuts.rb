@@ -68,8 +68,7 @@ exit if @changes.size > ENV["gs_max_changes"].to_i
 # Counter for env variables
 @e = 0
 
-
-# Heading
+# Show how many commits ahead we are from origin
 ahead = @ahead ? "  #{@c[:dark]}|  #{@c[:new]}+#{@ahead}#{@c[:rst]}" : ""
 
 
