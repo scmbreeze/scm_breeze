@@ -161,13 +161,9 @@ git_expand_args() {
   IFS="$OLDIFS"
 }
 
-# Wrapper function around git_expand_argsthat also escapes spaces in paths with '\ '
-# (internal functions need spaces unescaped.) 
-_git_expand_args_escaped() { git_expand_args "$@" | sed -e "s/ /\\\ /g"; }
-
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { eval "$(_git_expand_args_escaped "$@")"; }
+exec_git_expand_args() { eval "$(git_expand_args "$@" | sed -e "s/ /\\\ /g")"; }
 
 # Clear numbered env variables
 git_clear_vars() {
