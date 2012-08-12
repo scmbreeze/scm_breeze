@@ -55,58 +55,74 @@ _alias $exec_git_expand_args_alias="exec_git_expand_args"
 _alias $git_show_files_alias="git_show_affected_files"
 _alias $git_commit_all_alias='git_commit_all'
 
-# Expand numbers and ranges for commands that deal with paths
-_exp="exec_git_expand_args"
-__git_alias "$git_checkout_alias"    "$_exp git" "checkout"
-__git_alias "$git_commit_alias"      "$_exp git" "commit"
-__git_alias "$git_reset_alias"       "$_exp git" "reset"
-__git_alias "$git_reset_del_alias"   "$_exp git" "reset" "--"
-__git_alias "$git_reset_hard_alias"  "$_exp git" "reset" "--hard"
-__git_alias "$git_rm_alias"          "$_exp git" "rm"
-__git_alias "$git_blame_alias"       "$_exp git" "blame"
-__git_alias "$git_diff_alias"        "$_exp git" "diff"
-__git_alias "$git_diff_cached_alias" "$_exp git" "diff" "--cached"
-__git_alias "$git_add_patch_alias"   "$_exp git" "add" "-p"
-
-# Standard commands
-__git_alias "$git_clone_alias" "git" 'clone'
-__git_alias "$git_fetch_alias" "git" 'fetch'
-__git_alias "$git_checkout_branch_alias" "git" 'checkout' "-b"
-__git_alias "$git_pull_alias" "git" 'pull'
-__git_alias "$git_push_alias" "git" 'push'
-__git_alias "$git_status_original_alias" "git" 'status' # (Standard git status)
-__git_alias "$git_status_short_alias" "git" 'status' '-s'
-__git_alias "$git_clean_alias" "git" "clean"
-__git_alias "$git_clean_force_alias" "git" "clean" "-fd"
-__git_alias "$git_remote_alias" "git" 'remote' '-v'
-__git_alias "$git_branch_alias" "git" 'branch'
-__git_alias "$git_rebase_alias" "git" 'rebase'
-__git_alias "$git_rebase_alias_continue" "git" 'rebase' "--continue"
-__git_alias "$git_rebase_alias_abort" "git" 'rebase' "--abort"
-__git_alias "$git_merge_alias" "git" 'merge'
-__git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
-
-git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-__git_alias "$git_log_alias" "git" "$git_log_command"
-__git_alias "$git_show_alias" "git" 'show'
-
-
-# Compound/complex commands
-_alias $git_fetch_all_alias="git fetch --all"
-_alias $git_pull_then_push_alias="git pull && git push"
-_alias $git_fetch_and_rebase_alias='git fetch && git rebase'
-_alias $git_commit_amend_alias='git commit --amend'
-# Add staged changes to latest commit without prompting for message
-_alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
-_alias $git_commit_no_msg_alias='git commit -C HEAD'
-_alias $git_log_stat_alias='git log --stat --max-count=5'
-_alias $git_log_graph_alias='git log --graph --max-count=5'
-_alias $git_add_all_alias='git add -A'
-_alias $git_branch_all_alias='git branch -a'
-
-
 # Git Index alias
 _alias $git_index_alias="git_index"
+
+# Only set up aliases if git_augment_current_aliases is not 'yes'
+if [ "$git_augment_current_aliases" != "yes" ]; then
+
+  # Expand numbers and ranges for commands that deal with paths
+  _exp="exec_git_expand_args"
+  __git_alias "$git_checkout_alias"    "$_exp git" "checkout"
+  __git_alias "$git_commit_alias"      "$_exp git" "commit"
+  __git_alias "$git_reset_alias"       "$_exp git" "reset"
+  __git_alias "$git_reset_del_alias"   "$_exp git" "reset" "--"
+  __git_alias "$git_reset_hard_alias"  "$_exp git" "reset" "--hard"
+  __git_alias "$git_rm_alias"          "$_exp git" "rm"
+  __git_alias "$git_blame_alias"       "$_exp git" "blame"
+  __git_alias "$git_diff_alias"        "$_exp git" "diff"
+  __git_alias "$git_diff_cached_alias" "$_exp git" "diff" "--cached"
+  __git_alias "$git_add_patch_alias"   "$_exp git" "add" "-p"
+  # Custom default format for git log
+  git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+  __git_alias "$git_log_alias" "$_exp git" "$git_log_command"
+
+  # Standard commands
+  __git_alias "$git_clone_alias" "git" 'clone'
+  __git_alias "$git_fetch_alias" "git" 'fetch'
+  __git_alias "$git_checkout_branch_alias" "git" 'checkout' "-b"
+  __git_alias "$git_pull_alias" "git" 'pull'
+  __git_alias "$git_push_alias" "git" 'push'
+  __git_alias "$git_status_original_alias" "git" 'status' # (Standard git status)
+  __git_alias "$git_status_short_alias" "git" 'status' '-s'
+  __git_alias "$git_clean_alias" "git" "clean"
+  __git_alias "$git_clean_force_alias" "git" "clean" "-fd"
+  __git_alias "$git_remote_alias" "git" 'remote' '-v'
+  __git_alias "$git_branch_alias" "git" 'branch'
+  __git_alias "$git_rebase_alias" "git" 'rebase'
+  __git_alias "$git_rebase_alias_continue" "git" 'rebase' "--continue"
+  __git_alias "$git_rebase_alias_abort" "git" 'rebase' "--abort"
+  __git_alias "$git_merge_alias" "git" 'merge'
+  __git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
+  __git_alias "$git_show_alias" "git" 'show'
+
+
+  # Compound/complex commands
+  _alias $git_fetch_all_alias="git fetch --all"
+  _alias $git_pull_then_push_alias="git pull && git push"
+  _alias $git_fetch_and_rebase_alias='git fetch && git rebase'
+  _alias $git_commit_amend_alias='git commit --amend'
+  # Add staged changes to latest commit without prompting for message
+  _alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
+  _alias $git_commit_no_msg_alias='git commit -C HEAD'
+  _alias $git_log_stat_alias='git log --stat --max-count=5'
+  _alias $git_log_graph_alias='git log --graph --max-count=5'
+  _alias $git_add_all_alias='git add -A'
+  _alias $git_branch_all_alias='git branch -a'
+
+# Otherwise, wrap any existing git aliases with 'exec_git_expand_args'
+else
+  OLDIFS="$IFS"; IFS=$'\n'
+  for git_alias in $(alias | grep "git " --color=never); do
+    # Set up the new alias if not already wrapped with exec_git_expand_args
+    if [[ "$git_alias" != *exec_git_expand_args* ]]; then
+      new_alias=$(echo -n "$git_alias" | sed -e 's/git /exec_git_expand_args git /g')
+      eval "$new_alias"
+    fi
+  done
+  IFS="$OLDIFS"
+fi
+
 
 
 # ZSH tab completion
