@@ -27,7 +27,9 @@ git_status_shortcuts() {
   fi
   if [[ -z "$cmd_output" ]]; then
     # Just show regular git status if ruby script returns nothing.
-    git status; return 1
+    git status
+    echo -e "\n\e[33mThere were more than $gs_max_changes changed files. SCM Breeze has fallen back to standard \`git status\` for performance reasons.\e[0m"
+    return 1
   fi
   # Fetch list of files from last line of script output
   files="$(echo "$cmd_output" | \grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
