@@ -207,6 +207,7 @@ test_git_status_shortcuts_max_changes() {
   touch f
   git_status=$(git_status_shortcuts | strip_colors)
   assertNotIncludes "$git_status"  "\[[0-9]*\]" || return
+  assertIncludes "$git_status"  "There were more than 5 changed files." || return
 
   export gs_max_changes="20"
 }
