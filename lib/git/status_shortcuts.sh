@@ -94,36 +94,6 @@ git_silent_add_shortcuts() {
   fi
 }
 
-# 'git add -p' wrapper
-# This shortcut means 'stage my selection of patchs for the file'
-# Should be used in conjunction with the git_status_shortcuts() function for 'git status'.
-# -------------------------------------------------------------------------------
-git_add_patch_shortcuts() {
-  if [ -z "$1" ]; then
-    echo "Usage: gap <file>  => git add -p <file>"
-    echo "       gap 1       => git add -p \$e1"
-    echo "       gap 2-4    => git add -p \$e2 \$e3 \$e4"
-    echo "       gap 2 5-7  => git add -p \$e2 \$e5 \$e6 \$e7"
-  else
-    git_silent_add_patch_shortcuts "$@"
-    # Makes sense to run 'git status' after this command.
-    git_status_shortcuts
-  fi
-}
-# Does nothing if no args are given.
-git_silent_add_patch_shortcuts() {
-  if [ -n "$1" ]; then
-    # Expand args and process resulting set of files.
-    IFS=$'\t'
-    for file in $(git_expand_args "$@"); do
-      git add -p "$file"
-      echo -e "# Added '$file'"
-    done
-    IFS=$' \t\n'
-    echo "#"
-  fi
-}
-
 # Prints a list of all files affected by a given SHA1,
 # and exports numbered environment variables for each file.
 git_show_affected_files(){

@@ -29,7 +29,7 @@ git_alias="g"
 # 1. 'SCM Breeze' functions
 git_status_shortcuts_alias="gs"
 git_add_shortcuts_alias="ga"
-git_add_patch_shortcuts_alias="gap"
+git_add_patch_alias="gap"
 git_show_files_alias="gsf"
 exec_git_expand_args_alias="ge"
 # 2. Commands that handle paths (with shortcut args expanded)
