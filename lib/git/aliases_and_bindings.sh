@@ -9,8 +9,11 @@ alias git_aliases="list_aliases git"
 
 # Wrap git with the 'hub' github wrapper, if installed
 # https://github.com/defunkt/hub
-_git_cmd=git;
-if type hub > /dev/null 2>&1; then _git_cmd=hub; fi
+export _git_cmd=git;
+if type hub > /dev/null 2>&1; then export _git_cmd=hub; fi
+
+# Remove any 'git' alias first
+unalias git >/dev/null 2>&1 
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
 function git(){
