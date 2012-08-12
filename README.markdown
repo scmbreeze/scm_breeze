@@ -322,8 +322,8 @@ For example, if you already have an alias like `alias gco="git checkout"`,
 then SCM Breeze will automatically redefine it to `alias gco="exec_git_expand_args git checkout"`.
 This means you can type `gco 1` to checkout the first file in the output of SCM Breeze's `git status`.
 
-Note: If you wrap your own aliases, SCM Breeze will **not** set up tab completion for your aliases if you haven't
-set that up yourself.
+Note: If you wrap your own aliases, SCM Breeze will **not** set up tab completion for your aliases.
+You will need to set that up yourself.
 
 
 # Updating
