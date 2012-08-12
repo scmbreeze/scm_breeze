@@ -125,30 +125,8 @@ fi
 
 
 
-# ZSH tab completion
-if [[ $shell == "zsh" ]]; then
-  # Turn on support for bash completion
-  autoload -Uz bashcompinit
-  bashcompinit
-
-  # -- zsh
-  compdef $git_alias=git
-  compdef _git $git_pull_alias=git-pull
-  compdef _git $git_push_alias=git-push
-  compdef _git $git_fetch_alias=git-fetch
-  compdef _git $git_fetch_and_rebase_alias=git-fetch
-  compdef _git $git_diff_alias=git-diff
-  compdef _git $git_commit_alias=git-commit
-  compdef _git $git_commit_all_alias=git-commit
-  compdef _git $git_checkout_alias=git-checkout
-  compdef _git $git_branch_alias=git-branch
-  compdef _git $git_branch_all_alias=git-branch
-  compdef _git $git_log_alias=git-log
-  compdef _git $git_log_stat_alias=git-log
-  compdef _git $git_log_graph_alias=git-log
-  compdef _git $git_add_shortcuts_alias=git-add
-  compdef _git $git_merge_alias=git-merge
-else
+# Tab completion
+if [ $shell = "bash" ]; then
   complete -o default -o nospace -F _git $git_alias
 fi
 
