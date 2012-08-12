@@ -14,7 +14,13 @@ if type hub > /dev/null 2>&1; then _git_cmd=hub; fi
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
 function git(){
-  exec_git_expand_args "$_git_cmd" "$@"
+  # Only expand args for a subset of git commands
+  case $1 in
+    checkout|commit|reset|rm|blame|diff|add|log)
+      exec_git_expand_args "$_git_cmd" "$@";;
+    *)
+      "$_git_cmd" "$@";;
+  esac
 }
 
 _alias $git_alias='git'
