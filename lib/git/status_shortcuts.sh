@@ -90,36 +90,6 @@ git_silent_add_shortcuts() {
   fi
 }
 
-# 'git add -p' wrapper
-# This shortcut means 'stage my selection of patchs for the file'
-# Should be used in conjunction with the git_status_shortcuts() function for 'git status'.
-# -------------------------------------------------------------------------------
-git_add_patch_shortcuts() {
-  if [ -z "$1" ]; then
-    echo "Usage: gap <file>  => git add -p <file>"
-    echo "       gap 1       => git add -p \$e1"
-    echo "       gap 2-4    => git add -p \$e2 \$e3 \$e4"
-    echo "       gap 2 5-7  => git add -p \$e2 \$e5 \$e6 \$e7"
-  else
-    git_silent_add_patch_shortcuts "$@"
-    # Makes sense to run 'git status' after this command.
-    git_status_shortcuts
-  fi
-}
-# Does nothing if no args are given.
-git_silent_add_patch_shortcuts() {
-  if [ -n "$1" ]; then
-    # Expand args and process resulting set of files.
-    IFS=$'\n'
-    for file in $(git_expand_args "$@"); do
-      git add -p "$file"
-      echo -e "# add '$file'"
-    done
-    IFS=$' \t\n'
-    echo "#"
-  fi
-}
-
 # Prints a list of all files affected by a given SHA1,
 # and exports numbered environment variables for each file.
 git_show_affected_files(){
@@ -143,21 +113,24 @@ git_expand_args() {
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
-      eval printf '%s' "\$$git_env_char$arg"
+      eval echo -n "\$${git_env_char}$arg"
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
       for i in $(eval echo {${arg/-/..}}); do
         if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
-        eval printf '%s' "\$$git_env_char$i"
+        eval echo -n "\$${git_env_char}$i"
       done
     else   # Otherwise, treat $arg as a normal string.
       if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
-      printf '%q' "$arg"
+      printf '%s' "$arg"
     fi
   done
 }
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { $(git_expand_args "$@"); }
+exec_git_expand_args() {
+    local cmd=$(git_expand_args "$@")
+    eval $cmd
+}
 
 # Clear numbered env variables
 git_clear_vars() {
