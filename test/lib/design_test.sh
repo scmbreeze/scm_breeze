@@ -43,6 +43,7 @@ oneTimeTearDown() {
 
 test_design() {
   cd $project_dir
+  git init > /dev/null
   # Test creation of base and extra design directories
   design init > /dev/null
   for dir in $design_ext_dirs; do
