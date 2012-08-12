@@ -50,13 +50,13 @@ setupTestRepo() {
 test_git_expand_args() {
   local e1="one"; local e2="two"; local e3="three"; local e4="four"; local e5="five"; local e6="six"; local e7="seven"
   local error="Args not expanded correctly"
-  assertEquals "$error" "one three seven" "$(git_expand_args 1 3 7)"
-  assertEquals "$error" "one two three six" "$(git_expand_args 1-3 6)"
-  assertEquals "$error" "seven two three four five one" "$(git_expand_args seven 2-5 1)"
+  assertEquals "$error" "$(printf 'one\tthree\tseven')" "$(git_expand_args 1 3 7)"
+  assertEquals "$error" "$(printf 'one\ttwo\tthree\tsix')" "$(git_expand_args 1-3 6)"
+  assertEquals "$error" "$(printf 'seven\ttwo\tthree\tfour\tfive\tone')" "$(git_expand_args seven 2-5 1)"
 
   # Test that any args with spaces remain quoted
-  assertEquals "$error" "-m Test\ Commit\ Message one" "$(git_expand_args -m "Test Commit Message" 1)"
-  assertEquals "$error" "-ma Test\ Commit\ Message Unquoted"\
+  assertEquals "$error" "$(printf -- '-m\tTest Commit Message\tone')" "$(git_expand_args -m "Test Commit Message" 1)"
+  assertEquals "$error" "$(printf -- '-ma\tTest Commit Message\tUnquoted')"\
                         "$(git_expand_args -ma "Test Commit Message" "Unquoted")"
 }
 
@@ -251,6 +251,20 @@ test_git_commit_prompt() {
   test_history="$(history)"
   assertIncludes "$test_history"  "$commit_msg"
   assertIncludes "$test_history"  "git commit -m \"$dbl_escaped_msg\""
+}
+
+test_adding_files_with_spaces() {
+  setupTestRepo
+
+  test_file="file with spaces.txt"
+
+  touch "$test_file"
+  e1="$testRepo/$test_file" 
+  git_add_shortcuts 1 > /dev/null
+
+  # Test that file is added by looking at git status
+  git_status=$(git_status_shortcuts | strip_colors)
+  assertIncludes "$git_status"  "new file: \[1\] \"$test_file"
 }
 
 

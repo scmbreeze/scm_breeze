@@ -76,6 +76,7 @@ git_add_shortcuts() {
 git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
+    IFS=$'\t'
     for file in $(git_expand_args "$@"); do
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove == "yes" ]] && ! [ -e "$file" ]; then
@@ -86,6 +87,7 @@ git_silent_add_shortcuts() {
         echo -e "# add '$file'"
       fi
     done
+    IFS=$' \t\n'
     echo "#"
   fi
 }
@@ -110,7 +112,7 @@ git_add_patch_shortcuts() {
 git_silent_add_patch_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
-    IFS=$'\n'
+    IFS=$'\t'
     for file in $(git_expand_args "$@"); do
       git add -p "$file"
       echo -e "# add '$file'"
@@ -142,22 +144,24 @@ git_expand_args() {
   first=1
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
-      if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
-      eval printf '%s' "\$$git_env_char$arg"
+      if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
+      eval printf '%s' "\"\$$git_env_char$arg\""
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
+      OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
       for i in $(eval echo {${arg/-/..}}); do
-        if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
-        eval printf '%s' "\$$git_env_char$i"
+        if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
+        eval printf '%s' "\"\$$git_env_char$i\""
       done
+      IFS="$OLDIFS"
     else   # Otherwise, treat $arg as a normal string.
-      if [ "$first" -eq 1 ]; then first=0; else echo -n " "; fi
-      printf '%q' "$arg"
+      if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
+      printf '%s' "$arg"
     fi
   done
 }
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { $(git_expand_args "$@"); }
+exec_git_expand_args() { eval "$(git_expand_args "$@" | sed -e "s/ /\\\ /g")"; }
 
 # Clear numbered env variables
 git_clear_vars() {
