@@ -310,20 +310,27 @@ These aliases also come with tab completion. For example, you can type `gco <tab
 
 ### 2) Use your own aliases
 
-Make sure your git aliases are being defined before you load SCM Breeze.
-Then, in the `git.scmbrc` config file, just set the `git_augment_current_aliases` option to `yes`.
-Your existing git aliases will then be parsed and wrapped with a SCM Breeze function wrapper, so that you can
-use the numeric shortcuts feature.
+In your `git.scmbrc` config file, just set the `git_setup_aliases` option to `no`.
+Your existing git aliases will then be used, and you will still be able to use the numeric shortcuts feature.
+SCM Breeze creates a function to wrap the 'git' command, which expands numeric arguments, and uses `hub` if available.
 
 A few aliases will still be defined for the central SCM Breeze features, such as `gs` for the extended `git status`, 
 and `ga` for the `git add` function.
 
-For example, if you already have an alias like `alias gco="git checkout"`, 
-then SCM Breeze will automatically redefine it to `alias gco="exec_git_expand_args git checkout"`.
-This means you can type `gco 1` to checkout the first file in the output of SCM Breeze's `git status`.
+If you already have an alias like `alias gco="git checkout"`, 
+you can now type `gco 1` to checkout the first file in the output of SCM Breeze's `git status`.
 
-Note: If you wrap your own aliases, SCM Breeze will **not** set up tab completion for your aliases.
+# Notes about Tab Completion for Aliases
+
+### Bash 
+
+If you wrap your own aliases, SCM Breeze will **not** set up bash tab completion for your aliases.
 You will need to set that up yourself.
+
+### Zsh
+
+You just need to set `setopt no_complete_aliases`, and zsh will expand aliases like `gb` to `git branch`
+and use the completion for that.
 
 
 # Updating

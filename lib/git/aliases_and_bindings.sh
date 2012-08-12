@@ -9,7 +9,13 @@ alias git_aliases="list_aliases git"
 
 # Wrap git with the 'hub' github wrapper, if installed
 # https://github.com/defunkt/hub
-if type hub > /dev/null 2>&1; then alias git=hub; fi
+_git_cmd=git;
+if type hub > /dev/null 2>&1; then _git_cmd=hub; fi
+
+# Create 'git' function that calls hub if defined, and expands all numeric arguments
+function git(){
+  exec_git_expand_args "$_git_cmd" "$@"
+}
 
 _alias $git_alias='git'
 
@@ -58,24 +64,23 @@ _alias $git_commit_all_alias='git_commit_all'
 # Git Index alias
 _alias $git_index_alias="git_index"
 
-# Only set up aliases if git_augment_current_aliases is not 'yes'
-if [ "$git_augment_current_aliases" != "yes" ]; then
+# Only set up the following aliases if 'git_setup_aliases' is 'yes'
+if [ "$git_setup_aliases" = "yes" ]; then
 
-  # Expand numbers and ranges for commands that deal with paths
-  _exp="exec_git_expand_args"
-  __git_alias "$git_checkout_alias"    "$_exp git" "checkout"
-  __git_alias "$git_commit_alias"      "$_exp git" "commit"
-  __git_alias "$git_reset_alias"       "$_exp git" "reset"
-  __git_alias "$git_reset_del_alias"   "$_exp git" "reset" "--"
-  __git_alias "$git_reset_hard_alias"  "$_exp git" "reset" "--hard"
-  __git_alias "$git_rm_alias"          "$_exp git" "rm"
-  __git_alias "$git_blame_alias"       "$_exp git" "blame"
-  __git_alias "$git_diff_alias"        "$_exp git" "diff"
-  __git_alias "$git_diff_cached_alias" "$_exp git" "diff" "--cached"
-  __git_alias "$git_add_patch_alias"   "$_exp git" "add" "-p"
+  # Commands that deal with paths
+  __git_alias "$git_checkout_alias"    "git" "checkout"
+  __git_alias "$git_commit_alias"      "git" "commit"
+  __git_alias "$git_reset_alias"       "git" "reset"
+  __git_alias "$git_reset_del_alias"   "git" "reset" "--"
+  __git_alias "$git_reset_hard_alias"  "git" "reset" "--hard"
+  __git_alias "$git_rm_alias"          "git" "rm"
+  __git_alias "$git_blame_alias"       "git" "blame"
+  __git_alias "$git_diff_alias"        "git" "diff"
+  __git_alias "$git_diff_cached_alias" "git" "diff" "--cached"
+  __git_alias "$git_add_patch_alias"   "git" "add" "-p"
   # Custom default format for git log
   git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-  __git_alias "$git_log_alias" "$_exp git" "$git_log_command"
+  __git_alias "$git_log_alias" "git" "$git_log_command"
 
   # Standard commands
   __git_alias "$git_clone_alias" "git" 'clone'
@@ -109,18 +114,6 @@ if [ "$git_augment_current_aliases" != "yes" ]; then
   _alias $git_log_graph_alias='git log --graph --max-count=5'
   _alias $git_add_all_alias='git add -A'
   _alias $git_branch_all_alias='git branch -a'
-
-# Otherwise, wrap any existing git aliases with 'exec_git_expand_args'
-else
-  OLDIFS="$IFS"; IFS=$'\n'
-  for git_alias in $(alias | grep "git " --color=never); do
-    # Set up the new alias if not already wrapped with exec_git_expand_args
-    if [[ "$git_alias" != *exec_git_expand_args* ]]; then
-      new_alias=$(echo -n "$git_alias" | sed -e 's/git /exec_git_expand_args git /g')
-      eval "$new_alias"
-    fi
-  done
-  IFS="$OLDIFS"
 fi
 
 
