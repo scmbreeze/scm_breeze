@@ -115,7 +115,7 @@ git_silent_add_patch_shortcuts() {
     IFS=$'\t'
     for file in $(git_expand_args "$@"); do
       git add -p "$file"
-      echo -e "# add '$file'"
+      echo -e "# Added '$file'"
     done
     IFS=$' \t\n'
     echo "#"
@@ -142,26 +142,32 @@ git_show_affected_files(){
 # * git_show_affected_files() - shows files affected by a given SHA1, etc.
 git_expand_args() {
   first=1
+  OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       eval printf '%s' "\"\$$git_env_char$arg\""
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
-      OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
+      
       for i in $(eval echo {${arg/-/..}}); do
         if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
         eval printf '%s' "\"\$$git_env_char$i\""
       done
-      IFS="$OLDIFS"
     else   # Otherwise, treat $arg as a normal string.
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       printf '%s' "$arg"
     fi
   done
+  IFS="$OLDIFS"
 }
+
+# Wrapper function around git_expand_argsthat also escapes spaces in paths with '\ '
+# (internal functions need spaces unescaped.) 
+_git_expand_args_escaped() { git_expand_args "$@" | sed -e "s/ /\\\ /g"; }
+
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { eval "$(git_expand_args "$@" | sed -e "s/ /\\\ /g")"; }
+exec_git_expand_args() { eval "$(_git_expand_args_escaped "$@")"; }
 
 # Clear numbered env variables
 git_clear_vars() {
@@ -174,8 +180,21 @@ git_clear_vars() {
 
 
 # Shortcuts for resolving merge conflicts.
-ours(){   local files=$(git_expand_args "$@"); git checkout --ours "$files"; git add "$files"; }
-theirs(){ local files=$(git_expand_args "$@"); git checkout --theirs "$files"; git add "$files"; }
+_git_resolve_merge_conflict() { 
+  if [ -n "$2" ]; then
+    # Expand args and process resulting set of files.
+    IFS=$'\t'
+    for file in $(git_expand_args "${@:2}"); do
+      git checkout "--$1""s" "$file"   # "--$1""s" is expanded to --ours or --theirs
+      git add "$file"
+      echo -e "# Added $1 version of '$file'"
+    done
+    IFS=$' \t\n'
+    echo -e "# -- If you have finished resolving conflicts, commit the resolutions with 'git commit'"
+  fi
+}
+ours(){   _git_resolve_merge_conflict "our" "$@"; }
+theirs(){ _git_resolve_merge_conflict "their" "$@"; }
 
 
 # Git commit prompts
