@@ -86,7 +86,7 @@ git_silent_add_shortcuts() {
         git rm "$file"
       else
         git add "$file"
-        echo -e "# add '$file'"
+        echo -e "# Added '$file'"
       fi
     done
     IFS=$' \t\n'
