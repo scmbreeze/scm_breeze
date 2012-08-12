@@ -306,7 +306,7 @@ You have two options when it comes to aliases:
 ### 1) Configure and use the provided SCM Breeze aliases
 
 Just tweak the aliases in `~/.git.scmbrc`. You can also change or remove any keyboard shortcuts.
-These aliases also come with tab completion, so you can type `gco <tab>` to tab complete your list of branches.
+These aliases also come with tab completion. For example, you can type `gco <tab>` to tab complete your list of branches.
 
 ### 2) Use your own aliases
 
