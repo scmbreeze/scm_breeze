@@ -324,13 +324,13 @@ you can now type `gco 1` to checkout the first file in the output of SCM Breeze'
 
 ### Bash 
 
-If you wrap your own aliases, SCM Breeze will **not** set up bash tab completion for your aliases.
+If you use your own aliases, SCM Breeze will **not** set up bash tab completion for your aliases.
 You will need to set that up yourself.
 
 ### Zsh
 
-You just need to set `setopt no_complete_aliases`, and zsh will expand aliases like `gb` to `git branch`
-and use the completion for that.
+You just need to set the option: `setopt no_complete_aliases` (oh-my-zsh sets this by default).
+Zsh will then expand aliases like `gb` to `git branch`, and use the completion for that.
 
 
 # Updating
