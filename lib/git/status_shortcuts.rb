@@ -23,8 +23,7 @@
 @project_root = File.exist?(".git") ? Dir.pwd : `git rev-parse --git-dir 2> /dev/null`.sub(/\/\.git$/, '').strip
 
 @git_status = `git status --porcelain 2> /dev/null`
-# Exit if no changes
-exit if @git_status == ""
+
 git_branch = `git branch -v 2> /dev/null`
 @branch = git_branch[/^\* (\(no branch\)|[^ ]*)/, 1]
 @ahead = git_branch[/^\* [^ ]* *[^ ]* *\[ahead ?(\d+)\]/, 1]
@@ -69,8 +68,20 @@ exit if @changes.size > ENV["gs_max_changes"].to_i
 # Counter for env variables
 @e = 0
 
+
 # Heading
 ahead = @ahead ? "  #{@c[:dark]}|  #{@c[:new]}+#{@ahead}#{@c[:rst]}" : ""
+
+
+# If no changes, just display green no changes message and exit here
+if @git_status == ""
+  puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  \e[0;32mNo changes (working directory clean)%s" % [
+    @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst]
+  ]
+  exit
+end
+
+
 puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
   @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
 ]
