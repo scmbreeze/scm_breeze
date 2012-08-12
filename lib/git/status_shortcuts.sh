@@ -135,7 +135,7 @@ git_expand_args() {
 
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { eval "$(git_expand_args "$@" | sed -e "s/ /\\\ /g")"; }
+exec_git_expand_args() { eval "$(git_expand_args "$@" | sed -e 's/\([][()<> ]\)/\\\1/g')"; }
 
 # Clear numbered env variables
 git_clear_vars() {
