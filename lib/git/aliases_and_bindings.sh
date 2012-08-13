@@ -7,14 +7,15 @@
 list_aliases() { alias | grep "$*" --color=never | sed -e 's/alias //' -e "s/=/::/" -e "s/'//g" | awk -F "::" '{ printf "\033[1;36m%15s  \033[2;37m=>\033[0m  %-8s\n",$1,$2}'; }
 alias git_aliases="list_aliases git"
 
+# Remove any existing git alias or function
+unalias git > /dev/null 2>&1
+unset -f git > /dev/null 2>&1
 
 # Use the full path to git to avoid infinite loop with git function
-export _git_cmd="$(which git)";
+export _git_cmd="$(which git)"
 # Wrap git with the 'hub' github wrapper, if installed (https://github.com/defunkt/hub)
 if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 
-# Remove any 'git' alias first
-unalias git >/dev/null 2>&1
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
 function git(){
