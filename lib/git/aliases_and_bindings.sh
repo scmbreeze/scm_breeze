@@ -14,7 +14,7 @@ export _git_cmd="$(which git)";
 if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 
 # Remove any 'git' alias first
-unalias git >/dev/null 2>&1 
+unalias git >/dev/null 2>&1
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
 function git(){
