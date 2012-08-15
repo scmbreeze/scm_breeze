@@ -1,4 +1,9 @@
-#
+# ------------------------------------------------------------------------------
+# SCM Breeze - Streamline your SCM workflow.
+# Copyright 2011 Nathan Broadbent (http://madebynathan.com). All Rights Reserved.
+# Released under the LGPL (GNU Lesser General Public License)
+# ------------------------------------------------------------------------------
+
 # Set up configured aliases & keyboard shortcuts
 # --------------------------------------------------------------------
 # _alias() ignores errors if alias is not defined. (from lib/scm_breeze.sh)
@@ -104,7 +109,6 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_clean_alias" "git" "clean"
   __git_alias "$git_clean_force_alias" "git" "clean" "-fd"
   __git_alias "$git_remote_alias" "git" 'remote' '-v'
-  __git_alias "$git_branch_alias" "git" 'branch'
   __git_alias "$git_rebase_alias" "git" 'rebase'
   __git_alias "$git_rebase_alias_continue" "git" 'rebase' "--continue"
   __git_alias "$git_rebase_alias_abort" "git" 'rebase' "--abort"
@@ -139,108 +143,3 @@ if [ $shell = "bash" ]; then
   complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
 fi
 
-
-# Keyboard Bindings
-# -----------------------------------------------------------
-# 'git_commit_all' and 'git_add_and_commit' give commit message prompts.
-# See [here](http://qntm.org/bash#sec1) for info about why I wanted a prompt.
-
-# Cross-shell key bindings
-_bind(){
-  if [ -n "$1" ]; then
-    if [[ $shell == "zsh" ]]; then
-      bindkey -s "$1" "$2"
-    else # bash
-      bind "\"$1\": $2"
-    fi
-  fi
-}
-
-# Keyboard shortcuts for commits
-if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
-  case "$-" in
-  *i*)
-      # Uses emacs style keybindings, so vi mode is not supported for now
-      if ! set -o | grep -q '^vi .*on$'; then
-        if [[ $shell == "zsh" ]]; then
-          _bind "$git_commit_all_keys" " git_commit_all""\n"
-          _bind "$git_add_and_commit_keys" " \e[1~ git_add_and_commit""\n"
-        else
-          _bind "$git_commit_all_keys" "\" git_commit_all\n\""
-          _bind "$git_add_and_commit_keys" "\"\e[1~ git_add_and_commit \n\""
-        fi
-      fi
-
-      # Commands are prepended with a space so that they won't be added to history.
-      # Make sure this is turned on with:
-      # zsh:  setopt histignorespace histignoredups
-      # bash: HISTCONTROL=ignorespace:ignoredups
-  esac
-fi
-
-# Wrap common commands with numeric argument expansion.
-# Prepends everything with exec_scmb_expand_args,
-# even if commands are already aliases or functions
-if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_enabled" = "true" ]; then
-  # Do it in a function so we don't bleed variables
-  function _git_wrap_commands() {
-    # Define 'whence' for bash, to get the value of an alias
-    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
-    local cmd=''
-    for cmd in vim emacs gedit cat rm cp mv ln ls cd; do
-      case "$(type $cmd 2>&1)" in
-      *'exec_scmb_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
-
-      *'is aliased to'*|*'is an alias for'*)
-        # Store original alias
-        local original_alias="$(whence $cmd)"
-        # Remove alias, so that which can return binary
-        unalias $cmd
-        # Expand original command into full path, to avoid infinite loops
-        local expanded_alias="$(echo $original_alias | sed "s%^$cmd%$(\which $cmd)%")"
-        # Command is already an alias
-        alias $cmd="exec_scmb_expand_args $expanded_alias";;
-
-      *'is a'*'function'*)
-        # Copy old function into new name
-        eval "$(declare -f $cmd | sed "s/^$cmd ()/__original_$cmd ()/")"
-        # Remove function
-        unset -f $cmd
-        # Create wrapped alias for old function
-        alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
-      *'is a shell builtin'*) 
-        # Handle shell builtin commands
-        alias $cmd="exec_scmb_expand_args builtin $cmd";;
-      *) 
-        # Otherwise, command is a regular script or binary,
-        # and the full path can be found from 'which'
-        alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
-      esac
-    done
-    # Clean up
-    declare -f whence > /dev/null && unset -f whence
-  }
-  _git_wrap_commands
-fi
-
-# Function wrapper around 'll'
-# Adds numbered shortcuts to output of ls -l, just like 'git status'
-unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
-function ll {
-  # Use ruby to inject numbers into ls output
-  ruby -e "$( cat <<EOF
-    output = %x(ls -lv --group-directories-first --color)
-    output.lines.each_with_index do |line, i|
-      puts line.sub(/^(([^ ]* +){8})/, "\\\1\e[2;37m[\e[0m#{i}\e[2;37m]\e[0m" << (i < 10 ? "  " : " "))
-    end
-EOF
-)"
-
-  # Set numbered file shortcut in variable
-  local e=1
-  for file in $(ls -v --group-directories-first --color=never); do
-    export $git_env_char$e="$(readlink -f $file)"
-    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
-    let e++
-  done
-}

@@ -17,8 +17,11 @@ export scmbDir="$(dirname ${BASH_SOURCE:-$0})"
 if [[ -s "$HOME/.git.scmbrc" ]]; then
   # Load git config
   . "$HOME/.git.scmbrc"
-  . "$scmbDir/lib/git/aliases_and_bindings.sh"
+  . "$scmbDir/lib/git/aliases.sh"
+  . "$scmbDir/lib/git/keybindings.sh"
   . "$scmbDir/lib/git/status_shortcuts.sh"
+  . "$scmbDir/lib/git/branch_shortcuts.sh"
+  . "$scmbDir/lib/git/shell_shortcuts.sh"
   . "$scmbDir/lib/git/repo_index.sh"
   . "$scmbDir/lib/git/tools.sh"
 
