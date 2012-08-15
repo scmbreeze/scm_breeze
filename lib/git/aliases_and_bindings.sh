@@ -221,7 +221,7 @@ fi
 
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
-unalias ll > /dev/null 2>&1
+unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
 function ll {
   # Use ruby to inject numbers into ls output
   ruby -e "$( cat <<EOF
