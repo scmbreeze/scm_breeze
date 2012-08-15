@@ -187,7 +187,7 @@ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
     # Define 'whence' for bash, to get the value of an alias
     type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
-    for cmd in vim emacs gedit cat rm cp mv ln ls; do
+    for cmd in vim emacs gedit cat rm cp mv ln ls cd; do
       case "$(type $cmd 2>&1)" in
       *'exec_scmb_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
 
@@ -218,3 +218,25 @@ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
   }
   _git_wrap_commands
 fi
+
+# Function wrapper around 'll'
+# Adds numbered shortcuts to output of ls -l, just like 'git status'
+unalias ll > /dev/null 2>&1
+function ll {
+  # Use ruby to inject numbers into ls output
+  ruby -e "$( cat <<EOF
+    output = %x(ls -lv --group-directories-first --color)
+    output.lines.each_with_index do |line, i|
+      puts line.sub(/^(([^ ]* +){8})/, "\\\1\e[2;37m[\e[0m#{i}\e[2;37m]\e[0m" << (i < 10 ? "  " : " "))
+    end
+EOF
+)"
+
+  # Set numbered file shortcut in variable
+  local e=1
+  for file in $(ls -v --group-directories-first); do
+    export $git_env_char$e="$(readlink -f $file)"
+    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+    let e++
+  done
+}
