@@ -79,7 +79,7 @@ git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
     IFS=$'\t'
-    for file in $(git_expand_args "$@"); do
+    for file in $(scmb_expand_args "$@"); do
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove == "yes" ]] && ! [ -e "$file" ]; then
         echo -n "# "
@@ -112,7 +112,7 @@ git_show_affected_files(){
 # Numbered shortcut variables are produced by various commands, such as:
 # * git_status_shortcuts()  - git status implementation
 # * git_show_affected_files() - shows files affected by a given SHA1, etc.
-git_expand_args() {
+scmb_expand_args() {
   first=1
   OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
   for arg in "$@"; do
@@ -135,7 +135,7 @@ git_expand_args() {
 
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_git_expand_args() { eval "$(git_expand_args "$@" | sed -e 's/\([][()<>^ ]\)/\\\1/g')"; }
+exec_scmb_expand_args() { eval "$(scmb_expand_args "$@" | sed -e 's/\([][()<>^ ]\)/\\\1/g')"; }
 
 # Clear numbered env variables
 git_clear_vars() {
@@ -152,7 +152,7 @@ _git_resolve_merge_conflict() {
   if [ -n "$2" ]; then
     # Expand args and process resulting set of files.
     IFS=$'\t'
-    for file in $(git_expand_args "${@:2}"); do
+    for file in $(scmb_expand_args "${@:2}"); do
       git checkout "--$1""s" "$file"   # "--$1""s" is expanded to --ours or --theirs
       git add "$file"
       echo -e "# Added $1 version of '$file'"

@@ -47,17 +47,17 @@ setupTestRepo() {
 # Unit tests
 #-----------------------------------------------------------------------------
 
-test_git_expand_args() {
+test_scmb_expand_args() {
   local e1="one"; local e2="two"; local e3="three"; local e4="four"; local e5="five"; local e6="six"; local e7="seven"
   local error="Args not expanded correctly"
-  assertEquals "$error" "$(printf 'one\tthree\tseven')" "$(git_expand_args 1 3 7)"
-  assertEquals "$error" "$(printf 'one\ttwo\tthree\tsix')" "$(git_expand_args 1-3 6)"
-  assertEquals "$error" "$(printf 'seven\ttwo\tthree\tfour\tfive\tone')" "$(git_expand_args seven 2-5 1)"
+  assertEquals "$error" "$(printf 'one\tthree\tseven')" "$(scmb_expand_args 1 3 7)"
+  assertEquals "$error" "$(printf 'one\ttwo\tthree\tsix')" "$(scmb_expand_args 1-3 6)"
+  assertEquals "$error" "$(printf 'seven\ttwo\tthree\tfour\tfive\tone')" "$(scmb_expand_args seven 2-5 1)"
 
   # Test that any args with spaces remain quoted
-  assertEquals "$error" "$(printf -- '-m\tTest Commit Message\tone')" "$(git_expand_args -m "Test Commit Message" 1)"
+  assertEquals "$error" "$(printf -- '-m\tTest Commit Message\tone')" "$(scmb_expand_args -m "Test Commit Message" 1)"
   assertEquals "$error" "$(printf -- '-ma\tTest Commit Message\tUnquoted')"\
-                        "$(git_expand_args -ma "Test Commit Message" "Unquoted")"
+                        "$(scmb_expand_args -ma "Test Commit Message" "Unquoted")"
 }
 
 

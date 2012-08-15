@@ -67,7 +67,7 @@ $ gco 5
 ```
 
 
-You can use these shortcuts with system commands by passing your command through `exec_git_expand_args`
+You can use these shortcuts with system commands by passing your command through `exec_scmb_expand_args`
 (default alias is 'ge'):
 
 

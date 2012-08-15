@@ -22,7 +22,7 @@ function git(){
   # Only expand args for a subset of git commands
   case $1 in
     checkout|commit|reset|rm|blame|diff|add|log)
-      exec_git_expand_args "$_git_cmd" "$@";;
+      exec_scmb_expand_args "$_git_cmd" "$@";;
     *)
       "$_git_cmd" "$@";;
   esac
@@ -68,7 +68,7 @@ __git_alias () {
 # SCM Breeze functions
 _alias $git_status_shortcuts_alias="git_status_shortcuts"
 _alias $git_add_shortcuts_alias="git_add_shortcuts"
-_alias $exec_git_expand_args_alias="exec_git_expand_args"
+_alias $exec_scmb_expand_args_alias="exec_scmb_expand_args"
 _alias $git_show_files_alias="git_show_affected_files"
 _alias $git_commit_all_alias='git_commit_all'
 
@@ -179,7 +179,7 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
 fi
 
 # Wrap common commands with numeric argument expansion.
-# Prepends everything with exec_git_expand_args,
+# Prepends everything with exec_scmb_expand_args,
 # even if commands are already aliases or functions
 if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
   # Do it in a function so we don't bleed variables
@@ -189,7 +189,7 @@ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
     local cmd=''
     for cmd in vim emacs gedit cat rm cp mv ln ls; do
       case "$(type $cmd 2>&1)" in
-      *'exec_git_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
+      *'exec_scmb_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
 
       *'is aliased to'*|*'is an alias for'*)
         # Store original alias
@@ -199,7 +199,7 @@ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
         # Expand original command into full path, to avoid infinite loops
         local expanded_alias="$(echo $original_alias | sed "s%^$cmd%$(\which $cmd)%")"
         # Command is already an alias
-        alias $cmd="exec_git_expand_args $expanded_alias";;
+        alias $cmd="exec_scmb_expand_args $expanded_alias";;
 
       *'is a'*'function'*)
         # Copy old function into new name
@@ -207,10 +207,10 @@ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
         # Remove function
         unset -f $cmd
         # Create wrapped alias for old function
-        alias "$cmd"="exec_git_expand_args __original_$cmd";;
+        alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
 
       *) # Otherwise, command is a regular script or binary that can be aliased
-        alias $cmd="exec_git_expand_args $(\which $cmd)";;
+        alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
       esac
     done
     # Clean up
