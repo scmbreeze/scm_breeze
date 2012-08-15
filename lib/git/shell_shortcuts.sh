@@ -13,7 +13,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
     # Define 'whence' for bash, to get the value of an alias
     type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
-    for cmd in vim emacs gedit cat rm cp mv ln ls cd; do
+    for cmd in $scmb_wrapped_shell_commands; do
       case "$(type $cmd 2>&1)" in
       *'exec_scmb_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
 
