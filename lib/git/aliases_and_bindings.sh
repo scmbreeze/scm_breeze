@@ -208,8 +208,12 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         unset -f $cmd
         # Create wrapped alias for old function
         alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
-
-      *) # Otherwise, command is a regular script or binary that can be aliased
+      *'is a shell builtin'*) 
+        # Handle shell builtin commands
+        alias $cmd="exec_scmb_expand_args builtin $cmd";;
+      *) 
+        # Otherwise, command is a regular script or binary,
+        # and the full path can be found from 'which'
         alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
       esac
     done
