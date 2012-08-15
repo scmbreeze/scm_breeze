@@ -234,7 +234,7 @@ EOF
 
   # Set numbered file shortcut in variable
   local e=1
-  for file in $(ls -v --group-directories-first); do
+  for file in $(ls -v --group-directories-first --color=never); do
     export $git_env_char$e="$(readlink -f $file)"
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
