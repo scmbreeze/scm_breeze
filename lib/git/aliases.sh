@@ -28,6 +28,8 @@ function git(){
   case $1 in
     checkout|commit|reset|rm|blame|diff|add|log)
       exec_scmb_expand_args "$_git_cmd" "$@";;
+    branch)
+      _scmb_git_branch_shortcuts "${@:2}";;
     *)
       "$_git_cmd" "$@";;
   esac
