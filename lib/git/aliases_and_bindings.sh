@@ -178,16 +178,43 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
   esac
 fi
 
-# Bash command wrapping
-# (Works fine with RVM's cd() wrapper)
-#~ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
-  #~ for cmd in vim cat cd rm cp mv ln; do
-    #~ alias $cmd="exec_git_expand_args $cmd"
-  #~ done
-#~
-  #~ if [[ "$(type ls)" =~ "--color=auto" ]]; then
-    #~ alias ls="exec_git_expand_args ls --color=auto"
-  #~ else
-    #~ alias ls="exec_git_expand_args ls"
-  #~ fi
-#~ fi
+# Wrap common commands with numeric argument expansion.
+# Prepends everything with exec_git_expand_args,
+# even if commands are already aliases or functions
+if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
+  # Do it in a function so we don't bleed variables
+  function _git_wrap_commands() {
+    # Define 'whence' for bash, to get the value of an alias
+    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
+    local cmd=''
+    for cmd in vim cat rm cp mv ln ls; do
+      case "$(type $cmd 2>&1)" in
+      *'exec_git_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
+
+      *'is aliased to'*|*'is an alias for'*)
+        # Store original alias
+        local original_alias="$(whence $cmd)"
+        # Remove alias, so that which can return binary
+        unalias $cmd
+        # Expand original command into full path, to avoid infinite loops
+        local expanded_alias="$(echo $original_alias | sed "s%^$cmd%$(\which $cmd)%")"
+        # Command is already an alias
+        alias $cmd="exec_git_expand_args $expanded_alias";;
+
+      *'is a'*'function'*)
+        # Copy old function into new name
+        eval "$(declare -f $cmd | sed "s/^$cmd ()/__original_$cmd ()/")"
+        # Remove function
+        unset -f $cmd
+        # Create wrapped alias for old function
+        alias "$cmd"="exec_git_expand_args __original_$cmd";;
+
+      *) # Otherwise, command is a regular script or binary that can be aliased
+        alias $cmd="exec_git_expand_args $(\which $cmd)";;
+      esac
+    done
+    # Clean up
+    declare -f whence > /dev/null && unset -f whence
+  }
+  _git_wrap_commands
+fi
