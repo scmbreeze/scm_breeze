@@ -12,6 +12,12 @@
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
 function _scmb_git_branch_shortcuts {
+  # Fall back to normal git branch, if any unknown args given
+  if [[ -n "$@" ]] && [[ "$@" != "-a" ]]; then
+    $_git_cmd branch "$@"
+    return 1
+  fi
+
   # Use ruby to inject numbers into ls output
   ruby -e "$( cat <<EOF
     output = %x(script -q -c "$_git_cmd branch --color=always \"$@\"" /dev/null)
@@ -32,4 +38,6 @@ EOF
   done
 }
 
-alias "$git_branch_alias"="_scmb_git_branch_shortcuts"
+alias "$git_branch_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts"
+alias "$git_branch_all_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -a"
+alias "$git_branch_move_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -m"
