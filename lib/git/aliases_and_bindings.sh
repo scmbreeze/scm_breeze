@@ -187,7 +187,7 @@ if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
     # Define 'whence' for bash, to get the value of an alias
     type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
-    for cmd in vim cat rm cp mv ln ls; do
+    for cmd in vim emacs gedit cat rm cp mv ln ls; do
       case "$(type $cmd 2>&1)" in
       *'exec_git_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
 
