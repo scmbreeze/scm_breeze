@@ -181,7 +181,7 @@ fi
 # Wrap common commands with numeric argument expansion.
 # Prepends everything with exec_scmb_expand_args,
 # even if commands are already aliases or functions
-if [[ "$bash_command_wrapping_enabled" = "true" ]]; then
+if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_enabled" = "true" ]; then
   # Do it in a function so we don't bleed variables
   function _git_wrap_commands() {
     # Define 'whence' for bash, to get the value of an alias

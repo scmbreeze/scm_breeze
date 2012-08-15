@@ -87,7 +87,7 @@ git_commit_all_keys="\C-x "        # CTRL+x, SPACE
 git_add_and_commit_keys="\C-xc"    # CTRL+x, c
 
 
-# Bash Command Wrapping
+# Shell Command Wrapping
 # ----------------------------------------------
-# Expand numbered args for common bash commands
-bash_command_wrapping_enabled="true"
+# Expand numbered args for common shell commands
+shell_command_wrapping_enabled="true"
