@@ -41,3 +41,4 @@ EOF
 alias "$git_branch_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts"
 alias "$git_branch_all_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -a"
 alias "$git_branch_move_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -m"
+alias "$git_branch_delete_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -D"
