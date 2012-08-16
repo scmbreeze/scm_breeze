@@ -24,22 +24,22 @@ git_remove_history() {
   fi
   # Remove all paths passed as arguments from the history of the repo
   files=$@
-  git filter-branch --index-filter "git rm -rf --cached --ignore-unmatch $files" HEAD
+  $_git_cmd filter-branch --index-filter "$_git_cmd rm -rf --cached --ignore-unmatch $files" HEAD
   # Remove the temporary history git-filter-branch otherwise leaves behind for a long time
-  rm -rf .git/refs/original/ && git reflog expire --all &&  git gc --aggressive --prune
+  rm -rf .git/refs/original/ && $_git_cmd reflog expire --all &&  $_git_cmd gc --aggressive --prune
 }
 
 
 # Set default remote and merge for a git branch (pull and push)
 # Usage: git_set_default_remote(branch = master, remote = origin)
 git_set_default_remote() {
-  curr_branch=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  curr_branch=$($_git_cmd branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
   if [ -n "$1" ]; then branch="$1"; else branch="$curr_branch"; fi
   if [ -n "$2" ]; then remote="$2"; else remote="origin"; fi
   echo "branch.$branch.remote: $remote"
   echo "branch.$branch.merge: refs/heads/$branch"
-  git config branch.$branch.remote $remote
-  git config branch.$branch.merge refs/heads/$branch
+  $_git_cmd config branch.$branch.remote $remote
+  $_git_cmd config branch.$branch.merge refs/heads/$branch
 }
 
 # Add one git ignore rule, global by default
@@ -75,10 +75,10 @@ git_bisect_grep() {
     return
   fi
   if [ -n "$3" ]; then search_path="$3"; else search_path="."; fi
-  git bisect start
-  git bisect good $1
-  git bisect bad
-  git bisect run grep -qRE "$2" $search_path
+  $_git_cmd bisect start
+  $_git_cmd bisect good $1
+  $_git_cmd bisect bad
+  $_git_cmd bisect run grep -qRE "$2" $search_path
 }
 
 
@@ -91,11 +91,11 @@ git_submodule_rm() {
     echo "Usage: $0 path/to/submodule (no trailing slash)"
     return
   fi
-  git config -f .git/config --remove-section "submodule.$1"
-  git config -f .gitmodules --remove-section "submodule.$1"
-  git add .gitmodules
+  $_git_cmd config -f .git/config --remove-section "submodule.$1"
+  $_git_cmd config -f .gitmodules --remove-section "submodule.$1"
+  $_git_cmd add .gitmodules
   rm -rf "$1"
-  git rm --cached "$1"
+  $_git_cmd rm --cached "$1"
 }
 
 
@@ -106,9 +106,9 @@ git_swap_remotes() {
     echo "Usage: git_swap_remotes remote1 remote2"
     return
   fi
-  git remote rename "$1" "$1_temp"
-  git remote rename "$2" "$1"
-  git remote rename "$1_temp" "$2"
+  $_git_cmd remote rename "$1" "$1_temp"
+  $_git_cmd remote rename "$2" "$1"
+  $_git_cmd remote rename "$1_temp" "$2"
   echo "Swapped $1 <-> $2"
 }
 # (use git fetch tab completion)
@@ -123,7 +123,7 @@ git_branch_delete_all() {
     echo "Usage: git_branch_delete_all branch"
     return
   fi
-  git branch -D $1
-  git branch -D -r origin/$1
-  git push origin :$1
+  $_git_cmd branch -D $1
+  $_git_cmd branch -D -r origin/$1
+  $_git_cmd push origin :$1
 }
