@@ -10,7 +10,7 @@ enable_nullglob()  { if [ $shell = "zsh" ]; then setopt NULL_GLOB;   else shopt 
 disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt -u nullglob; fi; }
 
 # Alias wrapper that ignores errors if alias is not defined.
-_alias(){ alias "$@" 2> /dev/null; }
+alias_no_errors(){ alias "$@" 2> /dev/null; }
 
 
 # Updates SCM Breeze from GitHub.

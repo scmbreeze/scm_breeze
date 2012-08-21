@@ -35,7 +35,7 @@ function git(){
   esac
 }
 
-_alias $git_alias='git'
+alias_no_errors $git_alias='git'
 
 
 # --------------------------------------------------------------------
@@ -73,14 +73,14 @@ __git_alias () {
 
 # --------------------------------------------------------------------
 # SCM Breeze functions
-_alias $git_status_shortcuts_alias="git_status_shortcuts"
-_alias $git_add_shortcuts_alias="git_add_shortcuts"
-_alias $exec_scmb_expand_args_alias="exec_scmb_expand_args"
-_alias $git_show_files_alias="git_show_affected_files"
-_alias $git_commit_all_alias='git_commit_all'
+alias_no_errors $git_status_shortcuts_alias="git_status_shortcuts"
+alias_no_errors $git_add_shortcuts_alias="git_add_shortcuts"
+alias_no_errors $exec_scmb_expand_args_alias="exec_scmb_expand_args"
+alias_no_errors $git_show_files_alias="git_show_affected_files"
+alias_no_errors $git_commit_all_alias='git_commit_all'
 
 # Git Index alias
-_alias $git_index_alias="git_index"
+alias_no_errors $git_index_alias="git_index"
 
 # Only set up the following aliases if 'git_setup_aliases' is 'yes'
 if [ "$git_setup_aliases" = "yes" ]; then
