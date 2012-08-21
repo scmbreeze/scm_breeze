@@ -34,10 +34,10 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         unset -f $cmd
         # Create wrapped alias for old function
         alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
-      *'is a shell builtin'*) 
+      *'is a shell builtin'*)
         # Handle shell builtin commands
         alias $cmd="exec_scmb_expand_args builtin $cmd";;
-      *) 
+      *)
         # Otherwise, command is a regular script or binary,
         # and the full path can be found from 'which'
         alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
@@ -49,24 +49,39 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
   _git_wrap_commands
 fi
 
-# Function wrapper around 'll'
-# Adds numbered shortcuts to output of ls -l, just like 'git status'
-unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
-function ll {
-  # Use ruby to inject numbers into ls output
-  ruby -e "$( cat <<EOF
-    output = %x(ls -lv --group-directories-first --color)
-    output.lines.each_with_index do |line, i|
-      puts line.sub(/^(([^ ]* +){8})/, "\\\1\e[2;37m[\e[0m#{i}\e[2;37m]\e[0m" << (i < 10 ? "  " : " "))
-    end
+
+# BSD ls is different to Linux (GNU) ls
+_uname="$(uname)"
+if [ "$_uname" = "Linux" ]; then
+  # Linux ls commands
+  _ll_command="ls -l --group-directories-first --color"
+  _ll_sys_command="ls --color=never"
+elif [ "$_uname" = "Darwin" ]; then
+  # OS X ls commands
+  _ll_command="ls -l -G"
+  _ll_sys_command="ls"
+fi
+
+if [ -n "$_ll_command" ]; then
+  # Function wrapper around 'll'
+  # Adds numbered shortcuts to output of ls -l, just like 'git status'
+  unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
+  function ll {
+    # Use ruby to inject numbers into ls output
+    ruby -e "$( cat <<EOF
+  output = %x($_ll_command)
+  output.lines.each_with_index do |line, i|
+    puts line.sub(/^(([^ ]* +){8})/, "\\\1\e[2;37m[\e[0m#{i}\e[2;37m]\e[0m" << (i < 10 ? "  " : " "))
+  end
 EOF
 )"
 
-  # Set numbered file shortcut in variable
-  local e=1
-  for file in $(ls -v --group-directories-first --color=never); do
-    export $git_env_char$e="$(readlink -f $file)"
-    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
-    let e++
-  done
-}
+    # Set numbered file shortcut in variable
+    local e=1
+    for file in $($_ll_sys_command); do
+      export $git_env_char$e="$(readlink -f $file)"
+      if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+      let e++
+    done
+  }
+fi
