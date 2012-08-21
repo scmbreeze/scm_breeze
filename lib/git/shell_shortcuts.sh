@@ -70,10 +70,12 @@ if [ "$_uname" = "Linux" ]; then
   # Linux ls commands
   _ll_command="ls -l --group-directories-first --color"
   _ll_sys_command="ls --group-directories-first --color=never"
+  _abs_path_command="readlink -f"
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
   _ll_command="ls -l -G"
   _ll_sys_command="ls"
+  _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
 fi
 
 if [ -n "$_ll_command" ]; then
@@ -94,7 +96,7 @@ EOF
     local e=1
     for file in $($_ll_sys_command); do
       # Use perl abs_path instead of readlink -f, since it should work on both OS X and Linux
-      export $git_env_char$e="$(perl -e 'use Cwd "abs_path"; print abs_path(shift)' $file)"
+      export $git_env_char$e="$(eval $_abs_path_command $file)"
       if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
     done
