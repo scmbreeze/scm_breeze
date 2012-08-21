@@ -14,10 +14,19 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
     type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
     for cmd in $scmb_wrapped_shell_commands; do
+      if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
+
       case "$(type $cmd 2>&1)" in
-      *'exec_scmb_expand_args'*|*'not found'*);; # Don't do anything if command not found, or already aliased.
+
+      # Don't do anything if command already aliased, or not found.
+      *'exec_scmb_expand_args'*)
+        if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is already wrapped"; fi;;
+
+      *'not found'*)
+        if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd not found!"; fi;;
 
       *'is aliased to'*|*'is an alias for'*)
+        if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an alias"; fi
         # Store original alias
         local original_alias="$(whence $cmd)"
         # Remove alias, so that which can return binary
@@ -28,16 +37,21 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         alias $cmd="exec_scmb_expand_args $expanded_alias";;
 
       *'is a'*'function'*)
+        if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a function"; fi
         # Copy old function into new name
         eval "$(declare -f $cmd | sed "s/^$cmd ()/__original_$cmd ()/")"
         # Remove function
         unset -f $cmd
         # Create wrapped alias for old function
         alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
+
       *'is a shell builtin'*)
+        if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a shell builtin"; fi
         # Handle shell builtin commands
         alias $cmd="exec_scmb_expand_args builtin $cmd";;
+
       *)
+        if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an executable file"; fi
         # Otherwise, command is a regular script or binary,
         # and the full path can be found from 'which'
         alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
