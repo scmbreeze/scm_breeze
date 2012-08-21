@@ -13,7 +13,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
     # Define 'whence' for bash, to get the value of an alias
     type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
-    for cmd in $scmb_wrapped_shell_commands; do
+    for cmd in $(echo $scmb_wrapped_shell_commands); do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
 
       case "$(type $cmd 2>&1)" in
