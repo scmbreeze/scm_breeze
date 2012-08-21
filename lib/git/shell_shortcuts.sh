@@ -55,7 +55,7 @@ _uname="$(uname)"
 if [ "$_uname" = "Linux" ]; then
   # Linux ls commands
   _ll_command="ls -l --group-directories-first --color"
-  _ll_sys_command="ls --color=never"
+  _ll_sys_command="ls --group-directories-first --color=never"
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
   _ll_command="ls -l -G"
