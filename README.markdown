@@ -20,10 +20,17 @@ Whenever you view your SCM status, each modified path is stored in a numbered en
 You can configure the variable prefix, which is 'e' by default.
 
 
-### git_status_shortcuts():
+### Git Status Shortcuts:
 
 <div class="centered">
 <img src="http://madebynathan.com/images/posts/2011/10/status_with_shortcuts-resized-post.png" width="590" alt="Git Status With Shortcuts" />
+</div>
+<br/>
+
+### UPDATE: Now with 'ls' shortcuts:
+
+<div class="centered">
+<img src="http://i.imgur.com/72GE1.png" alt="Ls With Shortcuts" />
 </div>
 <br/>
 
@@ -314,15 +321,15 @@ In your `git.scmbrc` config file, just set the `git_setup_aliases` option to `no
 Your existing git aliases will then be used, and you will still be able to use the numeric shortcuts feature.
 SCM Breeze creates a function to wrap the 'git' command, which expands numeric arguments, and uses `hub` if available.
 
-A few aliases will still be defined for the central SCM Breeze features, such as `gs` for the extended `git status`, 
+A few aliases will still be defined for the central SCM Breeze features, such as `gs` for the extended `git status`,
 and `ga` for the `git add` function.
 
-If you already have an alias like `alias gco="git checkout"`, 
+If you already have an alias like `alias gco="git checkout"`,
 you can now type `gco 1` to checkout the first file in the output of SCM Breeze's `git status`.
 
 # Notes about Tab Completion for Aliases
 
-### Bash 
+### Bash
 
 If you use your own aliases, SCM Breeze will **not** set up bash tab completion for your aliases.
 You will need to set that up yourself.
