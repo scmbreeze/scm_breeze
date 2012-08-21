@@ -1,8 +1,6 @@
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 ### Streamline your SCM workflow.
 
-**Copyright 2011 Nathan Broadbent (http://madebynathan.com). All Rights Reserved.**
-
 -------------------------------------------------------
 
 **SCM Breeze** is a set of shell scripts (for `bash` and `zsh`) that enhance your interaction with tools
