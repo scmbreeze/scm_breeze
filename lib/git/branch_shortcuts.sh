@@ -8,6 +8,8 @@
 # Numbered shortcuts for git branch
 # ------------------------------------------------------------------------------
 
+_uname="$(uname)"
+
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
@@ -18,9 +20,20 @@ function _scmb_git_branch_shortcuts {
     return 1
   fi
 
+  local git_branch_command="$_git_cmd branch --color=always \\\"$@\\\""
+
+  if [ "$_uname" = "Linux" ]; then
+    # Linux
+    local script_git_branch_command="script -q -c \"$git_branch_command\" /dev/null"
+  elif [ "$_uname" = "Darwin" ]; then
+    # OS X
+    local script_git_branch_command="script -q /dev/null \"$git_branch_command\""
+  fi
+
+
   # Use ruby to inject numbers into ls output
   ruby -e "$( cat <<EOF
-    output = %x(script -q -c "$_git_cmd branch --color=always \"$@\"" /dev/null)
+    output = %x($script_git_branch_command)
     line_count = output.lines.to_a.size
     output.lines.each_with_index do |line, i|
       spaces = (line_count > 9 && i < 9 ? "  " : " ")
