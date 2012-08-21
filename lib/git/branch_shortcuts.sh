@@ -8,8 +8,6 @@
 # Numbered shortcuts for git branch
 # ------------------------------------------------------------------------------
 
-_uname="$(uname)"
-
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
