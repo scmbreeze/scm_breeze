@@ -94,7 +94,7 @@ EOF
 
     # Set numbered file shortcut in variable
     local e=1
-    for file in $($_ll_sys_command); do
+    for file in $(eval $_ll_sys_command); do
       # Use perl abs_path instead of readlink -f, since it should work on both OS X and Linux
       export $git_env_char$e="$(eval $_abs_path_command $file)"
       if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
