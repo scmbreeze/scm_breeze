@@ -42,3 +42,11 @@ alias "$git_branch_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts"
 alias "$git_branch_all_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -a"
 alias "$git_branch_move_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -m"
 alias "$git_branch_delete_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -D"
+
+# Define completions for git branch shortcuts
+if [ "$shell" = "bash" ]; then
+  for alias_str in $git_branch_alias $git_branch_all_alias $git_branch_move_alias $git_branch_delete_alias; do
+    __define_git_completion $alias_str branch
+    complete -o default -o nospace -F _git_"$alias_str"_shortcut $alias_str
+  done
+fi
