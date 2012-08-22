@@ -28,7 +28,7 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
       if ! set -o | grep -q '^vi .*on$'; then
         if [[ $shell == "zsh" ]]; then
           _bind "$git_commit_all_keys" " git_commit_all""\n"
-          _bind "$git_add_and_commit_keys" " \e[1~ git_add_and_commit""\n"
+          _bind "$git_add_and_commit_keys" " \e[1~ git_add_and_commit ""\n"
         else
           _bind "$git_commit_all_keys" "\" git_commit_all\n\""
           _bind "$git_add_and_commit_keys" "\"\e[1~ git_add_and_commit \n\""
