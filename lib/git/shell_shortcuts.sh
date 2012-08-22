@@ -31,9 +31,18 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         local original_alias="$(whence $cmd)"
         # Remove alias, so that which can return binary
         unalias $cmd
+
+        # Detect original $cmd type, and escape
+        case "$(type $cmd 2>&1)" in
+          # Escape shell builtins with 'builtin'
+          *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
+          # Get full path for files with 'which'
+          *) local escaped_cmd="$(\which $cmd)";;
+        esac
+
         # Expand original command into full path, to avoid infinite loops
-        local expanded_alias="$(echo $original_alias | sed "s%^$cmd%$(\which $cmd)%")"
-        # Command is already an alias
+        local expanded_alias="$(echo $original_alias | sed "s%\(^\| \)$cmd\($\| \)%\\1$escaped_cmd\\2%")"
+        # Wrap previous alias with escaped command
         alias $cmd="exec_scmb_expand_args $expanded_alias";;
 
       *'is a'*'function'*)
