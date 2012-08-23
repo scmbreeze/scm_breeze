@@ -84,6 +84,7 @@ elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
   _ll_command="ls -l -G"
   _ll_sys_command="ls"
+  # Use perl abs_path, since readlink -f isn't available on OS X
   _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
 fi
 
@@ -103,11 +104,13 @@ EOF
 
     # Set numbered file shortcut in variable
     local e=1
+    OLDIFS="$IFS"
+    IFS=$(echo -en "\n\b")
     for file in $(eval $_ll_sys_command); do
-      # Use perl abs_path instead of readlink -f, since it should work on both OS X and Linux
-      export $git_env_char$e="$(eval $_abs_path_command $file)"
+      export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
       if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
     done
+    IFS="$OLDIFS"
   }
 fi
