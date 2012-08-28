@@ -240,7 +240,10 @@ test_git_commit_prompt() {
   touch a b c d
   git add . > /dev/null
 
-  # Lightly test the git commit prompt, by piping a commit message
+  # Zsh 'vared' doesn't handle input via pipe, so replace with function that reads into commit_msg variable.
+  function vared(){ read commit_msg; }
+
+  # Test the git commit prompt, by piping a commit message
   # instead of user input.
   echo "$commit_msg" | git_commit_prompt > /dev/null
 
@@ -260,7 +263,7 @@ test_adding_files_with_spaces() {
   test_file="file with spaces.txt"
 
   touch "$test_file"
-  e1="$testRepo/$test_file" 
+  e1="$testRepo/$test_file"
   git_add_shortcuts 1 > /dev/null
 
   # Test that file is added by looking at git status
