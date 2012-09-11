@@ -95,4 +95,4 @@ git_add_and_commit_keys="\C-xc"    # CTRL+x, c
 # Expand numbered args for common shell commands
 shell_command_wrapping_enabled="true"
 # Here you can tweak the list of wrapped commands.
-scmb_wrapped_shell_commands="vim emacs gedit cat rm cp mv ln ls cd"
+scmb_wrapped_shell_commands="vim emacs gedit cat rm cp mv ln cd"
