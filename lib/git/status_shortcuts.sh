@@ -17,6 +17,11 @@
 # 1 || staged,  2 || unmerged,  3 || unstaged,  4 || untracked
 # --------------------------------------------------------------------
 git_status_shortcuts() {
+  # Fail if not a git repo
+  if ! find_in_cwd_or_parent ".git" > /dev/null; then
+    echo -e "\e[31mNot a git repository (or any of the parent directories)\e[0m"
+    return 1
+  fi
   zsh_compat # Ensure shwordsplit is on for zsh
   git_clear_vars
   # Run ruby script, store output
@@ -120,7 +125,7 @@ scmb_expand_args() {
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       eval printf '%s' "\"\$$git_env_char$arg\""
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
-      
+
       for i in $(eval echo {${arg/-/..}}); do
         if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
         eval printf '%s' "\"\$$git_env_char$i\""
@@ -148,7 +153,7 @@ git_clear_vars() {
 
 
 # Shortcuts for resolving merge conflicts.
-_git_resolve_merge_conflict() { 
+_git_resolve_merge_conflict() {
   if [ -n "$2" ]; then
     # Expand args and process resulting set of files.
     IFS=$'\t'
