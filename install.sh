@@ -19,7 +19,7 @@ for rc in bashrc zshrc; do
 done
 
 # Load SCM Breeze update scripts
-. "$scmbDir/lib/scm_breeze.sh"
+source "$scmbDir/lib/scm_breeze.sh"
 # Create '~/.*.scmbrc' files from example files
 _create_or_patch_scmbrc
 

@@ -13,11 +13,11 @@ export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../../.."
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
 # Load test helpers
-. "$scmbDir/test/support/test_helper"
+source "$scmbDir/test/support/test_helper"
 
 # Load functions to test
-. "$scmbDir/lib/scm_breeze.sh"
-. "$scmbDir/lib/git/repo_index.sh"
+source "$scmbDir/lib/scm_breeze.sh"
+source "$scmbDir/lib/git/repo_index.sh"
 
 
 # Setup and tear down
@@ -190,5 +190,5 @@ test_changing_to_top_level_directory() {
 
 # load and run shUnit2
 # Call this function to run tests
-. "$scmbDir/test/support/shunit2"
+source "$scmbDir/test/support/shunit2"
 

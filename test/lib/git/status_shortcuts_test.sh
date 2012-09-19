@@ -13,11 +13,11 @@ export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../../.."
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
 # Load test helpers
-. "$scmbDir/test/support/test_helper"
+source "$scmbDir/test/support/test_helper"
 
 # Load functions to test
-. "$scmbDir/lib/scm_breeze.sh"
-. "$scmbDir/lib/git/status_shortcuts.sh"
+source "$scmbDir/lib/scm_breeze.sh"
+source "$scmbDir/lib/git/status_shortcuts.sh"
 
 
 # Setup and tear down
@@ -274,5 +274,5 @@ test_adding_files_with_spaces() {
 
 
 # load and run shUnit2
-. "$scmbDir/test/support/shunit2"
+source "$scmbDir/test/support/shunit2"
 

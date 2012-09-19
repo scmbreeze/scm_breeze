@@ -20,7 +20,7 @@ else
 fi
 
 # Load test helpers
-. "$scmbDir/test/support/test_helper"
+source "$scmbDir/test/support/test_helper"
 
 # Setup
 #-----------------------------------------------------------------------------
@@ -69,4 +69,4 @@ test_shell_command_wrapping() {
 
 
 # load and run shUnit2
-. "$scmbDir/test/support/shunit2"
+source "$scmbDir/test/support/shunit2"

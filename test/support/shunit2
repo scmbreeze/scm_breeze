@@ -1015,7 +1015,7 @@ noexec 2>/dev/null || _shunit_fatal \
 
 # we must manually source the tests in standalone mode
 if [ "${__shunit_mode}" = "${__SHUNIT_MODE_STANDALONE}" ]; then
-  . "`_shunit_prepForSourcing \"${__shunit_script}\"`"
+  source "`_shunit_prepForSourcing \"${__shunit_script}\"`"
 fi
 
 # execute the oneTimeSetUp function (if it exists)
