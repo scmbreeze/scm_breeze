@@ -17,11 +17,7 @@
 # 1 || staged,  2 || unmerged,  3 || unstaged,  4 || untracked
 # --------------------------------------------------------------------
 git_status_shortcuts() {
-  # Fail if not a git repo
-  if ! find_in_cwd_or_parent ".git" > /dev/null; then
-    echo -e "\e[31mNot a git repository (or any of the parent directories)\e[0m"
-    return 1
-  fi
+  fail_if_not_git_repo || return 1
   zsh_compat # Ensure shwordsplit is on for zsh
   git_clear_vars
   # Run ruby script, store output
@@ -64,6 +60,7 @@ git_status_shortcuts() {
 # - 'auto git rm' behaviour can be turned off
 # -------------------------------------------------------------------------------
 git_add_shortcuts() {
+  fail_if_not_git_repo || return 1
   if [ -z "$1" ]; then
     echo "Usage: ga <file>  => git add <file>"
     echo "       ga 1       => git add \$e1"
@@ -102,6 +99,7 @@ git_silent_add_shortcuts() {
 # Prints a list of all files affected by a given SHA1,
 # and exports numbered environment variables for each file.
 git_show_affected_files(){
+  fail_if_not_git_repo || return 1
   f=0  # File count
   # Show colored revision and commit message
   echo -n "# "; git show --oneline --name-only $@ | head -n1; echo "# "
@@ -205,6 +203,7 @@ git_commit_prompt() {
 
 # Prompt for commit message, then commit all modified and untracked files.
 git_commit_all() {
+  fail_if_not_git_repo || return 1
   changes=$(git status --porcelain | wc -l)
   if [ "$changes" -gt 0 ]; then
     echo -e "\e[0;33mCommitting all files (\e[0;31m$changes\e[0;33m)\e[0m"
@@ -216,6 +215,7 @@ git_commit_all() {
 
 # Add paths or expanded args if any given, then commit all staged changes.
 git_add_and_commit() {
+  fail_if_not_git_repo || return 1
   git_silent_add_shortcuts "$@"
   changes=$(git diff --cached --numstat | wc -l)
   if [ "$changes" -gt 0 ]; then
