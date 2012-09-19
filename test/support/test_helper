@@ -1,5 +1,8 @@
 orig_cwd="$PWD"
 
+# Load SCM Breeze helpers
+source "$scmbDir/lib/git/helpers.sh"
+
 #
 # Test helpers
 #-----------------------------------------------------------------------------
