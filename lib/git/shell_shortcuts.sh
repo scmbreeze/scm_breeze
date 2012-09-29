@@ -95,7 +95,7 @@ if [ -n "$_ll_command" ]; then
   function ll {
     # Use ruby to inject numbers into ls output
     ruby -e "$( cat <<EOF
-  output = %x($_ll_command)
+  output = %x($_ll_command "$@")
   output.lines.each_with_index do |line, i|
     puts line.sub(/^(([^ ]* +){8})/, "\\\1\e[2;37m[\e[0m#{i}\e[2;37m]\e[0m" << (i < 10 ? "  " : " "))
   end
