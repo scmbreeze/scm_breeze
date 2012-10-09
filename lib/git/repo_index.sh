@@ -165,12 +165,12 @@ function _git_index_count() {
   echo $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | \grep . | wc -l)
 }
 
-# Returns the current git branch (returns nothing if not a git repository)
+# Returns the current /usr/local/bin/git branch (returns nothing if not a git repository)
 function is_git_dirty {
-    [[ $(\git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
+    [[ $(/usr/local/bin/git status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
  }
 function parse_git_branch {
-    \git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1/"
+    /usr/local/bin//usr/local/bin/git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1/"
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
@@ -204,7 +204,7 @@ _git_index_update_all_branches() {
   local remotes merges branches
   # Get branch configuration from .git/config
   IFS=$'\n'
-  for branch in $(git branch 2> /dev/null | sed -e 's/.\{2\}\(.*\)/\1/'); do
+  for branch in $(/usr/local/bin/git branch 2> /dev/null | sed -e 's/.\{2\}\(.*\)/\1/'); do
     # Skip '(no branch)'
     if [[ "$branch" = "(no branch)" ]]; then continue; fi
 
