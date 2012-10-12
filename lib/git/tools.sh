@@ -44,9 +44,13 @@ git_set_default_remote() {
 
 # Add one git ignore rule, global by default
 # Usage: git_ignore [rule] [ignore_file=.gitignore]
-git_ignore() {
+__git_ignore() {
   if [ -n "$2" ]; then local f="$2"; else local f=".gitignore"; fi
   if [ -n "$1" ] && ! ([ -e $f ] && grep -q "$1" $f); then echo "$1" >> $f; fi
+}
+# Always expand args
+git_ignore() {
+  exec_scmb_expand_args __git_ignore $@
 }
 
 # Add one git ignore rule, just for your machine
@@ -54,10 +58,15 @@ git_ignore() {
 git_exclude() {
   git_ignore "$1" ".git/info/exclude"
 }
+
 # Exclude basename of file
-git_exclude_basename() {
-  git_exclude $(basename "$1")
+__git_exclude_basename() {
+  __git_ignore $(basename "$1") ".git/info/exclude"
 }
+git_exclude_basename() {
+  exec_scmb_expand_args __git_exclude_basename $@
+}
+
 
 
 # Use git bisect to find where text was removed from a file.
