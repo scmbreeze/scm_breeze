@@ -41,7 +41,7 @@ _create_or_patch_scmbrc() {
       # Create diff of example file, substituting example file for user's config.
       git diff $1 "$prefix""scmbrc.example" | sed "s/$prefix""scmbrc.example/.$prefix""scmbrc/g" > $patchfile
       if [ -s $patchfile ]; then  # If patchfile is not empty
-        cd $HOME
+        cd "$HOME"
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
         if ! patch -f "$HOME/.$prefix""scmbrc" $patchfile; then
           printf "== \e[0;31mUpdates could not be applied to '\e[1m~/.$prefix""scmbrc\e[0;31m'.\e[0m\n"
