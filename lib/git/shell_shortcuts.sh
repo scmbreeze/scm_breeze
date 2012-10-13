@@ -80,6 +80,13 @@ if [ "$_uname" = "Linux" ]; then
   _ll_command="ls -lhv --group-directories-first --color"
   _ll_sys_command="ls -v --group-directories-first --color=never"
   _abs_path_command="readlink -f"
+
+  # Replace user/group with user symbol, if defined at ~/.user_sym
+  # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
+  # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
+  if [ -e $HOME/.user_sym ]; then
+    _ll_command+=" | sed \"s/$USER/\$(/bin/cat $HOME/.user_sym)/g\""
+  fi
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
   _ll_command="ls -l -G"
