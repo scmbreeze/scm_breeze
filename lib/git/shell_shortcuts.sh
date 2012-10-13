@@ -77,8 +77,8 @@ fi
 _uname="$(uname)"
 if [ "$_uname" = "Linux" ]; then
   # Linux ls commands
-  _ll_command="ls -l --group-directories-first --color"
-  _ll_sys_command="ls --group-directories-first --color=never"
+  _ll_command="ls -lhv --group-directories-first --color"
+  _ll_sys_command="ls -v --group-directories-first --color=never"
   _abs_path_command="readlink -f"
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
