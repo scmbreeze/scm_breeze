@@ -263,10 +263,7 @@ for each of the projects.
 
 
 
-## Anything else?
-
-I mentioned there was a 'community driven collection of useful SCM functions'.
-Well... The 'community' hasn't quite started yet.
+## Contributing tools / scripts
 
 If you have any awesome SCM scripts lurking in your `.bashrc` or `.zshrc`,
 please feel free to send me a pull request.
