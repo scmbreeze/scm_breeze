@@ -100,9 +100,17 @@ if [ -n "$_ll_command" ]; then
   # Adds numbered shortcuts to output of ls -l, just like 'git status'
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ll {
+    local ll_output="$(eval $_ll_command $@)"
+
+    if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
+      echo -e "\e[33mToo many files to create shortcuts. Running plain ll command...\e[0m"
+      echo "$ll_output"
+      return 1
+    fi
+
     # Use ruby to inject numbers into ls output
     ruby -e "$( cat <<EOF
-  output = %x($_ll_command $@)
+  output = "$ll_output"
   output.lines.each_with_index do |line, i|
     puts line.sub(/^(([^ ]* +){8})/, "\\\1\e[2;37m[\e[0m#{i}\e[2;37m]\e[0m" << (i < 10 ? "  " : " "))
   end
