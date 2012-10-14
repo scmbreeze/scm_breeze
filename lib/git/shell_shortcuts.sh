@@ -85,7 +85,11 @@ if [ "$_uname" = "Linux" ]; then
   # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
   # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
   if [ -e $HOME/.user_sym ]; then
-    _ll_command+=" | sed \"s/$USER/\$(/bin/cat $HOME/.user_sym)/g\""
+    # Little bit of ruby golf to rejustify the user/group/size columns after replacement
+    function rejustify_ls_columns(){
+      ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
+    }
+    _ll_command+=" | sed 1d | sed \"s/$USER/\$(/bin/cat $HOME/.user_sym)/g\" | _rejustify_ls_columns"
   fi
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
