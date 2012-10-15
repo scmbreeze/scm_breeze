@@ -143,7 +143,7 @@ if [ $shell = "bash" ]; then
 
   # Git repo management & aliases.
   # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
-  complete -o nospace -o filenames -F _git_index_tab_completion git_index
-  complete -o nospace -o filenames -F _git_index_tab_completion $git_index_alias
+  complete -o nospace -F _git_index_tab_completion git_index
+  complete -o nospace -F _git_index_tab_completion $git_index_alias
 fi
 

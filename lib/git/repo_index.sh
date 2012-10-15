@@ -81,8 +81,9 @@ function git_index() {
     # If $1 starts with '/', change to top-level directory within $GIT_REPO_DIR
     elif ([ $shell = "bash" ] && [ "${1:0:1}" = "/" ]) || \
          ([ $shell = "zsh" ]  && [ "${1[1]}"  = "/" ]); then
-      if [ -d "$GIT_REPO_DIR$1" ]; then "cd" "$GIT_REPO_DIR$1"; fi
-
+      if [ -d "$GIT_REPO_DIR$1" ]; then
+        builtin cd "$GIT_REPO_DIR$1"
+      fi
     else
       _check_git_index
       # Figure out which directory we need to change to.
@@ -107,7 +108,7 @@ function git_index() {
         if [[ "$base_path" == "~"* ]]; then
           base_path=$(eval echo ${base_path%%/*})/${base_path#*/}
         fi
-        "cd" "$base_path"
+        builtin cd "$base_path"
         # Run git callback (either update or show changes), if we are in the root directory
         if [ -z "${sub_path%/}" ]; then _git_index_status_if_dirty; fi
       else
