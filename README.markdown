@@ -3,14 +3,13 @@
 
 **SCM Breeze** is a set of shell scripts (for `bash` and `zsh`) that enhance your interaction with tools
 such as git. It integrates with your shell to give you numbered file shortcuts,
-a repository index with tab completion, and a community driven collection of useful SCM functions.
+a repository index with tab completion, and many other useful features.
 
-Disclaimer: **git** is currently the only supported SCM.
-I've kept the project's name open because it won't be difficult to port it for other SCMs.
+Note: **git** is currently the only supported SCM. I've kept the project's name generic, but other SCMs aren't supported yet.
 
 <hr/>
 
-### Demo video
+## Demo video
 
 <center><a href="http://www.youtube.com/watch?v=iKdp6uBfrvc" target="_blank"><img src="http://i.imgur.com/l7aGG.png"></a></center>
 
