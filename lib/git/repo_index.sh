@@ -71,16 +71,11 @@ function git_index() {
         echo $(basename $repo) : $repo
       done | sort | column -t -s ':'
     elif [ "$1" = "--count-by-host" ]; then
-
-      echo "=== Producing a report of the number of repos per host..."
-
-      sleep 1
-      echo
-      echo "      6 git@bitbucket.org"
-      echo "      1 git://git.gnome.org"
-      echo "     13 git://github.com"
-      echo "     68 git@github.com"
-      echo "     11 https://github.com"
+      echo -e "=== Producing a report of the number of repos per host...\n"
+      _git_index_batch_cmd git remote -v | \grep "origin.*(fetch)" |
+      sed -e "s/origin\s*//" -e "s/(fetch)//" |
+      sed -e "s/\(\([^/]*\/\/\)\?\([^@]*@\)\?\([^:/]*\)\).*/\1/" |
+      sort | uniq -c
       echo
 
     # If $1 starts with '/', change to top-level directory within $GIT_REPO_DIR
