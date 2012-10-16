@@ -82,7 +82,7 @@ if [ "$_uname" = "Linux" ]; then
   _abs_path_command="readlink -f"
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
-  _ll_command="ls -l -G"
+  _ll_command="CLICOLOR_FORCE=1 ls -l -G"
   _ll_sys_command="ls"
   # Use perl abs_path, since readlink -f isn't available on OS X
   _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
