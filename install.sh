@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #locate the dir where this script is stored
 export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )"
 
