@@ -1,8 +1,6 @@
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 ### Streamline your SCM workflow.
 
--------------------------------------------------------
-
 **SCM Breeze** is a set of shell scripts (for `bash` and `zsh`) that enhance your interaction with tools
 such as git. It integrates with your shell to give you numbered file shortcuts,
 a repository index with tab completion, and a community driven collection of useful SCM functions.
@@ -10,6 +8,13 @@ a repository index with tab completion, and a community driven collection of use
 Disclaimer: **git** is currently the only supported SCM.
 I've kept the project's name open because it won't be difficult to port it for other SCMs.
 
+<hr/>
+
+### Demo video
+
+<center><a href="http://www.youtube.com/watch?v=iKdp6uBfrvc" target="_blank"><img src="http://i.imgur.com/l7aGG.png"></a></center>
+
+<hr/>
 
 ## File Shortcuts
 
