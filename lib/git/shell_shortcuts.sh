@@ -95,6 +95,13 @@ if [ -n "$_ll_command" ]; then
   function ll {
     local ll_output="$($_ll_command "$@")"
 
+    # Parse path from args
+    OLDIFS="$IFS"; IFS=$'\n'
+    for arg in $@; do
+      if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
+    done
+    IFS="$OLDIFS"
+
     # Replace user/group with user symbol, if defined at ~/.user_sym
     # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
     # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
@@ -130,9 +137,10 @@ EOF
     # Set numbered file shortcut in variable
     local e=1
     local ll_files="$($_ll_sys_command "$@")"
-    OLDIFS="$IFS"
-    IFS=$'\n'
+
+    OLDIFS="$IFS"; IFS=$'\n'
     for file in $ll_files; do
+      if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
       export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
       if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
