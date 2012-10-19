@@ -92,7 +92,7 @@ if [ -n "$_ll_command" ]; then
   # Function wrapper around 'll'
   # Adds numbered shortcuts to output of ls -l, just like 'git status'
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
-  function ll {
+  function ls_with_file_shortcuts {
     local ll_output="$($_ll_command "$@")"
 
     # Parse path from args
@@ -149,5 +149,6 @@ EOF
   }
 fi
 
-# Alias to list all files
+# Setup aliases
+alias ll="exec_scmb_expand_args ls_with_file_shortcuts"
 alias la="ll -A"
