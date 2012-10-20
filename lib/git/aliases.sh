@@ -112,6 +112,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_clean_force_alias" "git" "clean" "-fd"
   __git_alias "$git_remote_alias" "git" 'remote' '-v'
   __git_alias "$git_rebase_alias" "git" 'rebase'
+  __git_alias "$git_rebase_interactive_alias" "git" 'rebase' "-i"
   __git_alias "$git_rebase_alias_continue" "git" 'rebase' "--continue"
   __git_alias "$git_rebase_alias_abort" "git" 'rebase' "--abort"
   __git_alias "$git_merge_alias" "git" 'merge'
