@@ -108,7 +108,7 @@ function git_index() {
         if [[ "$base_path" == "~"* ]]; then
           base_path=$(eval echo ${base_path%%/*})/${base_path#*/}
         fi
-        builtin cd "$base_path"
+        cd "$base_path"
         # Run git callback (either update or show changes), if we are in the root directory
         if [ -z "${sub_path%/}" ]; then _git_index_status_if_dirty; fi
       else
