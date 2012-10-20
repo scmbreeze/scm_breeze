@@ -82,7 +82,7 @@ if [ "$_uname" = "Linux" ]; then
   _abs_path_command="readlink -f"
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
-  _ll_command="ls -l -G"
+  _ll_command="CLICOLOR_FORCE=1 ls -l -G"
   _ll_sys_command="ls"
   # Use perl abs_path, since readlink -f isn't available on OS X
   _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
@@ -93,9 +93,10 @@ if [ -n "$_ll_command" ]; then
   # Adds numbered shortcuts to output of ls -l, just like 'git status'
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
-    local OLDCLICOLOR_FORCE="$CLICOLOR_FORCE"
-    export CLICOLOR_FORCE=1
-    local ll_output="$($_ll_command "$@")"
+    # Wrap each arg in quotes
+    local wrapped_args
+    for arg in "$@"; do wrapped_args+=" \"$arg\""; done
+    local ll_output="$(eval $_ll_command $wrapped_args)"
 
     # Parse path from args
     OLDIFS="$IFS"; IFS=$'\n'
@@ -138,9 +139,10 @@ EOF
 
     # Set numbered file shortcut in variable
     local e=1
-    local ll_files="$($_ll_sys_command "$@")"
+    local ll_files="$(eval $_ll_sys_command $wrapped_args)"
 
     OLDIFS="$IFS"; IFS=$'\n'
+    if [[ $shell == "zsh" ]]; then setopt shwordsplit; fi
     for file in $ll_files; do
       if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
       export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
@@ -148,7 +150,7 @@ EOF
       let e++
     done
     IFS="$OLDIFS"
-    export CLICOLOR_FORCE="$OLDCLICOLOR_FORCE"
+    if [[ $shell == "zsh" ]]; then unsetopt shwordsplit; fi
   }
 fi
 
