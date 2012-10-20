@@ -82,7 +82,7 @@ if [ "$_uname" = "Linux" ]; then
   _abs_path_command="readlink -f"
 elif [ "$_uname" = "Darwin" ]; then
   # OS X ls commands
-  _ll_command="CLICOLOR_FORCE=1 ls -l -G"
+  _ll_command="ls -l -G"
   _ll_sys_command="ls"
   # Use perl abs_path, since readlink -f isn't available on OS X
   _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
@@ -93,6 +93,8 @@ if [ -n "$_ll_command" ]; then
   # Adds numbered shortcuts to output of ls -l, just like 'git status'
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
+    local OLDCLICOLOR_FORCE="$CLICOLOR_FORCE"
+    export CLICOLOR_FORCE=1
     local ll_output="$($_ll_command "$@")"
 
     # Parse path from args
@@ -146,6 +148,7 @@ EOF
       let e++
     done
     IFS="$OLDIFS"
+    export CLICOLOR_FORCE="$OLDCLICOLOR_FORCE"
   }
 fi
 
