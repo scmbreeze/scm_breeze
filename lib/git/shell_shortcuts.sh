@@ -106,6 +106,7 @@ if [ -n "$_ll_command" ]; then
     fi
 
     # Parse path from args
+    zsh_compat # Ensure sh_word_split is on
     OLDIFS="$IFS"; IFS=$'\n'
     for arg in $@; do
       if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
@@ -155,6 +156,7 @@ EOF
 	ll_files="$(ls "$@")"
     fi
 
+    zsh_compat # Ensure sh_word_split is on
     OLDIFS="$IFS"; IFS=$'\n'
     for file in $ll_files; do
       if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
