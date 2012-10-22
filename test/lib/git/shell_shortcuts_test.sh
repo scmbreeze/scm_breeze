@@ -70,6 +70,7 @@ test_ls_with_file_shortcuts() {
   cd $TEST_DIR
   touch 'test file' 'test_file'
   mkdir -p "a [b]" 'a "b"' "a 'b'"
+  touch "a \"b\"/c"
 
   # Run command in shell, load output from temp file into variable
   # (This is needed so that env variables are exported in the current shell)
@@ -90,6 +91,10 @@ test_ls_with_file_shortcuts() {
   assertEquals "$TEST_DIR/a [b]" "$e3"
   assertEquals "$TEST_DIR/test file" "$e4"
   assertEquals "$TEST_DIR/test_file" "$e5"
+
+  # Test ls with subdirectory
+  ls_output=$(ls_with_file_shortcuts "a \"b\"" | strip_colors)
+  assertIncludes "$ls_output" '[1]  c' F
 }
 
 # load and run shUnit2
