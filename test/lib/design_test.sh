@@ -13,7 +13,7 @@ export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../.."
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
 # Load test helpers
-source "$scmbDir/test/support/test_helper"
+source "$scmbDir/test/support/test_helper.sh"
 
 # Load functions to test
 source "$scmbDir/lib/scm_breeze.sh"

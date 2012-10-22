@@ -13,7 +13,7 @@ export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../../.."
 if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
 
 # Load test helpers
-source "$scmbDir/test/support/test_helper"
+source "$scmbDir/test/support/test_helper.sh"
 
 # Load functions to test
 source "$scmbDir/lib/scm_breeze.sh"
@@ -95,6 +95,7 @@ test_git_status_shortcuts() {
   assertNotIncludes "$git_status3" "Untracked files"
 
   # Run command in shell, load output from temp file into variable
+  # (This is needed so that env variables are exported in the current shell)
   temp_file=$(mktemp -t scm_breeze.XXXXXXXXXX)
   git_status_shortcuts > $temp_file
   git_status=$(<$temp_file strip_colors)

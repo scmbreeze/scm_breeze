@@ -91,14 +91,20 @@ fi
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
 function ls_with_file_shortcuts {
-  if [ -z $_ls_bsd ]; then
-  	local ll_output="$(ls -lhv --group-directories-first --color "$@")"
+  local ll_output
+  if [ "$_ls_bsd" != "BSD" ]; then
+  	ll_output="$(\ls -lhv --group-directories-first --color "$@")"
   else
-    local ll_output="$(CLICOLOR_FORCE=1 ls -l -G "$@")"
+    ll_output="$(CLICOLOR_FORCE=1 \ls -l -G "$@")"
+  fi
+
+  if [[ $shell == "zsh" ]]; then
+    # Ensure sh_word_split is on
+    if setopt | grep -q shwordsplit; then SHWORDSPLIT_ON=true; fi
+    setopt shwordsplit
   fi
 
   # Parse path from args
-  zsh_compat # Ensure sh_word_split is on
   OLDIFS="$IFS"; IFS=$'\n'
   for arg in $@; do
     if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
@@ -115,7 +121,8 @@ function ls_with_file_shortcuts {
                u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};\
                puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
     }
-    ll_output=$(echo "$ll_output" | sed "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+
+    ll_output=$(echo "$ll_output" | \sed "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
   fi
 
   if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
@@ -125,7 +132,7 @@ function ls_with_file_shortcuts {
   fi
 
   # Use ruby to inject numbers into ls output
-  echo "$ll_output" | ruby -e "$( cat <<EOF
+  echo "$ll_output" | ruby -e "$( \cat <<EOF
 output = STDIN.read
 e = 1
 re = /^(([^ ]* +){8})/
@@ -143,17 +150,14 @@ EOF
   local file=''
 
   if [ -z $_ls_bsd ]; then
-    ll_files="$(ls -v --group-directories-first --color=never "$@")"
+    ll_files="$(\ls -v --group-directories-first --color=never "$@")"
   else
-    ll_files="$(ls "$@")"
+    ll_files="$(\ls "$@")"
   fi
+  # Escape single and double quotes
+  ll_files=$(echo "$ll_files" | \sed -e 's/"/\\\\\\"/g' -e "s/'"'/\\\\'"'/g")
 
   OLDIFS="$IFS"; IFS=$'\n'
-  if [[ $shell == "zsh" ]]; then
-    # Ensure sh_word_split is on
-    zsh_compat
-    setopt shwordsplit
-  fi
   for file in $ll_files; do
     if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
     export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
@@ -161,7 +165,9 @@ EOF
     let e++
   done
   IFS="$OLDIFS"
-  if [[ $shell == "zsh" ]]; then unsetopt shwordsplit; fi
+
+  # Turn off shwordsplit unless it was on previously
+  if [[ $shell == "zsh" ]] && [ -z "$SHWORDSPLIT_ON" ]; then unsetopt shwordsplit; fi
 }
 
 # Setup aliases

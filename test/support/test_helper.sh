@@ -24,18 +24,20 @@ verboseGitCommands() {
   unset -f git
 }
 
-
 # Asserts
 #-----------------------------------------------------------------------------
 
+_includes() {
+  if [ -n "$3" ]; then regex="$3"; else regex=P; fi
+  if echo "$1" | grep -q$regex "$2"; then echo 0; else echo 1; fi
+}
+
 # assert $1 contains $2
 assertIncludes() {
-  result=1; if echo "$1" | grep -Pq "$2"; then result=0; fi
-  assertTrue "'$1' should have contained '$2'" $result
+  assertTrue "'$1' should have contained '$2'" $(_includes "$@")
 }
 # assert $1 does not contain $2
 assertNotIncludes() {
-  result=1; if echo "$1" | grep -Pq "$2"; then result=0; fi
-  assertFalse "'$1' should not have contained '$2'" $result
+  assertFalse "'$1' should not have contained '$2'" $(_includes "$@")
 }
 
