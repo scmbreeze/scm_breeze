@@ -91,12 +91,10 @@ fi
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
 function ls_with_file_shortcuts {
-  local ll_output=''
-
   if [ -z $_ls_bsd ]; then
-  	ll_output="$(ls -lhv --group-directories-first --color "$@")"
+  	local ll_output="$(ls -lhv --group-directories-first --color "$@")"
   else
-    ll_output="$(CLICOLOR_FORCE=1 ls -l -G "$@")"
+    local ll_output="$(CLICOLOR_FORCE=1 ls -l -G "$@")"
   fi
 
   # Parse path from args
@@ -127,8 +125,8 @@ function ls_with_file_shortcuts {
   fi
 
   # Use ruby to inject numbers into ls output
-  ruby -e "$( cat <<EOF
-output = "$ll_output"
+  echo "$ll_output" | ruby -e "$( cat <<EOF
+output = STDIN.read
 e = 1
 re = /^(([^ ]* +){8})/
 output.lines.each do |line|
