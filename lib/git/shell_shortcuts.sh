@@ -74,18 +74,22 @@ fi
 
 
 # BSD ls is different to Linux (GNU) ls
-_uname="$(uname)"
-if [ "$_uname" = "Linux" ]; then
-  # Linux ls commands
-  _ll_command="ls -lhv --group-directories-first --color"
-  _ll_sys_command="ls -v --group-directories-first --color=never"
-  _abs_path_command="readlink -f"
-elif [ "$_uname" = "Darwin" ]; then
-  # OS X ls commands
-  _ll_command="CLICOLOR_FORCE=1 ls -l -G"
-  _ll_sys_command="ls"
+# test for BSD ls
+ls --color=auto > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  # ls is BSD
+  _ls_bsd="BSD"
+fi
+
+# test readlink
+type readlink > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  # no readlink
   # Use perl abs_path, since readlink -f isn't available on OS X
   _abs_path_command='perl -e "use Cwd "abs_path"; print abs_path(shift)"'
+else
+  #readlink
+  _abs_path_command="readlink -f"
 fi
 
 if [ -n "$_ll_command" ]; then
@@ -93,7 +97,13 @@ if [ -n "$_ll_command" ]; then
   # Adds numbered shortcuts to output of ls -l, just like 'git status'
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
-    local ll_output="$($_ll_command "$@")"
+    local ll_output=''
+
+    if [ -z $_ls_bsd ]; then
+    	ll_output="$(ls -lhv --group-directories-first --color "$@")"
+    else
+	ll_output="$(CLICOLOR_FORCE=1 ls -l -G "$@")"
+    fi
 
     # Parse path from args
     OLDIFS="$IFS"; IFS=$'\n'
@@ -136,7 +146,14 @@ EOF
 
     # Set numbered file shortcut in variable
     local e=1
-    local ll_files="$($_ll_sys_command "$@")"
+    local ll_files=''
+    local file=''
+
+    if [ -z $_ls_bsd ]; then
+	ll_files="$(ls -v --group-directories-first --color=never "$@")"
+    else
+	ll_files="$(ls "$@")"
+    fi
 
     OLDIFS="$IFS"; IFS=$'\n'
     for file in $ll_files; do
