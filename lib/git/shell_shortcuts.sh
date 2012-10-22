@@ -92,7 +92,6 @@ else
   _abs_path_command="readlink -f"
 fi
 
-if [ -n "$_ll_command" ]; then
   # Function wrapper around 'll'
   # Adds numbered shortcuts to output of ls -l, just like 'git status'
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
@@ -166,7 +165,6 @@ EOF
     done
     IFS="$OLDIFS"
   }
-fi
 
 # Setup aliases
 alias ll="exec_scmb_expand_args ls_with_file_shortcuts"
