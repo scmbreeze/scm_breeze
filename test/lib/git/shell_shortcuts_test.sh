@@ -87,10 +87,10 @@ test_ls_with_file_shortcuts() {
 
   # Test filenames with single or double quotes escaped
   assertEquals "$TEST_DIR/a \\\"b\\\"" "$e1"
-  assertEquals "$TEST_DIR/a \\'b\\'" "$e2"
-  assertEquals "$TEST_DIR/a [b]" "$e3"
-  assertEquals "$TEST_DIR/test file" "$e4"
-  assertEquals "$TEST_DIR/test_file" "$e5"
+  assertEquals "$TEST_DIR/a \\'b\\'"   "$e2"
+  assertEquals "$TEST_DIR/a [b]"       "$e3"
+  assertEquals "$TEST_DIR/test file"   "$e4"
+  assertEquals "$TEST_DIR/test_file"   "$e5"
 
   # Test ls with subdirectory
   ls_output=$(ls_with_file_shortcuts "a \"b\"" | strip_colors)
