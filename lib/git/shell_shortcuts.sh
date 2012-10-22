@@ -74,85 +74,97 @@ fi
 
 
 # BSD ls is different to Linux (GNU) ls
-_uname="$(uname)"
-if [ "$_uname" = "Linux" ]; then
-  # Linux ls commands
-  _ll_command="ls -lhv --group-directories-first --color"
-  _ll_sys_command="ls -v --group-directories-first --color=never"
-  _abs_path_command="readlink -f"
-elif [ "$_uname" = "Darwin" ]; then
-  # OS X ls commands
-  _ll_command="CLICOLOR_FORCE=1 ls -l -G"
-  _ll_sys_command="ls"
-  # Use perl abs_path, since readlink -f isn't available on OS X
-  _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
+# Test for BSD ls
+if ! ls --color=auto > /dev/null 2>&1; then
+  # ls is BSD
+  _ls_bsd="BSD"
 fi
 
-if [ -n "$_ll_command" ]; then
-  # Function wrapper around 'll'
-  # Adds numbered shortcuts to output of ls -l, just like 'git status'
-  unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
-  function ls_with_file_shortcuts {
-    # Wrap each arg in quotes
-    local wrapped_args
-    for arg in "$@"; do wrapped_args+=" \"$arg\""; done
-    local ll_output="$(eval $_ll_command $wrapped_args)"
+# Test if readlink supports -f option, otherwise use perl (a bit slower)
+if ! readlink -f > /dev/null 2>&1; then
+  _abs_path_command='perl -e "use Cwd "abs_path"; print abs_path(shift)"'
+else
+  _abs_path_command="readlink -f"
+fi
 
-    # Parse path from args
-    OLDIFS="$IFS"; IFS=$'\n'
-    for arg in $@; do
-      if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
-    done
-    IFS="$OLDIFS"
+# Function wrapper around 'll'
+# Adds numbered shortcuts to output of ls -l, just like 'git status'
+unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
+function ls_with_file_shortcuts {
+  local ll_output=''
 
-    # Replace user/group with user symbol, if defined at ~/.user_sym
-    # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
-    # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
-    if [ -e $HOME/.user_sym ]; then
-      # Little bit of ruby golf to rejustify the user/group/size columns after replacement
-      function rejustify_ls_columns(){
-        ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;\
-                 u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};\
-                 puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
-      }
-      ll_output=$(echo "$ll_output" | sed "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
-    fi
+  if [ -z $_ls_bsd ]; then
+  	ll_output="$(ls -lhv --group-directories-first --color "$@")"
+  else
+    ll_output="$(CLICOLOR_FORCE=1 ls -l -G "$@")"
+  fi
 
-    if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
-      echo -e "\e[33mToo many files to create shortcuts. Running plain ll command...\e[0m"
-      echo "$ll_output"
-      return 1
-    fi
+  # Parse path from args
+  zsh_compat # Ensure sh_word_split is on
+  OLDIFS="$IFS"; IFS=$'\n'
+  for arg in $@; do
+    if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
+  done
+  IFS="$OLDIFS"
 
-    # Use ruby to inject numbers into ls output
-    ruby -e "$( cat <<EOF
-  output = "$ll_output"
-  e = 1
-  re = /^(([^ ]* +){8})/
-  output.lines.each do |line|
-    next unless line.match(re)
-    puts line.sub(re, "\\\1\e[2;37m[\e[0m#{e}\e[2;37m]\e[0m" << (e < 10 ? "  " : " "))
-    e += 1
-  end
+  # Replace user/group with user symbol, if defined at ~/.user_sym
+  # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
+  # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
+  if [ -e $HOME/.user_sym ]; then
+    # Little bit of ruby golf to rejustify the user/group/size columns after replacement
+    function rejustify_ls_columns(){
+      ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;\
+               u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};\
+               puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
+    }
+    ll_output=$(echo "$ll_output" | sed "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+  fi
+
+  if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
+    echo -e "\e[33mToo many files to create shortcuts. Running plain ll command...\e[0m"
+    echo "$ll_output"
+    return 1
+  fi
+
+  # Use ruby to inject numbers into ls output
+  ruby -e "$( cat <<EOF
+output = "$ll_output"
+e = 1
+re = /^(([^ ]* +){8})/
+output.lines.each do |line|
+  next unless line.match(re)
+  puts line.sub(re, "\\\1\e[2;37m[\e[0m#{e}\e[2;37m]\e[0m" << (e < 10 ? "  " : " "))
+  e += 1
+end
 EOF
 )"
 
-    # Set numbered file shortcut in variable
-    local e=1
-    local ll_files="$(eval $_ll_sys_command $wrapped_args)"
+  # Set numbered file shortcut in variable
+  local e=1
+  local ll_files=''
+  local file=''
 
-    OLDIFS="$IFS"; IFS=$'\n'
-    if [[ $shell == "zsh" ]]; then setopt shwordsplit; fi
-    for file in $ll_files; do
-      if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
-      export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
-      if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
-      let e++
-    done
-    IFS="$OLDIFS"
-    if [[ $shell == "zsh" ]]; then unsetopt shwordsplit; fi
-  }
-fi
+  if [ -z $_ls_bsd ]; then
+    ll_files="$(ls -v --group-directories-first --color=never "$@")"
+  else
+    ll_files="$(ls "$@")"
+  fi
+
+  OLDIFS="$IFS"; IFS=$'\n'
+  if [[ $shell == "zsh" ]]; then
+    # Ensure sh_word_split is on
+    zsh_compat
+    setopt shwordsplit
+  fi
+  for file in $ll_files; do
+    if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
+    export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
+    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+    let e++
+  done
+  IFS="$OLDIFS"
+  if [[ $shell == "zsh" ]]; then unsetopt shwordsplit; fi
+}
 
 # Setup aliases
 alias ll="exec_scmb_expand_args ls_with_file_shortcuts"
