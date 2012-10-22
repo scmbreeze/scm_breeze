@@ -85,7 +85,7 @@ elif [ "$_uname" = "Darwin" ]; then
   _ll_command="CLICOLOR_FORCE=1 ls -l -G"
   _ll_sys_command="ls"
   # Use perl abs_path, since readlink -f isn't available on OS X
-  _abs_path_command="perl -e 'use Cwd \"abs_path\"; print abs_path(shift)'"
+  _abs_path_command='perl -e "use Cwd "abs_path"; print abs_path(shift)"'
 fi
 
 if [ -n "$_ll_command" ]; then
