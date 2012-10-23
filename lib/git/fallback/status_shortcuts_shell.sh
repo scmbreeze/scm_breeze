@@ -35,17 +35,17 @@ git_status_shortcuts() {
     fi
 
     # Colors
-    local c_rst="\e[0m"
-    local c_branch="\e[1m"
-    local c_header="\e[0m"
-    local c_dark="\e[2;37m"
-    local c_del="\e[0;31m"
-    local c_mod="\e[0;32m"
-    local c_new="\e[0;33m"
-    local c_ren="\e[0;34m"
-    local c_cpy="\e[0;33m"
-    local c_ign="\e[0;36m"
-    # Following colors must be prepended with modifiers e.g. '\e[1;', '\e[0;'
+    local c_rst="\033[0m"
+    local c_branch="\033[1m"
+    local c_header="\033[0m"
+    local c_dark="\033[2;37m"
+    local c_del="\033[0;31m"
+    local c_mod="\033[0;32m"
+    local c_new="\033[0;33m"
+    local c_ren="\033[0;34m"
+    local c_cpy="\033[0;33m"
+    local c_ign="\033[0;36m"
+    # Following colors must be prepended with modifiers e.g. '\033[1;', '\033[0;'
     local c_grp_1="33m"; local c_grp_2="31m"; local c_grp_3="32m"; local c_grp_4="36m"
 
     local f=1; local e=1  # Counters for number of files, and ENV variables
@@ -100,8 +100,8 @@ git_status_shortcuts() {
     for heading in 'Changes to be committed' 'Unmerged paths' 'Changes not staged for commit' 'Untracked files'; do
       # If no group specified as param, or specified group is current group
       if [ -z "$1" ] || [[ "$1" == "$grp_num" ]]; then
-        local c_arrow="\e[1;$(eval echo \$c_grp_$grp_num)"
-        local c_hash="\e[0;$(eval echo \$c_grp_$grp_num)"
+        local c_arrow="\033[1;$(eval echo \$c_grp_$grp_num)"
+        local c_hash="\033[0;$(eval echo \$c_grp_$grp_num)"
         if [ -n "${stat_grp[$grp_num]}" ]; then
           echo -e "$c_arrow➤$c_header $heading\n$c_hash#$c_rst"
           _gs_output_file_group $grp_num
@@ -121,7 +121,7 @@ git_status_shortcuts() {
 _gs_output_file_group() {
   for i in ${stat_grp[$1]}; do
     # Print colored hashes & files based on modification groups
-    local c_group="\e[0;$(eval echo -e \$c_grp_$1)"
+    local c_group="\033[0;$(eval echo -e \$c_grp_$1)"
 
     # Deduce relative path based on current working directory
     if [ -z "$project_root" ]; then

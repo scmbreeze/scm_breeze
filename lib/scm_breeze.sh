@@ -44,7 +44,7 @@ _create_or_patch_scmbrc() {
         cd "$HOME"
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
         if ! patch -f "$HOME/.$prefix""scmbrc" $patchfile; then
-          printf "== \e[0;31mUpdates could not be applied to '\e[1m~/.$prefix""scmbrc\e[0;31m'.\e[0m\n"
+          printf "== \033[0;31mUpdates could not be applied to '\033[1m~/.$prefix""scmbrc\033[0;31m'.\033[0m\n"
           printf "== Please look at the following changes and manually update '~/.$prefix""scmbrc', if necessary.\n\n"
           cat "$HOME/.$prefix""scmbrc.rej"
         fi

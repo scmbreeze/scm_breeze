@@ -126,7 +126,7 @@ function ls_with_file_shortcuts {
   fi
 
   if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
-    echo -e "\e[33mToo many files to create shortcuts. Running plain ll command...\e[0m"
+    echo -e "\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m"
     echo "$ll_output"
     return 1
   fi
@@ -138,7 +138,7 @@ e = 1
 re = /^(([^ ]* +){8})/
 output.lines.each do |line|
   next unless line.match(re)
-  puts line.sub(re, "\\\1\e[2;37m[\e[0m#{e}\e[2;37m]\e[0m" << (e < 10 ? "  " : " "))
+  puts line.sub(re, "\\\1\033[2;37m[\033[0m#{e}\033[2;37m]\033[0m" << (e < 10 ? "  " : " "))
   e += 1
 end
 EOF

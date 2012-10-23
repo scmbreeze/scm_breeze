@@ -29,7 +29,7 @@ git_status_shortcuts() {
   if [[ -z "$cmd_output" ]]; then
     # Just show regular git status if ruby script returns nothing.
     git status
-    echo -e "\n\e[33mThere were more than $gs_max_changes changed files. SCM Breeze has fallen back to standard \`git status\` for performance reasons.\e[0m"
+    echo -e "\n\033[33mThere were more than $gs_max_changes changed files. SCM Breeze has fallen back to standard \`git status\` for performance reasons.\033[0m"
     return 1
   fi
   # Fetch list of files from last line of script output
@@ -106,7 +106,7 @@ git_show_affected_files(){
   for file in $(git show --pretty="format:" --name-only $@ | \grep -v '^$'); do
     let f++
     export $git_env_char$f=$file     # Export numbered variable.
-    echo -e "#     \e[2;37m[\e[0m$f\e[2;37m]\e[0m $file"
+    echo -e "#     \033[2;37m[\033[0m$f\033[2;37m]\033[0m $file"
   done; echo "# "
 }
 
@@ -187,7 +187,7 @@ git_commit_prompt() {
     eval $@ # run any prequisite commands
     echo $commit_msg | git commit -F - | tail -n +2
   else
-    echo -e "\e[0;31mAborting commit due to empty commit message.\e[0m"
+    echo -e "\033[0;31mAborting commit due to empty commit message.\033[0m"
   fi
   escaped=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e 's/!/"'"'"'!'"'"'"/g')
 
@@ -206,7 +206,7 @@ git_commit_all() {
   fail_if_not_git_repo || return 1
   changes=$(git status --porcelain | wc -l)
   if [ "$changes" -gt 0 ]; then
-    echo -e "\e[0;33mCommitting all files (\e[0;31m$changes\e[0;33m)\e[0m"
+    echo -e "\033[0;33mCommitting all files (\033[0;31m$changes\033[0;33m)\033[0m"
     git_commit_prompt "git add -A"
   else
     echo "# No changed files to commit."

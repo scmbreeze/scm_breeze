@@ -34,21 +34,21 @@ exit if @changes.size > ENV["gs_max_changes"].to_i
 
 # Colors
 @c = {
-  :rst => "\e[0m",
-  :del => "\e[0;31m",
-  :mod => "\e[0;32m",
-  :new => "\e[0;33m",
-  :ren => "\e[0;34m",
-  :cpy => "\e[0;33m",
-  :typ => "\e[0;35m",
-  :unt => "\e[0;36m",
-  :dark => "\e[2;37m",
-  :branch => "\e[1m",
-  :header => "\e[0m"
+  :rst => "\033[0m",
+  :del => "\033[0;31m",
+  :mod => "\033[0;32m",
+  :new => "\033[0;33m",
+  :ren => "\033[0;34m",
+  :cpy => "\033[0;33m",
+  :typ => "\033[0;35m",
+  :unt => "\033[0;36m",
+  :dark => "\033[2;37m",
+  :branch => "\033[1m",
+  :header => "\033[0m"
 }
 
 
-# Following colors must be prepended with modifiers e.g. '\e[1;', '\e[0;'
+# Following colors must be prepended with modifiers e.g. '\033[1;', '\033[0;'
 @group_c = {
   :staged    => "33m",
   :unmerged  => "31m",
@@ -74,7 +74,7 @@ ahead = @ahead ? "  #{@c[:dark]}|  #{@c[:new]}+#{@ahead}#{@c[:rst]}" : ""
 
 # If no changes, just display green no changes message and exit here
 if @git_status == ""
-  puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  \e[0;32mNo changes (working directory clean)%s" % [
+  puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  \033[0;32mNo changes (working directory clean)%s" % [
     @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst]
   ]
   exit
@@ -99,7 +99,7 @@ end
     # If changed 'file' is actually a git submodule
     if @gitmodules.include?(file)
       # Parse long git status for submodule summaries
-      @git_status_long = `git status`.gsub(/\e\[[^m]*m/, "") # (strip colors)
+      @git_status_long = `git status`.gsub(/\033\[[^m]*m/, "") # (strip colors)
     end
   end
   
@@ -148,7 +148,7 @@ end
 # Output files
 def output_file_group(group)
   # Print colored hashes & files based on modification groups
-  c_group = "\e[0;#{@group_c[group]}"
+  c_group = "\033[0;#{@group_c[group]}"
 
   @stat_hash[group].each do |h|
     @e += 1
@@ -194,8 +194,8 @@ end
   # Allow filtering by specific group (by string or integer)
   if !ARGV[0] || ARGV[0] == group.to_s || ARGV[0] == (i+1).to_s; then
     if !@stat_hash[group].empty?
-      c_arrow="\e[1;#{@group_c[group]}"
-      c_hash="\e[0;#{@group_c[group]}"
+      c_arrow="\033[1;#{@group_c[group]}"
+      c_hash="\033[0;#{@group_c[group]}"
       puts "#{c_arrow}➤#{@c[:header]} #{heading}\n#{c_hash}##{@c[:rst]}"
       output_file_group(group)
     end

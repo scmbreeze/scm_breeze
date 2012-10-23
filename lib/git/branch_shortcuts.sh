@@ -25,7 +25,7 @@ function _scmb_git_branch_shortcuts {
     line_count = output.lines.to_a.size
     output.lines.each_with_index do |line, i|
       spaces = (line_count > 9 && i < 9 ? "  " : " ")
-      puts line.sub(/^([ *]{2})/, "\\\1\e[2;37m[\e[0m#{i+1}\e[2;37m]\e[0m" << spaces)
+      puts line.sub(/^([ *]{2})/, "\\\1\033[2;37m[\033[0m#{i+1}\033[2;37m]\033[0m" << spaces)
     end
 EOF
 )"
