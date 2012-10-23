@@ -12,6 +12,7 @@ disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt 
 # Alias wrapper that ignores errors if alias is not defined.
 _alias(){ alias "$@" 2> /dev/null; }
 
+export GIT_BINARY=$(which git)
 
 # Updates SCM Breeze from GitHub.
 update_scm_breeze() {
