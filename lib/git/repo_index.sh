@@ -281,40 +281,66 @@ function _git_index_batch_cmd() {
 }
 
 
-# Bash tab completion function for git_index()
-function _git_index_tab_completion() {
-  _check_git_index
-  local curw
-  IFS=$'\n'
-  COMPREPLY=()
-  curw=${COMP_WORDS[COMP_CWORD]}
+if [ $shell = 'bash' ]; then
+	# Bash tab completion function for git_index()
+	function _git_index_tab_completion() {
+		_check_git_index
+		local curw
+		IFS=$'\n'
+		COMPREPLY=()
+		curw=${COMP_WORDS[COMP_CWORD]}
 
-  # If the first part of $curw matches a high-level directory,
-  # then match on sub-directories for that project
-  local project=$(echo "$curw" | cut -d "/" -f1)
-  local base_path=$(\grep "/$project$" "$GIT_REPO_DIR/.git_index" | sed 's/ /\\ /g')
+		# If the first part of $curw matches a high-level directory,
+		# then match on sub-directories for that project
+		local project=$(echo "$curw" | cut -d "/" -f1)
+		local base_path=$(\grep "/$project$" "$GIT_REPO_DIR/.git_index" | sed 's/ /\\ /g')
 
-  # If matching project path was found and curr string contains a /, then complete project sub-directories
-  if [[ -n "$base_path" && $curw == */* ]]; then
-    local search_path=$(echo "$curw" | sed "s:^${project/\\/\\\\\\}::")
-    COMPREPLY=($(compgen -d "$base_path$search_path" | \grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
+		# If matching project path was found and curr string contains a /, then complete project sub-directories
+		if [[ -n "$base_path" && $curw == */* ]]; then
+			local search_path=$(echo "$curw" | sed "s:^${project/\\/\\\\\\}::")
+			COMPREPLY=($(compgen -d "$base_path$search_path" | \grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
 
-  # If curr string starts with /, tab complete top-level directories in root project dir
-  elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
-       ([ $shell = "zsh" ]  && [ "${curw[1,1]}"  = "/" ]); then
-    COMPREPLY=($(compgen -d "$GIT_REPO_DIR$curw" | sed -e "s:$GIT_REPO_DIR/::" -e "s:^:/:"))
+		# If curr string starts with /, tab complete top-level directories in root project dir
+		elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
+			([ $shell = "zsh" ]  && [ "${curw[1,1]}"  = "/" ]); then
+		COMPREPLY=($(compgen -d "$GIT_REPO_DIR$curw" | sed -e "s:$GIT_REPO_DIR/::" -e "s:^:/:"))
 
-  # If curr string starts with --, tab complete commands
-  elif ([ $shell = "bash" ] && [ "${curw:0:2}" = "--" ]) || \
-       ([ $shell = "zsh" ]  && [ "${curw[1,2]}"  = "--" ]); then
-    local commands="--list\n--rebuild\n--update-all\n--batch-cmd\n--count-by-host"
-    COMPREPLY=($(compgen -W '$(echo -e "\n"$commands)' -- $curw))
+		# If curr string starts with --, tab complete commands
+		elif ([ $shell = "bash" ] && [ "${curw:0:2}" = "--" ]) || \
+			([ $shell = "zsh" ]  && [ "${curw[1,2]}"  = "--" ]); then
+		local commands="--list\n--rebuild\n--update-all\n--batch-cmd\n--count-by-host"
+		COMPREPLY=($(compgen -W '$(echo -e "\n"$commands)' -- $curw))
 
-  # Else, tab complete the entries in .git_index
-  else
-    COMPREPLY=($(compgen -W '$(sed -e "s:.*/::" -e "s:$:/:" "$GIT_REPO_DIR/.git_index" | sort)' -- $curw))
-  fi
-  IFS=$' \t\n'
-  return 0
-}
+		# Else, tab complete the entries in .git_index
+		else
+			COMPREPLY=($(compgen -W '$(sed -e "s:.*/::" -e "s:$:/:" "$GIT_REPO_DIR/.git_index" | sort)' -- $curw))
+		fi
+		IFS=$' \t\n'
+		return 0
+	}
+else
+	function _git_index_tab_completion() {
+		typeset -A opt_args
 
+		_arguments \
+			"--rebuild[Rebuild repository index]" \
+			"--update-all[Update all indexed repositories]" \
+			"--update-all-with-notifications[Update all indexed repositories with notifications]" \
+			"--list[List all repositories currently present in the index]" \
+			"--count-by-host[Count all repositories per host]" \
+			"--batch-cmd+[Run a git command on all repositories]:git command:->git_command" \
+			":Project name:->projects" \
+			&& return 0
+
+
+		case "$state" in
+			projects)
+				_files -/ -W $GIT_REPO_DIR
+				;;
+			git_command)
+				;;
+		esac
+
+		return 1;
+	}
+fi
