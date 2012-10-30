@@ -301,13 +301,11 @@ if [ $shell = 'bash' ]; then
 			COMPREPLY=($(compgen -d "$base_path$search_path" | \grep -v "/.git" | sed -e "s:$base_path:$project:" -e "s:$:/:" ))
 
 		# If curr string starts with /, tab complete top-level directories in root project dir
-		elif ([ $shell = "bash" ] && [ "${curw:0:1}" = "/" ]) || \
-			([ $shell = "zsh" ]  && [ "${curw[1,1]}"  = "/" ]); then
+		elif [ "${curw:0:1}" = "/" ]; then
 		COMPREPLY=($(compgen -d "$GIT_REPO_DIR$curw" | sed -e "s:$GIT_REPO_DIR/::" -e "s:^:/:"))
 
 		# If curr string starts with --, tab complete commands
-		elif ([ $shell = "bash" ] && [ "${curw:0:2}" = "--" ]) || \
-			([ $shell = "zsh" ]  && [ "${curw[1,2]}"  = "--" ]); then
+		elif [ "${curw:0:2}" = "--" ]; then
 		local commands="--list\n--rebuild\n--update-all\n--batch-cmd\n--count-by-host"
 		COMPREPLY=($(compgen -W '$(echo -e "\n"$commands)' -- $curw))
 
