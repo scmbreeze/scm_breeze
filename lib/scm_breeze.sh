@@ -13,7 +13,7 @@ disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt 
 _alias(){ alias "$@" 2> /dev/null; }
 
 if [ $shell = "zsh" ]; then
-  export GIT_BINARY=$(type -p git | sed 's/git is //')
+  export GIT_BINARY=$(type -p git | sed 's/git is //' | head -1)
 else
   export GIT_BINARY=$(type -P git)
 fi
