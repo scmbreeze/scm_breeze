@@ -154,13 +154,11 @@ EOF
   else
     ll_files="$(\ls "$@")"
   fi
-  # Escape single and double quotes
-  ll_files=$(echo "$ll_files" | \sed -e 's/"/\\\\\\"/g' -e "s/'"'/\\\\'"'/g")
 
   OLDIFS="$IFS"; IFS=$'\n'
   for file in $ll_files; do
     if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
-    export $git_env_char$e="$(eval $_abs_path_command \"$file\")"
+    export $git_env_char$e="$(eval $_abs_path_command \"${file//\"/\\\"}\")"
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done

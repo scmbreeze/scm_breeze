@@ -86,14 +86,20 @@ test_ls_with_file_shortcuts() {
   assertIncludes "$ls_output" '[5]  test_file' F
 
   # Test filenames with single or double quotes escaped
-  assertEquals "$TEST_DIR/a \\\"b\\\"" "$e1"
-  assertEquals "$TEST_DIR/a \\'b\\'"   "$e2"
-  assertEquals "$TEST_DIR/a [b]"       "$e3"
-  assertEquals "$TEST_DIR/test file"   "$e4"
-  assertEquals "$TEST_DIR/test_file"   "$e5"
+  assertEquals "$TEST_DIR/"'a "b"'   "$e1"
+  assertEquals "$TEST_DIR/a 'b'"     "$e2"
+  assertEquals "$TEST_DIR/a [b]"     "$e3"
+  assertEquals "$TEST_DIR/test file" "$e4"
+  assertEquals "$TEST_DIR/test_file" "$e5"
 
   # Test ls with subdirectory
-  ls_output=$(ls_with_file_shortcuts "a \"b\"" | strip_colors)
+  ls_with_file_shortcuts 'a "b"' > $temp_file
+  ls_output=$(<$temp_file strip_colors)
+  assertIncludes "$ls_output" '[1]  c' F
+  # Test that env variable is set correctly
+  assertEquals "$TEST_DIR/a \"b\"/c" "$e1"
+  # Test arg with no quotes
+  ls_output=$(ls_with_file_shortcuts a\ \"b\" | strip_colors)
   assertIncludes "$ls_output" '[1]  c' F
 }
 

@@ -20,11 +20,11 @@
 # # groups => 1: staged, 2: unmerged, 3: unstaged, 4: untracked
 # --------------------------------------------------------------------
 
-@project_root = File.exist?(".git") ? Dir.pwd : `git rev-parse --git-dir 2> /dev/null`.sub(/\/\.git$/, '').strip
+@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --git-dir 2> /dev/null`.sub(/\/\.git$/, '').strip
 
-@git_status = `git status --porcelain 2> /dev/null`
+@git_status = `\git status --porcelain 2> /dev/null`
 
-git_branch = `git branch -v 2> /dev/null`
+git_branch = `\git branch -v 2> /dev/null`
 @branch = git_branch[/^\* (\(no branch\)|[^ ]*)/, 1]
 @ahead = git_branch[/^\* [^ ]* *[^ ]* *\[ahead ?(\d+)\]/, 1]
 
@@ -102,7 +102,7 @@ end
       @git_status_long = `git status`.gsub(/\033\[[^m]*m/, "") # (strip colors)
     end
   end
-  
+
 
   msg, col, group = case change[0..1]
   when "DD"; ["   both deleted",  :del, :unmerged]
@@ -156,7 +156,7 @@ def output_file_group(group)
 
     # Find relative path, i.e. ../../lib/path/to/file
     rel_file = relative_path(Dir.pwd, File.join(@project_root, h[:file]))
-  
+
     # If some submodules have changed, parse their summaries from long git status
     sub_stat = nil
     if @git_status_long && (sub_stat = @git_status_long[/#{h[:file]} \((.*)\)/, 1])

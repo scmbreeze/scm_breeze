@@ -136,3 +136,7 @@ git_branch_delete_all() {
   $_git_cmd branch -D -r origin/$1
   $_git_cmd push origin :$1
 }
+
+commit_docs() {
+  git commit -m "Update README / Documentation [ci skip]"
+}
