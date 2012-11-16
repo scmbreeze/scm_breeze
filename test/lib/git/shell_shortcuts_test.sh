@@ -17,8 +17,9 @@ else
   shopt -s expand_aliases
 fi
 
-# Load test helpers
+# Load test helpers and core functions
 source "$scmbDir/test/support/test_helper.sh"
+source "$scmbDir/lib/scm_breeze.sh"
 
 # Setup
 #-----------------------------------------------------------------------------
