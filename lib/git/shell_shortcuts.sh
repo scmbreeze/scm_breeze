@@ -29,15 +29,15 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an alias"; fi
         # Store original alias
         local original_alias="$(whence $cmd)"
-        # Remove alias, so that which can return binary
+        # Remove alias, so that we can find binary
         unalias $cmd
 
         # Detect original $cmd type, and escape
         case "$(type $cmd 2>&1)" in
           # Escape shell builtins with 'builtin'
           *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
-          # Get full path for files with 'which'
-          *) local escaped_cmd="$(\which $cmd)";;
+          # Get full path for files with 'find_binary' function
+          *) local escaped_cmd="$(find_binary $cmd)";;
         esac
 
         # Expand original command into full path, to avoid infinite loops
@@ -62,8 +62,8 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       *)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an executable file"; fi
         # Otherwise, command is a regular script or binary,
-        # and the full path can be found from 'which'
-        alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
+        # and the full path can be found with 'find_binary' function
+        alias $cmd="exec_scmb_expand_args $(find_binary $cmd)";;
       esac
     done
     # Clean up
