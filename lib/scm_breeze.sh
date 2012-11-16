@@ -14,9 +14,9 @@ _alias(){ alias "$@" 2> /dev/null; }
 
 find_binary(){
   if [ $shell = "zsh" ]; then
-    type -p "$1" | sed "s/$1 is //" | head -1
+    builtin type -p "$1" | sed "s/$1 is //" | head -1
   else
-    type -P "$1"
+    builtin type -P "$1"
   fi
 }
 
