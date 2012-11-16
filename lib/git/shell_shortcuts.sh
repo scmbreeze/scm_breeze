@@ -25,7 +25,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       *'not found'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd not found!"; fi;;
 
-      *'is aliased to'*|*'is an alias for'*)
+      *'aliased to'*|*'is an alias for'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an alias"; fi
         # Store original alias
         local original_alias="$(whence $cmd)"
