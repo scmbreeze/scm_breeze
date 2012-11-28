@@ -129,11 +129,14 @@ fi
 # Delete a git branch from local, cached remote and remote server
 git_branch_delete_all() {
   if [ -z "$1" ]; then
-    echo "Usage: git_branch_delete_all branch"
+    echo "Usage: git_branch_delete_all branch (-f forces deletion of unmerged branches.)"
     return
   fi
-  $_git_cmd branch -D $1
-  $_git_cmd branch -D -r origin/$1
+  local opt="-d"
+  if [ "$2" = '-f' ] || [ "$2" = '--force' ]; then opt="-D"; fi
+
+  $_git_cmd branch $opt $1
+  $_git_cmd branch $opt -r origin/$1
   $_git_cmd push origin :$1
 }
 
