@@ -82,6 +82,7 @@ git_log_stat_alias="gls"
 git_log_graph_alias="glg"
 git_show_alias="gsh"
 git_show_summary="gsm"  # (gss taken by git status short)
+git_tag_alias="gt"
 
 
 # Git Keyboard Shortcuts

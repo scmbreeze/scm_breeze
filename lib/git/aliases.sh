@@ -120,6 +120,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
   __git_alias "$git_show_alias" "git" 'show'
   __git_alias "$git_show_summary" "git" 'show' '--summary'
+  __git_alias "$git_tag_alias" "git" 'tag'
 
 
   # Compound/complex commands
