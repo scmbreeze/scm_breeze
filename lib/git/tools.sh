@@ -50,7 +50,7 @@ __git_ignore() {
 }
 # Always expand args
 git_ignore() {
-  exec_scmb_expand_args __git_ignore $@
+  exec_scmb_expand_args __git_ignore "$@"
 }
 
 # Add one git ignore rule, just for your machine
@@ -64,7 +64,7 @@ __git_exclude_basename() {
   __git_ignore "$(basename "$1")" ".git/info/exclude"
 }
 git_exclude_basename() {
-  exec_scmb_expand_args __git_exclude_basename $@
+  exec_scmb_expand_args __git_exclude_basename "$@"
 }
 
 
