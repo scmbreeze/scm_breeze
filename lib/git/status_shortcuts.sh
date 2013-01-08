@@ -121,7 +121,11 @@ scmb_expand_args() {
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
-      eval printf '%s' "\"\$$git_env_char$arg\""
+      if [ -e "$arg" ]; then 
+        printf '%s' "$arg"
+      else
+        eval printf '%s' "\"\$$git_env_char$arg\""
+      fi
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
 
       for i in $(eval echo {${arg/-/..}}); do
