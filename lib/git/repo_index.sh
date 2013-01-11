@@ -217,10 +217,10 @@ _git_index_update_all_branches() {
 
     # Ignore branch if remote and merge is not configured
     if [[ -n "$remote" ]] && [[ -n "$merge" ]]; then
-      branches=("${branches[@]}" "$branch")
-      remotes=("${remotes[@]}" "$remote")
+      branches=(${branches[@]} "$branch")
+      remotes=(${remotes[@]} "$remote")
       # Get branch from merge ref (refs/heads/master => master)
-      merges=("${merges[@]}" "$(basename $merge)")
+      merges=(${merges[@]} "$(basename $merge)")
     else
       echo "=== Skipping $branch: remote and merge refs are not configured."
     fi
