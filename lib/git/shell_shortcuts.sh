@@ -16,6 +16,15 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
     for cmd in $(echo $scmb_wrapped_shell_commands); do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
 
+      # Special check for 'cd', to make sure SCM Breeze is loaded after RVM
+      if [ "$cmd" = 'cd' ]; then
+        if [ -e "$HOME/.rvm" ] && ! type rvm > /dev/null 2>&1; then
+          echo -e "\033[0;31mSCM Breeze must be loaded \033[1;31mafter\033[0;31m RVM, otherwise there will be a conflict when RVM wraps the 'cd' command.\033[0m"
+          echo -e "\033[0;31mPlease move the line that loads SCM Breeze to the bottom of your ~/.bashrc\033[0m"
+          continue
+        fi
+      fi
+
       case "$(type $cmd 2>&1)" in
 
       # Don't do anything if command already aliased, or not found.
