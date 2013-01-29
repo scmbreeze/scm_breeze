@@ -27,6 +27,8 @@ oneTimeSetUp() {
   export shell_command_wrapping_enabled="true"
   export scmb_wrapped_shell_commands="not_found cat rm cp mv ln cd sed"
 
+  alias rvm="test" # Ensure tests run if RVM isn't loaded but $HOME/.rvm is present
+
   # Test functions
   function ln() { ln $@; }
   # Test aliases
