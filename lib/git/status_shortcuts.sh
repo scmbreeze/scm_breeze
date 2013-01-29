@@ -189,6 +189,8 @@ git_commit_prompt() {
 
   if [ -n "$commit_msg" ]; then
     eval $@ # run any prequisite commands
+    # Add $APPEND to commit message, if given. (Used to append things like [ci skip] for Travis CI)
+    if [ -n "$APPEND" ]; then commit_msg="$commit_msg $APPEND"; fi
     echo $commit_msg | git commit -F - | tail -n +2
   else
     echo -e "\033[0;31mAborting commit due to empty commit message.\033[0m"
@@ -210,7 +212,10 @@ git_commit_all() {
   fail_if_not_git_repo || return 1
   changes=$(git status --porcelain | wc -l)
   if [ "$changes" -gt 0 ]; then
-    echo -e "\033[0;33mCommitting all files (\033[0;31m$changes\033[0;33m)\033[0m"
+    if [ -n "$APPEND" ]; then
+      local appending=" | \033[0;36mappending '\033[1;36m$APPEND\033[0;36m' to commit message.\033[0m"
+    fi
+    echo -e "\033[0;33mCommitting all files (\033[0;31m$changes\033[0;33m)\033[0m$appending"
     git_commit_prompt "git add -A"
   else
     echo "# No changed files to commit."
@@ -229,4 +234,3 @@ git_add_and_commit() {
     echo "# No staged changes to commit."
   fi
 }
-

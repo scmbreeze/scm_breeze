@@ -234,9 +234,9 @@ test_git_commit_prompt() {
   commit_msg="\"Nathan's git commit prompt function!\""
   dbl_escaped_msg="\\\\\"Nathan's git commit prompt function\"'"'!'"'\"\\\\\""
   # Create temporary history file
-  HISTFILE=$(mktemp -t scm_breeze.XXXXXXXXXX)
-  HISTFILESIZE=1000
-  HISTSIZE=1000
+  export HISTFILE=$(mktemp -t scm_breeze.XXXXXXXXXX)
+  export HISTFILESIZE=1000
+  export HISTSIZE=1000
 
   touch a b c d
   git add . > /dev/null
@@ -252,10 +252,46 @@ test_git_commit_prompt() {
   assertIncludes "$git_show_output"  "$commit_msg"
 
   # Test that history was appended correctly.
-  if [[ $shell != "zsh" ]]; then history -n; fi  # Reload bash history
-  test_history="$(history)"
+  if [[ $shell == "zsh" ]]; then 
+    test_history="$(history)"    
+  else
+    test_history="$(cat $HISTFILE)"    
+  fi
   assertIncludes "$test_history"  "$commit_msg"
   assertIncludes "$test_history"  "git commit -m \"$dbl_escaped_msg\""
+}
+
+test_git_commit_prompt_with_append() {
+  setupTestRepo
+
+  commit_msg="Updating README, no build please"
+
+  # Create temporary history file
+  HISTFILE=$(mktemp -t scm_breeze.XXXXXXXXXX)
+  HISTFILESIZE=1000
+  HISTSIZE=1000
+
+  touch a b c
+  git add . > /dev/null
+
+  # Zsh 'vared' doesn't handle input via pipe, so replace with function that reads into commit_msg variable.
+  function vared(){ read commit_msg; }
+
+  # Test the git commit prompt, by piping a commit message
+  # instead of user input.
+  echo "$commit_msg" | APPEND="[ci skip]" git_commit_prompt > /dev/null
+
+  git_show_output=$(git show --oneline --name-only)
+  assertIncludes "$git_show_output"  "$commit_msg \[ci skip\]"
+
+  # Test that history was appended correctly.
+  if [[ $shell == "zsh" ]]; then 
+    test_history="$(history)"    
+  else
+    test_history="$(cat $HISTFILE)"    
+  fi
+  assertIncludes "$test_history"  "$commit_msg \[ci skip\]"
+  assertIncludes "$test_history"  "git commit -m \"$commit_msg \[ci skip\]\""
 }
 
 test_adding_files_with_spaces() {
