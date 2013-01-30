@@ -60,8 +60,8 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         eval "$(declare -f $cmd | sed -E "s/^$cmd \(\)/__original_$cmd ()/")"
         # Remove function
         unset -f $cmd
-        # Create wrapped alias for old function
-        alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
+        # Create function that wraps old function
+        eval "${cmd}(){ exec_scmb_expand_args __original_${cmd} \"\$@\"; }";;
 
       *'is a shell builtin'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a shell builtin"; fi

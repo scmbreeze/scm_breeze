@@ -63,7 +63,8 @@ test_shell_command_wrapping() {
   assertAliasEquals "exec_scmb_expand_args /bin/sed"          "sed"
   assertAliasEquals "exec_scmb_expand_args /bin/cat"          "cat"
   assertAliasEquals "exec_scmb_expand_args builtin cd"        "cd"
-  assertAliasEquals "exec_scmb_expand_args __original_ln"     "ln"
+  assertIncludes    "$(declare -f ln)" "ln ()"
+  assertIncludes    "$(declare -f ln)" "exec_scmb_expand_args __original_ln"
 }
 
 test_ls_with_file_shortcuts() {
