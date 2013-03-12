@@ -39,11 +39,11 @@ EOF
   done
 }
 
-alias "$git_branch_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts"
-alias "$git_branch_all_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -a"
-alias "$git_branch_move_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -m"
-alias "$git_branch_delete_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -d"
-alias "$git_branch_delete_force_alias"="exec_scmb_expand_args _scmb_git_branch_shortcuts -D"
+__git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts"
+__git_alias "$git_branch_all_alias"          "_scmb_git_branch_shortcuts" "-a"
+__git_alias "$git_branch_move_alias"         "_scmb_git_branch_shortcuts" "-m"
+__git_alias "$git_branch_delete_alias"       "_scmb_git_branch_shortcuts" "-d"
+__git_alias "$git_branch_delete_force_alias" "_scmb_git_branch_shortcuts" "-D"
 
 # Define completions for git branch shortcuts
 if [ "$shell" = "bash" ]; then
