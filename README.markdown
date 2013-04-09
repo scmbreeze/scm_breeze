@@ -283,6 +283,12 @@ The install script just adds the following line to your `.bashrc` or `.zshrc`:
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
+
+# Updating
+
+Please run `update_scm_breeze` to fetch the latest code. This will update SCM Breeze from Github,
+and will create or patch your `~/.*.scmbrc` config files if any new settings are added.
+
 # Uninstall
 
 ```bash
@@ -334,13 +340,6 @@ You will need to set that up yourself.
 
 You just need to set the option: `setopt no_complete_aliases` (oh-my-zsh sets this by default).
 Zsh will then expand aliases like `gb` to `git branch`, and use the completion for that.
-
-
-# Updating
-
-Run `update_scm_breeze`. This will update SCM Breeze from Github,
-and will create or patch your `~/.*.scmbrc` files if any new settings are added.
-
 
 # Contributing
 
