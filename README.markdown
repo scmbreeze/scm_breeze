@@ -1,11 +1,8 @@
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 ### Streamline your SCM workflow.
 
-**SCM Breeze** is a set of shell scripts (for `bash` and `zsh`) that enhance your interaction with tools
-such as git. It integrates with your shell to give you numbered file shortcuts,
+**SCM Breeze** is a set of shell scripts (for `bash` and `zsh`) that enhance your interaction with git. It integrates with your shell to give you numbered file shortcuts,
 a repository index with tab completion, and many other useful features.
-
-Note: **git** is currently the only supported SCM. I've kept the project's name generic, but other SCMs aren't supported yet.
 
 <hr/>
 
@@ -29,7 +26,7 @@ You can configure the variable prefix, which is 'e' by default.
 </div>
 <br/>
 
-### UPDATE: Now with 'ls' shortcuts:
+### 'ls' shortcuts:
 
 <div class="centered">
 <img src="http://i.imgur.com/72GE1.png" alt="Ls With Shortcuts" />
