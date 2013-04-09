@@ -3,6 +3,13 @@ orig_cwd="$PWD"
 # Load SCM Breeze helpers
 source "$scmbDir/lib/git/helpers.sh"
 
+if [ -z "$(git config --global user.email)" ]; then
+  git config --global user.email "testuser@example.com"
+fi
+if [ -z "$(git config --global user.name)" ]; then
+  git config --global user.name "Test User"
+fi
+
 #
 # Test helpers
 #-----------------------------------------------------------------------------
