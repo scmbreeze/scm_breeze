@@ -50,7 +50,7 @@ __git_ignore() {
 }
 # Always expand args
 git_ignore() {
-  exec_scmb_expand_args __git_ignore $@
+  exec_scmb_expand_args __git_ignore "$@"
 }
 
 # Add one git ignore rule, just for your machine
@@ -61,10 +61,10 @@ git_exclude() {
 
 # Exclude basename of file
 __git_exclude_basename() {
-  __git_ignore $(basename "$1") ".git/info/exclude"
+  __git_ignore "$(basename "$1")" ".git/info/exclude"
 }
 git_exclude_basename() {
-  exec_scmb_expand_args __git_exclude_basename $@
+  exec_scmb_expand_args __git_exclude_basename "$@"
 }
 
 
@@ -129,11 +129,14 @@ fi
 # Delete a git branch from local, cached remote and remote server
 git_branch_delete_all() {
   if [ -z "$1" ]; then
-    echo "Usage: git_branch_delete_all branch"
+    echo "Usage: git_branch_delete_all branch (-f forces deletion of unmerged branches.)"
     return
   fi
-  $_git_cmd branch -D $1
-  $_git_cmd branch -D -r origin/$1
+  local opt="-d"
+  if [ "$2" = '-f' ] || [ "$2" = '--force' ]; then opt="-D"; fi
+
+  $_git_cmd branch $opt $1
+  $_git_cmd branch $opt -r origin/$1
   $_git_cmd push origin :$1
 }
 

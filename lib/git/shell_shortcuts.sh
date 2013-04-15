@@ -11,10 +11,19 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
   # Do it in a function so we don't bleed variables
   function _git_wrap_commands() {
     # Define 'whence' for bash, to get the value of an alias
-    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -e "s/.*is aliased to \`//" -e "s/'$//"; }
+    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -E -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
     for cmd in $(echo $scmb_wrapped_shell_commands); do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
+
+      # Special check for 'cd', to make sure SCM Breeze is loaded after RVM
+      if [ "$cmd" = 'cd' ]; then
+        if [ -e "$HOME/.rvm" ] && ! type rvm > /dev/null 2>&1; then
+          echo -e "\033[0;31mSCM Breeze must be loaded \033[1;31mafter\033[0;31m RVM, otherwise there will be a conflict when RVM wraps the 'cd' command.\033[0m"
+          echo -e "\033[0;31mPlease move the line that loads SCM Breeze to the bottom of your ~/.bashrc\033[0m"
+          continue
+        fi
+      fi
 
       case "$(type $cmd 2>&1)" in
 
@@ -25,34 +34,34 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       *'not found'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd not found!"; fi;;
 
-      *'is aliased to'*|*'is an alias for'*)
+      *'aliased to'*|*'is an alias for'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an alias"; fi
         # Store original alias
         local original_alias="$(whence $cmd)"
-        # Remove alias, so that which can return binary
+        # Remove alias, so that we can find binary
         unalias $cmd
 
         # Detect original $cmd type, and escape
         case "$(type $cmd 2>&1)" in
           # Escape shell builtins with 'builtin'
           *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
-          # Get full path for files with 'which'
-          *) local escaped_cmd="$(\which $cmd)";;
+          # Get full path for files with 'find_binary' function
+          *) local escaped_cmd="$(find_binary $cmd)";;
         esac
 
         # Expand original command into full path, to avoid infinite loops
-        local expanded_alias="$(echo $original_alias | sed "s%\(^\| \)$cmd\($\| \)%\\1$escaped_cmd\\2%")"
+        local expanded_alias="$(echo $original_alias | sed -E "s%(^| )$cmd($| )%\\1$escaped_cmd\\2%")"
         # Wrap previous alias with escaped command
         alias $cmd="exec_scmb_expand_args $expanded_alias";;
 
       *'is a'*'function'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a function"; fi
         # Copy old function into new name
-        eval "$(declare -f $cmd | sed "s/^$cmd ()/__original_$cmd ()/")"
+        eval "$(declare -f $cmd | sed -E "s/^$cmd \(\)/__original_$cmd ()/")"
         # Remove function
         unset -f $cmd
-        # Create wrapped alias for old function
-        alias "$cmd"="exec_scmb_expand_args __original_$cmd";;
+        # Create function that wraps old function
+        eval "${cmd}(){ exec_scmb_expand_args __original_${cmd} \"\$@\"; }";;
 
       *'is a shell builtin'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a shell builtin"; fi
@@ -62,8 +71,8 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       *)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is an executable file"; fi
         # Otherwise, command is a regular script or binary,
-        # and the full path can be found from 'which'
-        alias $cmd="exec_scmb_expand_args $(\which $cmd)";;
+        # and the full path can be found with 'find_binary' function
+        alias $cmd="exec_scmb_expand_args $(find_binary $cmd)";;
       esac
     done
     # Clean up
@@ -122,7 +131,7 @@ function ls_with_file_shortcuts {
                puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
     }
 
-    ll_output=$(echo "$ll_output" | \sed "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+    ll_output=$(echo "$ll_output" | \sed -E "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
   fi
 
   if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then

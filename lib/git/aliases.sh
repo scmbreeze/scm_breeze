@@ -24,9 +24,9 @@ if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
 function git(){
-  # Only expand args for a subset of git commands
+  # Only expand args for git commands that deal with paths or branches
   case $1 in
-    checkout|commit|reset|rm|blame|diff|add|log)
+    checkout|commit|rm|blame|diff|add|log|rebase)
       exec_scmb_expand_args "$_git_cmd" "$@";;
     branch)
       _scmb_git_branch_shortcuts "${@:2}";;
@@ -94,6 +94,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_rm_alias"          "git" "rm"
   __git_alias "$git_blame_alias"       "git" "blame"
   __git_alias "$git_diff_alias"        "git" "diff"
+  __git_alias "$git_diff_word_alias"   "git" "diff" "--word-diff"
   __git_alias "$git_diff_cached_alias" "git" "diff" "--cached"
   __git_alias "$git_add_patch_alias"   "git" "add" "-p"
   # Custom default format for git log
@@ -106,6 +107,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_checkout_branch_alias" "git" 'checkout' "-b"
   __git_alias "$git_pull_alias" "git" 'pull'
   __git_alias "$git_push_alias" "git" 'push'
+  __git_alias "$git_push_force_alias" "git" 'push' '-f'
   __git_alias "$git_status_original_alias" "git" 'status' # (Standard git status)
   __git_alias "$git_status_short_alias" "git" 'status' '-s'
   __git_alias "$git_clean_alias" "git" "clean"
@@ -119,6 +121,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
   __git_alias "$git_show_alias" "git" 'show'
   __git_alias "$git_show_summary" "git" 'show' '--summary'
+  __git_alias "$git_tag_alias" "git" 'tag'
 
 
   # Compound/complex commands

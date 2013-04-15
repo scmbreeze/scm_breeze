@@ -47,6 +47,7 @@ git_reset_hard_alias="grsh"
 git_rm_alias="grm"
 git_blame_alias="gbl"
 git_diff_alias="gd"
+git_diff_word_alias="gdw"
 git_diff_cached_alias="gdc"
 # 3. Standard commands
 git_clone_alias="gcl"
@@ -55,6 +56,7 @@ git_fetch_all_alias="gfa"
 git_fetch_and_rebase_alias="gfr"
 git_pull_alias="gpl"
 git_push_alias="gps"
+git_push_force_alias="gpsf"
 git_pull_then_push_alias="gpls"
 git_status_original_alias="gst"
 git_status_short_alias="gss"
@@ -70,6 +72,7 @@ git_branch_alias="gb"
 git_branch_all_alias="gba"
 git_branch_move_alias="gbm"
 git_branch_delete_alias="gbd"
+git_branch_delete_force_alias="gbD"
 git_rebase_alias="grb"
 git_rebase_interactive_alias="grbi"
 git_rebase_alias_continue="grbc"
@@ -81,14 +84,16 @@ git_log_stat_alias="gls"
 git_log_graph_alias="glg"
 git_show_alias="gsh"
 git_show_summary="gsm"  # (gss taken by git status short)
+git_tag_alias="gt"
 
 
 # Git Keyboard Shortcuts
 # ----------------------------------------------
 # Keyboard shortcuts are on by default. Set this to 'false' to disable them.
 git_keyboard_shortcuts_enabled="true"
-git_commit_all_keys="\C-x "        # CTRL+x, SPACE
-git_add_and_commit_keys="\C-xc"    # CTRL+x, c
+git_commit_all_keys="\C-x "        		  # CTRL+x, SPACE
+git_add_and_commit_keys="\C-xc"    		  # CTRL+x, c
+git_commit_all_with_ci_skip_keys="\C-xv"  # CTRL+x, v    (Appends [ci skip] to commit message)
 
 
 # Shell Command Wrapping

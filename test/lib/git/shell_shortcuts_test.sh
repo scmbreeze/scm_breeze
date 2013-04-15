@@ -17,14 +17,17 @@ else
   shopt -s expand_aliases
 fi
 
-# Load test helpers
+# Load test helpers and core functions
 source "$scmbDir/test/support/test_helper.sh"
+source "$scmbDir/lib/scm_breeze.sh"
 
 # Setup
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
   export shell_command_wrapping_enabled="true"
   export scmb_wrapped_shell_commands="not_found cat rm cp mv ln cd sed"
+
+  alias rvm="test" # Ensure tests run if RVM isn't loaded but $HOME/.rvm is present
 
   # Test functions
   function ln() { ln $@; }
@@ -60,7 +63,8 @@ test_shell_command_wrapping() {
   assertAliasEquals "exec_scmb_expand_args /bin/sed"          "sed"
   assertAliasEquals "exec_scmb_expand_args /bin/cat"          "cat"
   assertAliasEquals "exec_scmb_expand_args builtin cd"        "cd"
-  assertAliasEquals "exec_scmb_expand_args __original_ln"     "ln"
+  assertIncludes    "$(declare -f ln)" "ln ()"
+  assertIncludes    "$(declare -f ln)" "exec_scmb_expand_args __original_ln"
 }
 
 test_ls_with_file_shortcuts() {
