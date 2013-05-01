@@ -143,6 +143,8 @@ fi
 if [ $shell = "bash" ]; then
   # Fix to preload Arch bash completion for git
   [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
+  # new path in Ubuntu 13.04
+  [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
   complete -o default -o nospace -F _git $git_alias
 
   # Git repo management & aliases.
