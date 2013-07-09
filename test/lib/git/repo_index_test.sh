@@ -33,7 +33,7 @@ oneTimeSetUp() {
 
   cd $GIT_REPO_DIR
   # Setup test repos in temp repo dir
-  for repo in github bitbucket source_forge; do
+  for repo in github bitbucket source_forge TestCaps; do
     mkdir $repo; cd $repo; git init; cd - > /dev/null
   done
 
@@ -119,7 +119,7 @@ test_check_git_index() {
 }
 
 test_git_index_count() {
-  assertEquals "9" "$(_git_index_count)"
+  assertEquals "10" "$(_git_index_count)"
 }
 
 test_repo_list() {
@@ -136,6 +136,7 @@ test_git_index_changing_directory() {
   git_index "github";       assertEquals "$GIT_REPO_DIR/github" "$PWD"
   git_index "github/";      assertEquals "$GIT_REPO_DIR/github" "$PWD"
   git_index "bucket";       assertEquals "$GIT_REPO_DIR/bitbucket" "$PWD"
+  git_index "testcaps";     assertEquals "$GIT_REPO_DIR/TestCaps" "$PWD"
   git_index "green_sub";    assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/green_submodule" "$PWD"
   git_index "_submod";      assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
   git_index "test_repo_1";  assertEquals "/tmp/test_repo_1" "$PWD"

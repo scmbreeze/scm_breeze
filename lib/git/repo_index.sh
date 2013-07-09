@@ -97,9 +97,9 @@ function git_index() {
       fi
       # Try partial matches
       # - string at beginning of project
-      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 "/$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 -i "/$project"); fi
       # - string anywhere in project
-      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 "$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 -i "$project"); fi
       # --------------------
       # Go to our base path
       if [ -n "$base_path" ]; then
@@ -149,7 +149,7 @@ function _rebuild_git_index() {
   IFS=$'\n'
   for repo in $(echo -e "$(_find_git_repos)\n$(echo $GIT_REPOS | sed "s/:/\\\\n/g")"); do
     echo $(basename $repo | sed "s/ /_/g") $repo
-  done | sort | cut -d " " -f2- | tr '[A-Z]' '[a-z]' > "$GIT_REPO_DIR/.git_index"
+  done | sort | cut -d " " -f2- > "$GIT_REPO_DIR/.git_index"
   IFS=$' \t\n'
 
   if [ "$1" != "--silent" ]; then
