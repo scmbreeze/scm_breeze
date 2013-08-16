@@ -119,9 +119,9 @@ scmb_expand_args() {
   first=1
   OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
   for arg in "$@"; do
-    if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
+    if [[ "$arg" =~ ^[0-9]{0,3}$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
-      if [ -e "$arg" ]; then 
+      if [ -e "$arg" ]; then
         printf '%s' "$arg"
       else
         eval printf '%s' "\"\$$git_env_char$arg\""
