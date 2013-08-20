@@ -334,8 +334,15 @@ else
 
 		case "$state" in
 			projects)
-				_files -/ -W $GIT_REPO_DIR
-				;;
+			    # Only check and rebuild index if necessary
+			    _check_git_index
+			    if [[ $PREFIX == /* ]]; then
+				PREFIX=$PREFIX[2,-1]
+				_files -X "Files in project directory" -W $GIT_REPO_DIR
+			    else
+				compadd -X "Git projects" $(sed -e 's:.*/::' -e 's:$:/:' "$GIT_REPO_DIR/.git_index") && return 0
+			    fi
+			    ;;
 			git_command)
 				;;
 		esac
