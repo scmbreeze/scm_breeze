@@ -319,6 +319,7 @@ if [ $shell = 'bash' ]; then
 else
 	function _git_index_tab_completion() {
 		typeset -A opt_args
+		local state state_descr context line
 
 		_arguments \
 			"--rebuild[Rebuild repository index]" \
