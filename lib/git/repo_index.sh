@@ -327,7 +327,7 @@ else
 			"--update-all-with-notifications[Update all indexed repositories with notifications]" \
 			"--list[List all repositories currently present in the index]" \
 			"--count-by-host[Count all repositories per host]" \
-			"--batch-cmd+[Run a git command on all repositories]:git command:->git_command" \
+			"--batch-cmd+[Run a command on all repositories]:command:->command" \
 			"1::Git projects:->projects" \
 			&& return 0
 
@@ -343,8 +343,11 @@ else
 				compadd -X "Git projects" $(sed -e 's:.*/::' -e 's:$:/:' "$GIT_REPO_DIR/.git_index") && return 0
 			    fi
 			    ;;
-			git_command)
-				;;
+			command)
+			    local ret=1
+			    _call_function ret _command_names
+			    return ret
+			    ;;
 		esac
 
 		return 1;
