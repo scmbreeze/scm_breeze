@@ -119,9 +119,9 @@ scmb_expand_args() {
   first=1
   OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
   for arg in "$@"; do
-    if [[ "$arg" =~ ^[0-9]+$ ]] ; then      # Substitute $e{*} variables for any integers
+    if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
-      if [ -e "$arg" ]; then 
+      if [ -e "$arg" ]; then
         printf '%s' "$arg"
       else
         eval printf '%s' "\"\$$git_env_char$arg\""
@@ -210,7 +210,7 @@ git_commit_prompt() {
 # Prompt for commit message, then commit all modified and untracked files.
 git_commit_all() {
   fail_if_not_git_repo || return 1
-  changes=$(git status --porcelain | wc -l)
+  changes=$(git status --porcelain | wc -l | tr -d ' ')
   if [ "$changes" -gt 0 ]; then
     if [ -n "$APPEND" ]; then
       local appending=" | \033[0;36mappending '\033[1;36m$APPEND\033[0;36m' to commit message.\033[0m"

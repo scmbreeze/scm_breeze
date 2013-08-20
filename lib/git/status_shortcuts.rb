@@ -20,7 +20,7 @@
 # # groups => 1: staged, 2: unmerged, 3: unstaged, 4: untracked
 # --------------------------------------------------------------------
 
-@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --git-dir 2> /dev/null`.sub(/\/\.git$/, '').strip
+@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel 2> /dev/null`.strip
 
 @git_status = `\git status --porcelain 2> /dev/null`
 

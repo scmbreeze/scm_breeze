@@ -97,9 +97,9 @@ function git_index() {
       fi
       # Try partial matches
       # - string at beginning of project
-      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 "/$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 -i "/$project"); fi
       # - string anywhere in project
-      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 "$project"); fi
+      if [ -z "$base_path" ]; then base_path=$(_git_index_dirs_without_home | \grep -m1 -i "$project"); fi
       # --------------------
       # Go to our base path
       if [ -n "$base_path" ]; then
