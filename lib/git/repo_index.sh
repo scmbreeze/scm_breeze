@@ -328,7 +328,7 @@ else
 			"--list[List all repositories currently present in the index]" \
 			"--count-by-host[Count all repositories per host]" \
 			"--batch-cmd+[Run a git command on all repositories]:git command:->git_command" \
-			":Project name:->projects" \
+			"1::Git projects:->projects" \
 			&& return 0
 
 
