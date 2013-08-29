@@ -89,6 +89,7 @@ git_show_alias="gsh"
 git_show_summary="gsm"  # (gss taken by git status short)
 git_stash_alias="gash"
 git_stash_apply_alias="gasha"
+git_stash_pop_alias="gashp"
 git_stash_list_alias="gashl"
 git_tag_alias="gt"
 
