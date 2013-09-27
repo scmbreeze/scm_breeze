@@ -91,9 +91,9 @@ $ ge echo 1-3
 ### Other shortcuts
 
 SCM Breeze adds a number of aliases to your shell. Use `list_aliases` to view all the aliases and their corresponding commands.
-You can filter aliases with a search string, e.g. `list_aliases git log`
+You can filter aliases by adding a search string: `list_aliases git log`
 
-There's also a `git_aliases` command, which shows aliases for `git` commands. You can also pass in additional filters, e.g. `git_aliases log`.
+There's also a `git_aliases` command, which just shows aliases for `git` commands. You can also pass in additional filters, e.g. `git_aliases log`.
 
 
 ## Keyboard bindings
