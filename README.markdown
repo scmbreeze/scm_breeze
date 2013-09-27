@@ -88,6 +88,11 @@ $ ge echo 1-3
 ```
 
 
+### Other shortcuts
+
+SCM Breeze adds a total of 76 aliases to your shell. Use `list_aliases` to view all the aliases and their corresponding commands.
+
+
 ## Keyboard bindings
 
 Some of my most common git commands are `git add` and `git commit`, so I wanted these
