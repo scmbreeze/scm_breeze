@@ -158,5 +158,7 @@ if [ $shell = "bash" ]; then
   # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
   complete -o nospace -F _git_index_tab_completion git_index
   complete -o nospace -F _git_index_tab_completion $git_index_alias
+else
+  compdef _git_index_tab_completion git_index $git_index_alias
 fi
 
