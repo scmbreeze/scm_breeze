@@ -103,6 +103,9 @@ if [ "$git_setup_aliases" = "yes" ]; then
   git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
   __git_alias "$git_log_alias" "git" "$git_log_command"
 
+  # Same as the above, but displays all the branches and remotes
+  __git_alias "$git_log_all_alias" "git" "$git_log_command" "--branches" "--remotes"
+
   # Standard commands
   __git_alias "$git_clone_alias" "git" 'clone'
   __git_alias "$git_fetch_alias" "git" 'fetch'
