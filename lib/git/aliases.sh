@@ -88,6 +88,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   # Commands that deal with paths
   __git_alias "$git_checkout_alias"    "git" "checkout"
   __git_alias "$git_commit_alias"      "git" "commit"
+  __git_alias "$git_commit_verbose_alias" "git" "commit" "--verbose"
   __git_alias "$git_reset_alias"       "git" "reset"
   __git_alias "$git_reset_del_alias"   "git" "reset" "--"
   __git_alias "$git_reset_hard_alias"  "git" "reset" "--hard"
