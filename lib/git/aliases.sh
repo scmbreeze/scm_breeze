@@ -121,6 +121,8 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_rebase_alias_abort" "git" 'rebase' "--abort"
   __git_alias "$git_reset_last_commit" "git" "reset HEAD~"
   __git_alias "$git_merge_alias" "git" 'merge'
+  __git_alias "$git_merge_no_fast_forward_alias" "git" "merge" "--no-ff"
+  __git_alias "$git_merge_only_fast_forward_alias" "git" "merge" "--ff"
   __git_alias "$git_cherry_pick_alias" "git" 'cherry-pick'
   __git_alias "$git_show_alias" "git" 'show'
   __git_alias "$git_show_summary" "git" 'show' '--summary'
