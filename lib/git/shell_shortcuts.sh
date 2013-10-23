@@ -4,6 +4,16 @@
 # Released under the LGPL (GNU Lesser General Public License)
 # ------------------------------------------------------------------------------
 
+
+if test | sed -E 's///g' 2>/dev/null; then
+  SED_REGEX_ARG="E"
+elif test | sed -r 's///g' 2>/dev/null; then
+  SED_REGEX_ARG="r"
+else
+  echo "Cannot determine extended regex argument for sed! (Doesn't respond to either -E or -r)"
+fi
+
+
 # Wrap common commands with numeric argument expansion.
 # Prepends everything with exec_scmb_expand_args,
 # even if commands are already aliases or functions
@@ -11,7 +21,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
   # Do it in a function so we don't bleed variables
   function _git_wrap_commands() {
     # Define 'whence' for bash, to get the value of an alias
-    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -E -e "s/.*is aliased to \`//" -e "s/'$//"; }
+    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
     for cmd in $(echo $scmb_wrapped_shell_commands); do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
@@ -50,14 +60,14 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         esac
 
         # Expand original command into full path, to avoid infinite loops
-        local expanded_alias="$(echo $original_alias | sed -E "s%(^| )$cmd($| )%\\1$escaped_cmd\\2%")"
+        local expanded_alias="$(echo $original_alias | sed -$SED_REGEX_ARG "s%(^| )$cmd($| )%\\1$escaped_cmd\\2%")"
         # Wrap previous alias with escaped command
         alias $cmd="exec_scmb_expand_args $expanded_alias";;
 
       *'is a'*'function'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a function"; fi
         # Copy old function into new name
-        eval "$(declare -f $cmd | sed -E "s/^$cmd \(\)/__original_$cmd ()/")"
+        eval "$(declare -f $cmd | sed -$SED_REGEX_ARG "s/^$cmd \(\)/__original_$cmd ()/")"
         # Remove function
         unset -f $cmd
         # Create function that wraps old function
@@ -131,7 +141,7 @@ function ls_with_file_shortcuts {
                puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
     }
 
-    ll_output=$(echo "$ll_output" | \sed -E "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+    ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
   fi
 
   if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
