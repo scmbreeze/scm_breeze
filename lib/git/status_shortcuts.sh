@@ -116,21 +116,28 @@ git_show_affected_files(){
 # * git_status_shortcuts()  - git status implementation
 # * git_show_affected_files() - shows files affected by a given SHA1, etc.
 scmb_expand_args() {
+  # Check for --relative param
+  if [ "$1" = "--relative" ]; then
+    local relative=1
+    shift
+  fi
+
   first=1
   OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       if [ -e "$arg" ]; then
+        # Don't expand files or directories with numeric names
         printf '%s' "$arg"
       else
-        eval printf '%s' "\"\$$git_env_char$arg\""
+        _print_path "$relative" "$git_env_char$arg"
       fi
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
 
       for i in $(eval echo {${arg/-/..}}); do
         if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
-        eval printf '%s' "\"\$$git_env_char$i\""
+        _print_path "$relative" "$git_env_char$i"
       done
     else   # Otherwise, treat $arg as a normal string.
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
@@ -140,9 +147,19 @@ scmb_expand_args() {
   IFS="$OLDIFS"
 }
 
+_print_path() {
+  if [ "$1" = 1 ]; then
+    eval printf '%s' "\"\$$2\"" | sed -e "s%$(pwd)/%%" | awk '{printf("%s", $0)}'
+  else
+    eval printf '%s' "\"\$$2\""
+  fi
+}
+
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
-exec_scmb_expand_args() { eval "$(scmb_expand_args "$@" | sed -e "s/\([][()<>^ \"']\)/"'\\\1/g')"; }
+exec_scmb_expand_args() {
+  eval "$(scmb_expand_args "$@" | sed -e "s/\([][()<>^ \"']\)/"'\\\1/g')"
+}
 
 # Clear numbered env variables
 git_clear_vars() {

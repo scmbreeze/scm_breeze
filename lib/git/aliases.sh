@@ -26,8 +26,10 @@ if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 function git(){
   # Only expand args for git commands that deal with paths or branches
   case $1 in
-    checkout|commit|rm|blame|diff|add|log|rebase|reset|merge)
+    commit|blame|add|log|rebase|merge)
       exec_scmb_expand_args "$_git_cmd" "$@";;
+    checkout|diff|rm|reset)
+      exec_scmb_expand_args --relative "$_git_cmd" "$@";;
     branch)
       _scmb_git_branch_shortcuts "${@:2}";;
     *)
@@ -89,14 +91,13 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_checkout_alias"    "git" "checkout"
   __git_alias "$git_commit_alias"      "git" "commit"
   __git_alias "$git_commit_verbose_alias" "git" "commit" "--verbose"
-  __git_alias "$git_reset_alias"       "git" "reset"
-  __git_alias "$git_reset_del_alias"   "git" "reset" "--"
+  __git_alias "$git_reset_alias"       "git" "reset" "--"
   __git_alias "$git_reset_hard_alias"  "git" "reset" "--hard"
   __git_alias "$git_rm_alias"          "git" "rm"
   __git_alias "$git_blame_alias"       "git" "blame"
-  __git_alias "$git_diff_alias"        "git" "diff"
+  __git_alias "$git_diff_alias"        "git" "diff" "--"
   __git_alias "$git_diff_word_alias"   "git" "diff" "--word-diff"
-  __git_alias "$git_diff_cached_alias" "git" "diff" "--cached"
+  __git_alias "$git_diff_cached_alias" "git" "diff" "--cached --"
   __git_alias "$git_add_patch_alias"   "git" "add" "-p"
   __git_alias "$git_add_updated_alias"   "git" "add" "-u"
   __git_alias "$git_difftool_alias"    "git" "difftool"
