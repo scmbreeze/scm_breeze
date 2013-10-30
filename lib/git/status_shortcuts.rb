@@ -26,7 +26,8 @@
 
 git_branch = `\git branch -v 2> /dev/null`
 @branch = git_branch[/^\* (\(no branch\)|[^ ]*)/, 1]
-@ahead = git_branch[/^\* [^ ]* *[^ ]* *\[ahead ?(\d+)\]/, 1]
+@ahead = git_branch[/^\* [^ ]* *[^ ]* *\[ahead ?(\d+).*\]/, 1]
+@behind = git_branch[/^\* [^ ]* *[^ ]* *\[.*behind ?(\d+)\]/, 1]
 
 @changes = @git_status.split("\n")
 # Exit if too many changes
@@ -68,20 +69,21 @@ exit if @changes.size > ENV["gs_max_changes"].to_i
 # Counter for env variables
 @e = 0
 
-# Show how many commits ahead we are from origin
-ahead = @ahead ? "  #{@c[:dark]}|  #{@c[:new]}+#{@ahead}#{@c[:rst]}" : ""
+# Show how many commits we are ahead and/or behind origin
+difference = ["-#{@behind}", "+#{@ahead}"].select{|d| d.length > 1}.join('/')
+difference = difference.length > 0 ? "  #{@c[:dark]}|  #{@c[:new]}#{difference}#{@c[:rst]}" : ""
 
 
 # If no changes, just display green no changes message and exit here
 if @git_status == ""
-  puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  \033[0;32mNo changes (working directory clean)%s" % [
+  puts "%s#%s On branch: %s#{@branch}#{difference}  %s|  \033[0;32mNo changes (working directory clean)%s" % [
     @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst]
   ]
   exit
 end
 
 
-puts "%s#%s On branch: %s#{@branch}#{ahead}  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
+puts "%s#%s On branch: %s#{@branch}#{difference}  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
   @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
 ]
 
