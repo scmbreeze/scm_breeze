@@ -76,6 +76,7 @@ __git_alias () {
 # --------------------------------------------------------------------
 # SCM Breeze functions
 _alias $git_status_shortcuts_alias="git_status_shortcuts"
+_alias $git_grep_shortcuts_alias="git_grep_shortcuts"
 _alias $git_add_shortcuts_alias="git_add_shortcuts"
 _alias $exec_scmb_expand_args_alias="exec_scmb_expand_args"
 _alias $git_show_files_alias="git_show_affected_files"
