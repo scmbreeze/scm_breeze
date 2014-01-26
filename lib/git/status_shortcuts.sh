@@ -233,7 +233,7 @@ git_commit_all() {
       local appending=" | \033[0;36mappending '\033[1;36m$APPEND\033[0;36m' to commit message.\033[0m"
     fi
     echo -e "\033[0;33mCommitting all files (\033[0;31m$changes\033[0;33m)\033[0m$appending"
-    git_commit_prompt "git add -A"
+    git_commit_prompt "git add --all ."
   else
     echo "# No changed files to commit."
   fi
