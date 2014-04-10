@@ -21,7 +21,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
   # Do it in a function so we don't bleed variables
   function _git_wrap_commands() {
     # Define 'whence' for bash, to get the value of an alias
-    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
+    type whence > /dev/null 2>&1 || function whence() { LC_MESSAGES="C" type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
     for cmd in $(echo $scmb_wrapped_shell_commands); do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
@@ -35,7 +35,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         fi
       fi
 
-      case "$(type $cmd 2>&1)" in
+      case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
 
       # Don't do anything if command already aliased, or not found.
       *'exec_scmb_expand_args'*)
@@ -52,7 +52,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         unalias $cmd
 
         # Detect original $cmd type, and escape
-        case "$(type $cmd 2>&1)" in
+        case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
           # Escape shell builtins with 'builtin'
           *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
           # Get full path for files with 'find_binary' function
