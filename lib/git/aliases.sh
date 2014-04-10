@@ -148,7 +148,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   _alias $git_commit_no_msg_alias='git commit -C HEAD'
   _alias $git_log_stat_alias='git log --stat --max-count=5'
   _alias $git_log_graph_alias='git log --graph --max-count=5'
-  _alias $git_add_all_alias='git add -A'
+  _alias $git_add_all_alias='git add --all .'
 fi
 
 
