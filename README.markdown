@@ -287,7 +287,7 @@ git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
 source ~/.bashrc   # or source ~/.zshrc
 ```
 
-The install script just adds the following line to your `.bashrc` or `.zshrc`:
+The install script creates required default configs and adds the following line to your `.bashrc` or `.zshrc`:
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
