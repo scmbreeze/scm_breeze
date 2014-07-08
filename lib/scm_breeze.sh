@@ -48,7 +48,7 @@ _create_or_patch_scmbrc() {
     # If file exists, attempt to update it with any new settings
     elif [ -n "$1" ]; then
       # Create diff of example file, substituting example file for user's config.
-      git diff $1 "$prefix""scmbrc.example" | sed "s/$prefix""scmbrc.example/.$prefix""scmbrc/g" > $patchfile
+      git diff $1 "$prefix""scmbrc.example" | sed "s/$prefix""scmbrc.example/.$prefix""scmbrc/g" >| $patchfile
       if [ -s $patchfile ]; then  # If patchfile is not empty
         cd "$HOME"
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.
