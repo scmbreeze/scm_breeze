@@ -127,7 +127,12 @@ end
   @stat_hash[group] << {:msg => msg, :col => col, :file => file} if msg
 
   # Work tree modification states
-  if y == "M"
+  if x == "R" && y == "M"
+    # Extract the second file name from the format x -> y
+    quoted, unquoted = /^(?:"(?:[^"\\]|\\.)*"|[^"].*) -> (?:"((?:[^"\\]|\\.)*)"|(.*[^"]))$/.match(file)[1..2]
+    renamed_file = quoted || unquoted
+    @stat_hash[:unstaged] << {:msg => "  modified", :col => :mod, :file => renamed_file}  
+  elsif x != "R" && y == "M"
     @stat_hash[:unstaged] << {:msg => "  modified", :col => :mod, :file => file}
   elsif y == "D" && x != "D" && x != "U"
     # Don't show deleted 'y' during a merge conflict.
