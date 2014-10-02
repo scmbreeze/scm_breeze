@@ -20,7 +20,7 @@ unset -f git > /dev/null 2>&1
 export _git_cmd="$(\which git)"
 # Wrap git with the 'hub' github wrapper, if installed (https://github.com/defunkt/hub)
 if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
-
+if type gh  > /dev/null 2>&1; then export _git_cmd="gh"; fi
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
 function git(){
