@@ -37,7 +37,7 @@ function git(){
   esac
 }
 
-_alias $git_alias='git'
+_alias "$git_alias" "git"
 
 
 # --------------------------------------------------------------------
@@ -75,14 +75,14 @@ __git_alias () {
 
 # --------------------------------------------------------------------
 # SCM Breeze functions
-_alias $git_status_shortcuts_alias="git_status_shortcuts"
-_alias $git_add_shortcuts_alias="git_add_shortcuts"
-_alias $exec_scmb_expand_args_alias="exec_scmb_expand_args"
-_alias $git_show_files_alias="git_show_affected_files"
-_alias $git_commit_all_alias='git_commit_all'
+_alias "$git_status_shortcuts_alias"  "git_status_shortcuts"
+_alias "$git_add_shortcuts_alias"     "git_add_shortcuts"
+_alias "$exec_scmb_expand_args_alias" "exec_scmb_expand_args"
+_alias "$git_show_files_alias"        "git_show_affected_files"
+_alias "$git_commit_all_alias"        "git_commit_all"
 
 # Git Index alias
-_alias $git_index_alias="git_index"
+_alias "$git_index_alias"             "git_index"
 
 # Only set up the following aliases if 'git_setup_aliases' is 'yes'
 if [ "$git_setup_aliases" = "yes" ]; then
@@ -139,16 +139,17 @@ if [ "$git_setup_aliases" = "yes" ]; then
 
 
   # Compound/complex commands
-  _alias $git_fetch_all_alias="git fetch --all"
-  _alias $git_pull_then_push_alias="git pull && git push"
-  _alias $git_fetch_and_rebase_alias='git fetch && git rebase'
-  _alias $git_commit_amend_alias='git commit --amend'
+  _alias "$git_fetch_all_alias"           "git fetch --all"
+  _alias "$git_pull_then_push_alias"      "git pull && git push"
+  _alias "$git_fetch_and_rebase_alias"    "git fetch && git rebase"
+  _alias "$git_commit_amend_alias"        "git commit --amend"
+
   # Add staged changes to latest commit without prompting for message
-  _alias $git_commit_amend_no_msg_alias='git commit --amend -C HEAD'
-  _alias $git_commit_no_msg_alias='git commit -C HEAD'
-  _alias $git_log_stat_alias='git log --stat --max-count=5'
-  _alias $git_log_graph_alias='git log --graph --max-count=5'
-  _alias $git_add_all_alias='git add --all .'
+  _alias "$git_commit_amend_no_msg_alias" "git commit --amend -C HEAD"
+  _alias "$git_commit_no_msg_alias"       "git commit -C HEAD"
+  _alias "$git_log_stat_alias"            "git log --stat --max-count=5"
+  _alias "$git_log_graph_alias"           "git log --graph --max-count=5"
+  _alias "$git_add_all_alias"             "git add --all ."
 fi
 
 
@@ -168,4 +169,3 @@ if [ $shell = "bash" ]; then
 else
   compdef _git_index_tab_completion git_index $git_index_alias
 fi
-
