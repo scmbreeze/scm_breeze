@@ -10,7 +10,13 @@ enable_nullglob()  { if [ $shell = "zsh" ]; then setopt NULL_GLOB;   else shopt 
 disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt -u nullglob; fi; }
 
 # Alias wrapper that ignores errors if alias is not defined.
-_alias(){ alias "$@" 2> /dev/null; }
+_safe_alias(){ alias "$@" 2> /dev/null; }
+_alias() {
+  if [ -n "$1" ]; then
+    local alias_str="$1"; local cmd="$2"
+    _safe_alias $alias_str="$cmd"
+  fi
+}
 
 find_binary(){
   if [ $shell = "zsh" ]; then
