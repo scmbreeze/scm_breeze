@@ -113,6 +113,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_add_patch_alias"                'git' 'add' '-p'
   __git_alias "$git_add_updated_alias"              'git' 'add' '-u'
   __git_alias "$git_difftool_alias"                 'git' 'difftool'
+  __git_alias "$git_mergetool_alias"                'git' 'mergetool'
 
   # Custom default format for git log
   git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"

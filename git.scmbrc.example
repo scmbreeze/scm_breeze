@@ -53,6 +53,7 @@ git_diff_file_alias="gdf"
 git_diff_word_alias="gdw"
 git_diff_cached_alias="gdc"
 git_difftool_alias="gdt"
+git_mergetool_alias="gmt"
 # 3. Standard commands
 git_clone_alias="gcl"
 git_fetch_alias="gf"
