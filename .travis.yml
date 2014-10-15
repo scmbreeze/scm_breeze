@@ -1,3 +1,9 @@
-script: ./run_tests.sh
-before_script:
-  - sudo apt-get install zsh
+os:
+  - linux
+  - osx
+
+install:
+  - ./test/support/travisci_deps.sh
+
+script:
+  - ./run_tests.sh
