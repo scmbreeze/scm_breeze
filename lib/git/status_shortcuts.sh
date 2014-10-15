@@ -166,7 +166,12 @@ git_clear_vars() {
   local i
   for (( i=1; i<=$gs_max_changes; i++ )); do
     # Stop clearing after first empty var
-    if [[ -z "$(eval echo "\${$git_env_char$i:-}")" ]]; then break; fi
+    local env_var_i=${git_env_char}${i}
+    if [[ -z "$(eval echo "\${$env_var_i:-}")" ]]; then
+      break
+    else
+      unset $env_var_i
+    fi
   done
 }
 
