@@ -82,7 +82,7 @@ test_ls_with_file_shortcuts() {
   ls_with_file_shortcuts > $temp_file
   ls_output=$(<$temp_file strip_colors)
 
-  # Compare as fixed strings (F), instead of regex (P)
+  # Compare as fixed strings (F), instead of normal grep behavior
   assertIncludes "$ls_output" '[1]  a "b"' F
   assertIncludes "$ls_output" "[2]  a 'b'" F
   assertIncludes "$ls_output" '[3]  a [b]' F
