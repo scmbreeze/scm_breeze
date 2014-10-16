@@ -71,7 +71,15 @@ test_ls_with_file_shortcuts() {
   export git_env_char="e"
 
   TEST_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
+
+  # Darwin actually symlinks /var inside /private, but mktemp reports back the
+  # logical pathat time of file creation.  So make sure we always get the
+  # full physical path to be absolutely certain when doing comparisons later,
+  # because thats how the Ruby status_shortcuts.rb script is going to obtain
+  # them.
   cd $TEST_DIR
+  TEST_DIR=`pwd -P`
+
   touch 'test file' 'test_file'
   mkdir -p "a [b]" 'a "b"' "a 'b'"
   touch "a \"b\"/c"
