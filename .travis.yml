@@ -3,10 +3,8 @@ os:
   - osx
 
 env:
-  - TEST_SHELLS="zsh bash"
   - TEST_SHELLS=bash
   - TEST_SHELLS=zsh
-  - HI=mom
 
 install:
   - ./test/support/travisci_deps.sh
