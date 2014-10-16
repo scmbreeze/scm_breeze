@@ -19,8 +19,8 @@ done
 
 if [ "$failed" = "true" ]; then
   echo "Tests failed!"
-  return 1;
+  exit 1;
 else
   echo "All tests passed!"
-  return 0;
+  exit 0;
 fi
