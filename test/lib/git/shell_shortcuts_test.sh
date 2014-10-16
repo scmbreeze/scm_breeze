@@ -31,6 +31,14 @@ oneTimeSetUp() {
 
   # Test functions
   function ln() { ln $@; }
+
+  # Before aliasing, get original locations so we can compare them in the test
+  unalias mv rm sed cat 2>/dev/null
+  orig_mv=`which mv`
+  orig_rm=`which rm`
+  orig_sed=`which sed`
+  orig_cat=`which cat`
+
   # Test aliases
   alias mv="nocorrect mv"
   alias rm="rm --option"
@@ -58,11 +66,11 @@ assertAliasEquals(){
 #-----------------------------------------------------------------------------
 
 test_shell_command_wrapping() {
-  assertAliasEquals "exec_scmb_expand_args /bin/rm --option"  "rm"
-  assertAliasEquals "exec_scmb_expand_args nocorrect /bin/mv" "mv"
-  assertAliasEquals "exec_scmb_expand_args /bin/sed"          "sed"
-  assertAliasEquals "exec_scmb_expand_args /bin/cat"          "cat"
-  assertAliasEquals "exec_scmb_expand_args builtin cd"        "cd"
+  assertAliasEquals "exec_scmb_expand_args $orig_rm --option"  "rm"
+  assertAliasEquals "exec_scmb_expand_args nocorrect $orig_mv" "mv"
+  assertAliasEquals "exec_scmb_expand_args $orig_sed"          "sed"
+  assertAliasEquals "exec_scmb_expand_args $orig_cat"          "cat"
+  assertAliasEquals "exec_scmb_expand_args builtin cd"         "cd"
   assertIncludes    "$(declare -f ln)" "ln ()"
   assertIncludes    "$(declare -f ln)" "exec_scmb_expand_args __original_ln"
 }
