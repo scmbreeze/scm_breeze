@@ -151,6 +151,9 @@ if [ "$git_setup_aliases" = "yes" ]; then
   _alias "$git_log_stat_alias"            'git log --stat --max-count=5'
   _alias "$git_log_graph_alias"           'git log --graph --max-count=5'
   _alias "$git_add_all_alias"             'git add --all .'
+
+  # Hub aliases (https://github.com/github/hub)
+  _alias "$git_pull_request_alias"        'git pull-request'
 fi
 
 
