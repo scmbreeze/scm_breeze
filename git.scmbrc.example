@@ -40,7 +40,7 @@ git_show_files_alias="gsf"
 exec_scmb_expand_args_alias="ge"
 # 2. Commands that handle paths (with shortcut args expanded)
 git_checkout_alias="gco"
-git_checkout_branch_alias="gcob"
+git_checkout_branch_alias="gcb"
 git_commit_alias="gc"
 git_commit_verbose_alias="gcv"
 git_reset_alias="grs"
