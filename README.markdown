@@ -6,7 +6,13 @@ a repository index with tab completion, and many other useful features.
 
 <hr/>
 
-## Demo video
+## Demos
+
+Adding a range of files, and pressing `Ctrl+X, C` to commit:
+
+<center><img src="http://i.imgur.com/3fD8cpo.gif" title="SCM Breeze Example Gif" /></center>
+
+<br/>
 
 <center><a href="http://www.youtube.com/watch?v=iKdp6uBfrvc" target="_blank"><img src="http://i.imgur.com/l7aGG.png"></a></center>
 
