@@ -96,6 +96,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_rm_alias"                       'git' 'rm'
   __git_alias "$git_blame_alias"                    'git' 'blame'
   __git_alias "$git_diff_alias"                     'git' 'diff' '--'
+  __git_alias "$git_diff_no_whitespace_alias"       'git' 'diff' '-w' '--'
   __git_alias "$git_diff_word_alias"                'git' 'diff' '--word-diff'
   __git_alias "$git_diff_cached_alias"              'git' 'diff' '--cached --'
   __git_alias "$git_add_patch_alias"                'git' 'add' '-p'
