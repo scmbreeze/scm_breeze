@@ -125,7 +125,7 @@ scmb_expand_args() {
   first=1
   OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
   for arg in "$@"; do
-    if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
+    if echo "$arg" | grep -E '^[0-9]{0,4}$'; then      # Substitute $e{*} variables for any integers
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       if [ -e "$arg" ]; then
         # Don't expand files or directories with numeric names
@@ -133,7 +133,7 @@ scmb_expand_args() {
       else
         _print_path "$relative" "$git_env_char$arg"
       fi
-    elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
+    elif echo "$arg" | grep -E '^[0-9]+-[0-9]+$'; then           # Expand ranges into $e{*} variables
 
       for i in $(eval echo {${arg/-/..}}); do
         if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
