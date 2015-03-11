@@ -26,6 +26,7 @@ source "$scmbDir/lib/scm_breeze.sh"
 oneTimeSetUp() {
   export shell_command_wrapping_enabled="true"
   export scmb_wrapped_shell_commands="not_found cat rm cp mv ln cd sed"
+  export shell_ls_aliases_enabled="true"
 
   alias rvm="test" # Ensure tests run if RVM isn't loaded but $HOME/.rvm is present
 
