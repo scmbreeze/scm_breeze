@@ -64,7 +64,8 @@ _git
 # Usage: __git_alias <alias> <command_prefix> <command>
 __git_alias () {
   if [ -n "$1" ]; then
-    local alias_str="$1"; local cmd_prefix="$2"; local cmd="$3"; local cmd_args=("${@:4}")
+    local alias_str cmd_prefix cmd cmd_args
+    alias_str="$1"; cmd_prefix="$2"; cmd="$3"; cmd_args=("${@:4}")
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
     if [ "$shell" = "bash" ]; then
       __define_git_completion "$alias_str" "$cmd"
