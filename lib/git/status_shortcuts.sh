@@ -158,7 +158,12 @@ _print_path() {
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
-  eval "$(scmb_expand_args "$@" | sed -e "s/\([][()<>^ \"']\)/"'\\\1/g')"
+  local expanded=( $(scmb_expand_args "$@") )
+  local quoted=()
+  for word in "${expanded[@]}"; do
+    quoted=( "${quoted[@]}" "$(printf "%q" "$word")" )
+  done
+  eval "${quoted[@]}"
 }
 
 # Clear numbered env variables
