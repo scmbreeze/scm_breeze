@@ -66,6 +66,10 @@ __git_alias () {
   if [ -n "$1" ]; then
     local alias_str cmd_prefix cmd cmd_args
     alias_str="$1"; cmd_prefix="$2"; cmd="$3"; cmd_args=("${@:4}")
+    if [ "$shell" = "zsh" ]; then
+        cmd_args=("${@:3}")
+    fi
+
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
     if [ "$shell" = "bash" ]; then
       __define_git_completion "$alias_str" "$cmd"
