@@ -39,7 +39,7 @@ EOF
   done
 }
 
-__git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts"
+__git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts" ""
 __git_alias "$git_branch_all_alias"          "_scmb_git_branch_shortcuts" "-a"
 __git_alias "$git_branch_move_alias"         "_scmb_git_branch_shortcuts" "-m"
 __git_alias "$git_branch_delete_alias"       "_scmb_git_branch_shortcuts" "-d"
