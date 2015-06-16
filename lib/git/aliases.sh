@@ -65,9 +65,13 @@ _git
 __git_alias () {
   if [ -n "$1" ]; then
     local alias_str cmd_prefix cmd cmd_args
+
     alias_str="$1"; cmd_prefix="$2"; cmd="$3";
-    shift 3 2>/dev/null
-    cmd_args=$@
+    if [ $# -gt 2 ]; then
+      shift 3 2>/dev/null
+      cmd_args=$@
+    fi
+
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
     if [ "$shell" = "bash" ]; then
       __define_git_completion "$alias_str" "$cmd"
