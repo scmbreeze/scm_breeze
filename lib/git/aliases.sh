@@ -28,7 +28,7 @@ if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 function git(){
   # Only expand args for git commands that deal with paths or branches
   case $1 in
-    commit|blame|add|log|rebase|merge)
+    commit|blame|add|log|rebase|merge|difftool)
       exec_scmb_expand_args "$_git_cmd" "$@";;
     checkout|diff|rm|reset)
       exec_scmb_expand_args --relative "$_git_cmd" "$@";;
