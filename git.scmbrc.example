@@ -95,6 +95,7 @@ git_stash_apply_alias="gasha"
 git_stash_pop_alias="gashp"
 git_stash_list_alias="gashl"
 git_tag_alias="gt"
+git_top_level_alias="gtop"
 # Hub aliases (https://github.com/github/hub)
 git_pull_request_alias="gpr"
 
