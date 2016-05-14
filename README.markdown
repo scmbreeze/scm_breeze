@@ -328,6 +328,8 @@ The install script creates required default configs and adds the following line 
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
+**Note:** SCM Breeze performs much faster if you have ruby installed.
+
 
 # Updating
 
