@@ -13,8 +13,9 @@
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
 function _scmb_git_branch_shortcuts {
   fail_if_not_git_repo || return 1
+
   # Fall back to normal git branch, if any unknown args given
-  if [[ -n "$@" ]] && [[ "$@" != "-a" ]]; then
+  if [[ "$($_git_cmd branch | wc -l)" -gt 300 ]] || ([[ -n "$@" ]] && [[ "$@" != "-a" ]]); then
     exec_scmb_expand_args $_git_cmd branch "$@"
     return 1
   fi
