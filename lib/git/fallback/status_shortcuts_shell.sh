@@ -127,7 +127,7 @@ _gs_output_file_group() {
     if [ -z "$project_root" ]; then
       relative="${stat_file[$i]}"
     else
-      dest="$project_root/${stat_file[$i]}"
+      dest=$(readlink -f "$project_root/${stat_file[$i]}")
       local pwd=$(readlink -f "$PWD")
       relative="$(_gs_relative_path "$pwd" "$dest" )"
     fi
