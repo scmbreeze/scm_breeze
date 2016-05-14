@@ -3,10 +3,37 @@
 ## I still use it every day but it does everything I need.
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
-### Streamline your SCM workflow.
+
+> Streamline your SCM workflow.
 
 **SCM Breeze** is a set of shell scripts (for `bash` and `zsh`) that enhance your interaction with git. It integrates with your shell to give you numbered file shortcuts,
 a repository index with tab completion, and many other useful features.
+
+<hr/>
+
+- [SCM Breeze](#scm-breeze-)
+  - [Demos](#demos)
+  - [File Shortcuts](#file-shortcuts)
+    - [Git Status Shortcuts:](#git-status-shortcuts)
+    - ['ls' shortcuts:](#ls-shortcuts)
+    - [Other shortcuts](#other-shortcuts)
+  - [Keyboard bindings](#keyboard-bindings)
+  - [Repository Index](#repository-index)
+  - [Linking External Project Design Directories](#linking-external-project-design-directories)
+    - [1) Create and configure a root design directory](#1-create-and-configure-a-root-design-directory)
+    - [2) Initialize design directories for your projects](#2-initialize-design-directories-for-your-projects)
+    - [3) Link existing design directories into your projects](#3-link-existing-design-directories-into-your-projects)
+  - [Contributing tools / scripts](#contributing-tools--scripts)
+- [Installation](#installation)
+- [Updating](#updating)
+- [Uninstall](#uninstall)
+- [Configuration](#configuration)
+    - [1) Configure and use the provided SCM Breeze aliases](#1-configure-and-use-the-provided-scm-breeze-aliases)
+    - [2) Use your own aliases](#2-use-your-own-aliases)
+- [Notes about Tab Completion for Aliases](#notes-about-tab-completion-for-aliases)
+    - [Bash](#bash)
+    - [Zsh](#zsh)
+- [Contributing](#contributing)
 
 <hr/>
 
@@ -367,5 +394,5 @@ Please feel free to fork and send pull requests, especially if you would like to
 for Mercurial, SVN, etc.
 
 
-## Enjoy!
+***Enjoy!***
 
