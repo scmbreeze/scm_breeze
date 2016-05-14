@@ -1,3 +1,7 @@
+# Sorry, I don't really work on this anymore.
+
+## I still use it every day but it does everything I need.
+
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 ### Streamline your SCM workflow.
 
