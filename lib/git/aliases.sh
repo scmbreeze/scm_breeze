@@ -133,6 +133,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_rebase_alias_continue"          'git' 'rebase' '--continue'
   __git_alias "$git_rebase_alias_abort"             'git' 'rebase' '--abort'
   __git_alias "$git_reset_last_commit"              'git' 'reset HEAD~'
+  __git_alias "$git_top_level_alias"                'git' 'rev-parse' '--show-toplevel'
   __git_alias "$git_merge_alias"                    'git' 'merge'
   __git_alias "$git_merge_no_fast_forward_alias"    'git' 'merge' '--no-ff'
   __git_alias "$git_merge_only_fast_forward_alias"  'git' 'merge' '--ff'
@@ -144,7 +145,6 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_stash_pop_alias"                'git' 'stash' 'pop'
   __git_alias "$git_stash_list_alias"               'git' 'stash' 'list'
   __git_alias "$git_tag_alias"                      'git' 'tag'
-
 
   # Compound/complex commands
   _alias "$git_fetch_all_alias"           'git fetch --all'
