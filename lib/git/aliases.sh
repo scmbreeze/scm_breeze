@@ -102,6 +102,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_reset_hard_alias"               'git' 'reset' '--hard'
   __git_alias "$git_rm_alias"                       'git' 'rm'
   __git_alias "$git_blame_alias"                    'git' 'blame'
+  __git_alias "$git_diff_no_whitespace_alias"       'git' 'diff' '-w' '--'
   __git_alias "$git_diff_alias"                     'git' 'diff'
   __git_alias "$git_diff_file_alias"                'git' 'diff' '--'
   __git_alias "$git_diff_word_alias"                'git' 'diff' '--word-diff'
