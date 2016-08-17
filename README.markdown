@@ -1,6 +1,6 @@
-# Sorry, I don't really work on this anymore.
+# Moved to an organization, and looking for maintainers.
 
-## I still use it every day but it does everything I need.
+## Please post an issue if you would like to help with maintainance.
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 
