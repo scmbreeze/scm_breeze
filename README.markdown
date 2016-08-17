@@ -1,6 +1,6 @@
-# Moved to an organization, and looking for maintainers.
+# Now looking for help with maintainance.
 
-## Please post an issue if you would like to help with maintainance.
+## Please post an issue if you would like to help out.
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/ndbroadbent/scm_breeze.png?branch=master)](http://travis-ci.org/ndbroadbent/scm_breeze)
 
