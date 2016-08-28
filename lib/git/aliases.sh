@@ -150,6 +150,8 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_stash_pop_alias"                'git' 'stash' 'pop'
   __git_alias "$git_stash_list_alias"               'git' 'stash' 'list'
   __git_alias "$git_tag_alias"                      'git' 'tag'
+  __git_alias "$git_submodule_update_alias"         'git' 'submodule' 'update' '--init'
+  __git_alias "$git_submodule_update_rec_alias"     'git' 'submodule' 'update' '--init' '--recursive'
   __git_alias "$git_whatchanged_alias"              'git' 'whatchanged'
 
   # Compound/complex commands
