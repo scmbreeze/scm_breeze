@@ -139,6 +139,14 @@ scmb_expand_args() {
         if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
         _print_path "$relative" "$git_env_char$i"
       done
+    elif [[ "$arg" =~ ^d[0-9]{0,4}$ ]]; then # Expand d1 to $(dirname $e1)
+      argnum=${arg#d}
+      if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
+      if [ -e "$arg" ]; then
+        printf '%s' "$arg"
+      else
+        _print_dirname "$relative" "$git_env_char$argnum"
+      fi
     else   # Otherwise, treat $arg as a normal string.
       if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       printf '%s' "$arg"
@@ -152,6 +160,14 @@ _print_path() {
     eval printf '%s' "\"\$$2\"" | sed -e "s%$(pwd)/%%" | awk '{printf("%s", $0)}'
   else
     eval printf '%s' "\"\$$2\""
+  fi
+}
+
+_print_dirname() {
+  if [ "$1" = 1 ]; then
+    eval dirname $(printf '%s' "\"\$$2\"") | sed -e "s%$(pwd)/%%" | awk '{printf("%s", $0)}'
+  else
+    eval dirname $(printf '%s' "\"\$$2\"")
   fi
 }
 
