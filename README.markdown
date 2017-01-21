@@ -319,7 +319,7 @@ It would be cool to make this project into an [oh-my-zsh](https://github.com/rob
 # Installation
 
 ```bash
-git clone git://github.com/ndbroadbent/scm_breeze.git ~/.scm_breeze
+git clone git://github.com/scmbreeze/scm_breeze.git ~/.scm_breeze
 ~/.scm_breeze/install.sh
 source ~/.bashrc   # or source ~/.zshrc
 ```
