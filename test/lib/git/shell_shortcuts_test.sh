@@ -33,9 +33,9 @@ oneTimeSetUp() {
   # Test functions
   function ln() { ln $@; }
   # Test aliases
-  alias mv="nocorrect mv"
-  alias rm="rm --option"
-  alias sed="sed"
+  alias mv="nocorrect /bin/mv"
+  alias rm="/bin/rm --option"
+  alias sed="/bin/sed"
   # Test already wrapped commands
   alias cat="exec_scmb_expand_args /bin/cat"
 
