@@ -20,11 +20,11 @@
 # # groups => 1: staged, 2: unmerged, 3: unstaged, 4: untracked
 # --------------------------------------------------------------------
 
-@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel 2> /dev/null`.strip
+@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel`.strip
 
-@git_status = `\git status --porcelain 2> /dev/null`
+@git_status = `\git status --porcelain`
 
-git_branch = `\git branch -v 2> /dev/null`
+git_branch = `\git branch -v`
 @branch = git_branch[/^\* (\(no branch\)|[^ ]*)/, 1]
 @ahead = git_branch[/^\* [^ ]* *[^ ]* *\[ahead ?(\d+).*\]/, 1]
 @behind = git_branch[/^\* [^ ]* *[^ ]* *\[.*behind ?(\d+)\]/, 1]
