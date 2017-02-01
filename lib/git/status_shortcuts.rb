@@ -20,17 +20,17 @@
 # # groups => 1: staged, 2: unmerged, 3: unstaged, 4: untracked
 # --------------------------------------------------------------------
 
-@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel 2> /dev/null`.strip
+@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel`.strip
 
-@git_status = `\git status --porcelain -b 2> /dev/null`
+@git_status = `\git status --porcelain`
 
 git_status_lines = @git_status.split("\n")
-git_branch = git_status_lines[0]
-@branch = git_branch[/^## (?:Initial commit on )?([^ \.]+)/, 1]
-@ahead  = git_branch[/\[ahead ?(\d+).*\]/, 1]
-@behind = git_branch[/\[.*behind ?(\d+)\]/, 1]
+git_branch = `\git branch -v` #git_status_lines[0]
+@branch = git_branch[/^\* (?:Initial commit on )?([^ \.]+)/, 1]
+@ahead  = git_branch[/^\*.*\[ahead ?(\d+).*\]/, 1]
+@behind = git_branch[/^\*.*\[.*behind ?(\d+)\]/, 1]
 
-@changes = git_status_lines[1..-1]
+@changes = git_status_lines[0..-1]
 # Exit if too many changes
 exit if @changes.size > ENV["gs_max_changes"].to_i
 
