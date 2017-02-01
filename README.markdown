@@ -1,5 +1,6 @@
 # Now looking for help with maintainance.
 
+## /!\ this version contain a fix to works with windows!
 ## Please post an issue if you would like to help out.
 
 ---
@@ -407,4 +408,3 @@ project into an [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) for
 SCMs.
 
 ***Enjoy!***
-
