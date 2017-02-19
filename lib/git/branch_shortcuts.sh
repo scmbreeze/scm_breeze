@@ -39,6 +39,7 @@ EOF
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
+  unset IFS
 }
 
 __git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts" ""
