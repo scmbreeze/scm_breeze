@@ -1,4 +1,6 @@
-<img src="https://user-images.githubusercontent.com/139536/30805055-fe64a9e4-a219-11e7-90b2-9f5655dda99e.png" width="200" height="200">
+<img src="https://user-images.githubusercontent.com/139536/30827652-08e9b684-a265-11e7-95fb-50cbd2fb7c0d.png" width="200" height="200">
+
+
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/scmbreeze/scm_breeze.png?branch=master)](http://travis-ci.org/scmbreeze/scm_breeze)
 
