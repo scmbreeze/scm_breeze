@@ -1,8 +1,4 @@
-# Now looking for help with maintainance.
-
-## Please post an issue if you would like to help out.
-
----
+<img src="https://user-images.githubusercontent.com/139536/30805055-fe64a9e4-a219-11e7-90b2-9f5655dda99e.png" width="200" height="200">
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/scmbreeze/scm_breeze.png?branch=master)](http://travis-ci.org/scmbreeze/scm_breeze)
 
