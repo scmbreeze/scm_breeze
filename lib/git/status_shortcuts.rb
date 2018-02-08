@@ -22,7 +22,7 @@
 
 @project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel 2> /dev/null`.strip
 
-@git_status = `\git status --porcelain -b 2> /dev/null`
+@git_status = `\git status --porcelain -b`
 
 git_status_lines = @git_status.split("\n")
 git_branch = git_status_lines[0]
