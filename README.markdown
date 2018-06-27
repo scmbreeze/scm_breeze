@@ -114,7 +114,7 @@ $ gco 5
 
 
 You can use these shortcuts with system commands by passing your command
-through `exec_scmb_expand_args` (default alias is 'ge'):
+through `exec_scmb_expand_args` (default alias is `ge`):
 
 
 ```bash
