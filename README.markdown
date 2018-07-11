@@ -1,9 +1,6 @@
-# Now looking for help with maintainance.
+<img src="https://user-images.githubusercontent.com/139536/30827652-08e9b684-a265-11e7-95fb-50cbd2fb7c0d.png" width="200" height="200">
 
 ## /!\ this version contain a fix to works with windows!
-## Please post an issue if you would like to help out.
-
----
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/scmbreeze/scm_breeze.png?branch=master)](http://travis-ci.org/scmbreeze/scm_breeze)
 
@@ -117,7 +114,7 @@ $ gco 5
 
 
 You can use these shortcuts with system commands by passing your command
-through `exec_scmb_expand_args` (default alias is 'ge'):
+through `exec_scmb_expand_args` (default alias is `ge`):
 
 
 ```bash

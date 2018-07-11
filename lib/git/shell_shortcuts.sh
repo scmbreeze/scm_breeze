@@ -125,11 +125,11 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
     fi
 
     # Parse path from args
-    OLDIFS="$IFS"; IFS=$'\n'
+    IFS=$'\n'
     for arg in $@; do
       if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
     done
-    IFS="$OLDIFS"
+    unset IFS
 
     # Replace user/group with user symbol, if defined at ~/.user_sym
     # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
@@ -175,14 +175,14 @@ EOF
       ll_files="$(\ls "$@")"
     fi
 
-    OLDIFS="$IFS"; IFS=$'\n'
+    IFS=$'\n'
     for file in $ll_files; do
       if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
       export $git_env_char$e="$(eval $_abs_path_command \"${file//\"/\\\"}\")"
       if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
     done
-    IFS="$OLDIFS"
+    unset IFS
 
     # Turn off shwordsplit unless it was on previously
     if [[ $shell == "zsh" ]] && [ -z "$SHWORDSPLIT_ON" ]; then unsetopt shwordsplit; fi

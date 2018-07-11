@@ -43,7 +43,7 @@ git_status_shortcuts() {
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
-  IFS=$' \t\n'
+  unset IFS
 
   if [ "${scmbDebug:-}" = "true" ]; then echo "------------------------"; fi
   # Print status
@@ -91,7 +91,7 @@ git_silent_add_shortcuts() {
         echo -e "# Added '$file'"
       fi
     done
-    IFS=$' \t\n'
+    unset IFS
     echo "#"
   fi
 }
@@ -186,7 +186,7 @@ _git_resolve_merge_conflict() {
       git add "$file"
       echo -e "# Added $1 version of '$file'"
     done
-    IFS=$' \t\n'
+    unset IFS
     echo -e "# -- If you have finished resolving conflicts, commit the resolutions with 'git commit'"
   fi
 }

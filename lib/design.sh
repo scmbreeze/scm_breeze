@@ -102,5 +102,6 @@ design() {
     printf "Invalid command.\n\n"
     design
   fi
+  unset IFS
 }
 

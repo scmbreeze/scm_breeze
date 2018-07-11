@@ -33,11 +33,15 @@ oneTimeSetUp() {
   # Test functions
   function ln() { ln $@; }
   # Test aliases
-  alias mv="nocorrect mv"
-  alias rm="rm --option"
-  alias sed="sed"
+  export mv_path="$(which mv)"
+  export rm_path="$(which rm)"
+  export sed_path="$(which sed)"
+  export cat_pathj="$(which cat)"
+  alias mv="nocorrect $mv_path"
+  alias rm="$rm_path --option"
+  alias sed="$sed_path"
   # Test already wrapped commands
-  alias cat="exec_scmb_expand_args /bin/cat"
+  alias cat="exec_scmb_expand_args $cat_path"
 
   # Run shortcut wrapping
   source "$scmbDir/lib/git/shell_shortcuts.sh"
@@ -59,11 +63,11 @@ assertAliasEquals(){
 #-----------------------------------------------------------------------------
 
 test_shell_command_wrapping() {
-  assertAliasEquals "exec_scmb_expand_args /bin/rm --option"  "rm"
-  assertAliasEquals "exec_scmb_expand_args nocorrect /bin/mv" "mv"
-  assertAliasEquals "exec_scmb_expand_args /bin/sed"          "sed"
-  assertAliasEquals "exec_scmb_expand_args /bin/cat"          "cat"
-  assertAliasEquals "exec_scmb_expand_args builtin cd"        "cd"
+  assertAliasEquals "exec_scmb_expand_args $rm_path --option"  "rm"
+  assertAliasEquals "exec_scmb_expand_args nocorrect $mv_path" "mv"
+  assertAliasEquals "exec_scmb_expand_args $sed_path"          "sed"
+  assertAliasEquals "exec_scmb_expand_args $cat_path"          "cat"
+  assertAliasEquals "exec_scmb_expand_args builtin cd"            "cd"
   assertIncludes    "$(declare -f ln)" "ln ()"
   assertIncludes    "$(declare -f ln)" "exec_scmb_expand_args __original_ln"
 }
