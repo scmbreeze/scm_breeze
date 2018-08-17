@@ -5,9 +5,9 @@
 # ------------------------------------------------------------------------------
 
 
-if test | sed -E 's///g' 2>/dev/null; then
+if sed -E 's///g' </dev/null &>/dev/null; then
   SED_REGEX_ARG="E"
-elif test | sed -r 's///g' 2>/dev/null; then
+elif sed -r 's///g' </dev/null &>/dev/null; then
   SED_REGEX_ARG="r"
 else
   echo "Cannot determine extended regex argument for sed! (Doesn't respond to either -E or -r)"
