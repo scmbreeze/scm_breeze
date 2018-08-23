@@ -1,6 +1,6 @@
 <img src="https://user-images.githubusercontent.com/139536/30827652-08e9b684-a265-11e7-95fb-50cbd2fb7c0d.png" width="200" height="200">
 
-
+## /!\ this version contain a fix to works with windows!
 
 # SCM Breeze [![TravisCI](https://secure.travis-ci.org/scmbreeze/scm_breeze.png?branch=master)](http://travis-ci.org/scmbreeze/scm_breeze)
 
@@ -405,4 +405,3 @@ project into an [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) for
 SCMs.
 
 ***Enjoy!***
-
