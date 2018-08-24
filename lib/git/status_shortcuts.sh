@@ -147,12 +147,13 @@ scmb_expand_args() {
   IFS="$OLDIFS"
 }
 
+# Expand a variable into a (possibly relative) pathname
 _print_path() {
-  if [ "$1" = 1 ]; then
-    eval printf '%s' "\"\$$2\"" | sed -e "s%$(pwd)/%%" | awk '{printf("%s", $0)}'
-  else
-    eval printf '%s' "\"\$$2\""
+  local pathname=$(eval printf '%s' "\"\${$2}\"")
+  if [ "$1" = 1 ]; then  # print relative
+    pathname=${pathname#$PWD/}  # Remove $PWD from beginning of the path
   fi
+  printf '%s' "$pathname"
 }
 
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
