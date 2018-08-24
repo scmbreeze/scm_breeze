@@ -126,7 +126,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
 
     # Parse path from args
     IFS=$'\n'
-    for arg in $@; do
+    for arg in "$@"; do
       if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
     done
     unset IFS
@@ -142,7 +142,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
                  puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
       }
 
-      ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+      ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat "$HOME/.user_sym")/g" | rejustify_ls_columns)
     fi
 
     if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then

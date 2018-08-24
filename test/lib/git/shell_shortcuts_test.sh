@@ -38,7 +38,7 @@ oneTimeSetUp() {
   alias rvm="test" # Ensure tests run if RVM isn't loaded but $HOME/.rvm is present
 
   # Test functions
-  function ln() { ln $@; }
+  function ln() { ln "$@"; }
 
   # Before aliasing, get original locations so we can compare them in the test
   unalias mv rm sed cat 2>/dev/null

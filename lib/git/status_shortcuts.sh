@@ -21,7 +21,7 @@ git_status_shortcuts() {
   zsh_compat # Ensure shwordsplit is on for zsh
   git_clear_vars
   # Run ruby script, store output
-  local cmd_output="$(/usr/bin/env ruby "$scmbDir/lib/git/status_shortcuts.rb" $@)"
+  local cmd_output="$(/usr/bin/env ruby "$scmbDir/lib/git/status_shortcuts.rb" "$@")"
   # Print debug information if $scmbDebug = "true"
   if [ "${scmbDebug:-}" = "true" ]; then
     printf "status_shortcuts.rb output => \n$cmd_output\n------------------------\n"
@@ -102,8 +102,8 @@ git_show_affected_files(){
   fail_if_not_git_repo || return 1
   f=0  # File count
   # Show colored revision and commit message
-  echo -n "# "; git show --oneline --name-only $@ | head -n1; echo "# "
-  for file in $(git show --pretty="format:" --name-only $@ | \grep -v '^$'); do
+  echo -n "# "; git show --oneline --name-only "$@" | head -n1; echo "# "
+  for file in $(git show --pretty="format:" --name-only "$@" | \grep -v '^$'); do
     let f++
     export $git_env_char$f=$file     # Export numbered variable.
     echo -e "#     \033[2;37m[\033[0m$f\033[2;37m]\033[0m $file"
@@ -210,7 +210,7 @@ git_commit_prompt() {
   fi
 
   if [ -n "$commit_msg" ]; then
-    eval $@ # run any prequisite commands
+    eval "$@" # run any prequisite commands
     # Add $APPEND to commit message, if given. (Used to append things like [ci skip] for Travis CI)
     if [ -n "$APPEND" ]; then commit_msg="$commit_msg $APPEND"; fi
     echo $commit_msg | git commit -F - | tail -n +2

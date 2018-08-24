@@ -71,7 +71,7 @@ __git_alias () {
     alias_str="$1"; cmd_prefix="$2"; cmd="$3";
     if [ $# -gt 2 ]; then
       shift 3 2>/dev/null
-      cmd_args=$@
+      cmd_args=("$@")
     fi
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"

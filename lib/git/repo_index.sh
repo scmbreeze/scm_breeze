@@ -217,10 +217,10 @@ _git_index_update_all_branches() {
 
     # Ignore branch if remote and merge is not configured
     if [[ -n "$remote" ]] && [[ -n "$merge" ]]; then
-      branches=(${branches[@]} "$branch")
-      remotes=(${remotes[@]} "$remote")
+      branches=("${branches[@]}" "$branch")
+      remotes=("${remotes[@]}" "$remote")
       # Get branch from merge ref (refs/heads/master => master)
-      merges=(${merges[@]} "$(basename $merge)")
+      merges=("${merges[@]}" "$(basename "$merge")")
     else
       echo "=== Skipping $branch: remote and merge refs are not configured."
     fi
@@ -232,12 +232,12 @@ _git_index_update_all_branches() {
 
   local index=0
   # Iterate over branches, and update those that can be fast-forwarded
-  for branch in ${branches[@]}; do
+  for branch in "${branches[@]}"; do
     branch_rev="$(git rev-parse $branch)"
     # Local branch can be fast-forwarded if revision is ancestor of remote revision, and not the same.
     # (see http://stackoverflow.com/a/2934062/304706)
-    if [[ "$branch_rev" != "$(git rev-parse ${remotes[$index]}/${merges[$index]})" ]] && \
-       [[ "$(git merge-base $branch_rev ${remotes[$index]}/${merges[$index]})" = "$branch_rev" ]]; then
+    if [[ "$branch_rev" != "$(git rev-parse "${remotes[$index]}/${merges[$index]}")" ]] && \
+       [[ "$(git merge-base "$branch_rev" "${remotes[$index]}/${merges[$index]}")" = "$branch_rev" ]]; then
       echo "=== Updating $branch branch in $base_path from ${remotes[$index]}/${merges[$index]}..."
       # Checkout branch if we aren't already on it.
       if [[ "$branch" != "$(parse_git_branch)" ]]; then git checkout $branch; fi
@@ -272,7 +272,7 @@ function _git_index_batch_cmd() {
     local base_path
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | \grep . | sort); do
       builtin cd "$base_path"
-      $@
+      "$@"
     done
   else
     echo "Please give a command to run for all repos. (It may be useful to write your command as a function or script.)"
