@@ -36,14 +36,13 @@ git_status_shortcuts() {
   files="$(echo "$cmd_output" | \grep '@@filelist@@::' | sed 's%@@filelist@@::%%g')"
   if [ "${scmbDebug:-}" = "true" ]; then echo "filelist => $files"; fi
   # Export numbered env variables for each file
-  IFS="|"
+  local IFS="|"
   local e=1
   for file in $files; do
     export $git_env_char$e="$file"
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
-  unset IFS
 
   if [ "${scmbDebug:-}" = "true" ]; then echo "------------------------"; fi
   # Print status

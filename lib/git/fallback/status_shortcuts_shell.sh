@@ -16,7 +16,7 @@
 # --------------------------------------------------------------------
 git_status_shortcuts() {
   zsh_compat # Ensure shwordsplit is on for zsh
-  IFS=$'\n'
+  local IFS=$'\n'
   local git_status="$(git status --porcelain 2> /dev/null)"
   local i
 
@@ -95,7 +95,7 @@ git_status_shortcuts() {
       fi
     done
 
-    IFS=" "
+    local IFS=" "
     grp_num=1
     for heading in 'Changes to be committed' 'Unmerged paths' 'Changes not staged for commit' 'Untracked files'; do
       # If no group specified as param, or specified group is current group
@@ -114,7 +114,6 @@ git_status_shortcuts() {
     # so just use plain 'git status'
     git status
   fi
-  unset IFS
   zsh_reset # Reset zsh environment to default
 }
 # Template function for 'git_status_shortcuts'.

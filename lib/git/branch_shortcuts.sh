@@ -32,14 +32,12 @@ EOF
 )"
 
   # Set numbered file shortcut in variable
-  local e=1
-  IFS=$'\n'
+  local e=1 IFS=$'\n'
   for branch in $($_git_cmd branch "$@" | sed "s/^[* ]\{2\}//"); do
     export $git_env_char$e="$branch"
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
-  unset IFS
 }
 
 __git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts" ""

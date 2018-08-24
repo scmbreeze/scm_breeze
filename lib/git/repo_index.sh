@@ -51,7 +51,7 @@
 
 
 function git_index() {
-  IFS=$'\n'
+  local IFS=$'\n'
   if [ -z "$1" ]; then
     # Just change to $GIT_REPO_DIR if no params given.
     "cd" $GIT_REPO_DIR
@@ -103,7 +103,7 @@ function git_index() {
       # --------------------
       # Go to our base path
       if [ -n "$base_path" ]; then
-        IFS=$' \t\n'
+        local IFS=$' \t\n'
         # evaluate ~ if necessary
         if [[ "$base_path" == "~"* ]]; then
           base_path=$(eval echo ${base_path%%/*})/${base_path#*/}
@@ -116,7 +116,6 @@ function git_index() {
       fi
     fi
   fi
-  unset IFS
 }
 
 _git_index_dirs_without_home() {
@@ -126,12 +125,11 @@ _git_index_dirs_without_home() {
 # Recursively searches for git repos in $GIT_REPO_DIR
 function _find_git_repos() {
   # Find all unarchived projects
-  IFS=$'\n'
+  local IFS=$'\n'
   for repo in $(find -L "$GIT_REPO_DIR" -maxdepth 5 -name ".git" -type d \! -wholename '*/archive/*'); do
     echo ${repo%/.git}          # Return project folder, with trailing ':'
     _find_git_submodules $repo  # Detect any submodules
   done
-  unset IFS
 }
 
 # List all submodules for a git repo, if any.
@@ -146,11 +144,10 @@ function _find_git_submodules() {
 function _rebuild_git_index() {
   if [ "$1" != "--silent" ]; then echo -e "== Scanning $GIT_REPO_DIR for git repos & submodules..."; fi
   # Get repos from src dir and custom dirs, then sort by basename
-  IFS=$'\n'
+  local IFS=$'\n'
   for repo in $(echo -e "$(_find_git_repos)\n$(echo $GIT_REPOS | sed "s/:/\\\\n/g")"); do
     echo $(basename $repo | sed "s/ /_/g"):$repo
   done | sort -t ":" -k1,1 | cut -d ":" -f2- >| "$GIT_REPO_DIR/.git_index"
-  unset IFS
 
   if [ "$1" != "--silent" ]; then
     echo -e "===== Indexed $_bld_col$(_git_index_count)$_txt_col repos in $GIT_REPO_DIR/.git_index"
@@ -207,7 +204,7 @@ _git_index_update_all_branches() {
 
   local remotes merges branches
   # Get branch configuration from .git/config
-  IFS=$'\n'
+  local IFS=$'\n'
   for branch in $($GIT_BINARY branch 2> /dev/null | sed -e 's/.\{2\}\(.*\)/\1/'); do
     # Skip '(no branch)'
     if [[ "$branch" = "(no branch)" ]]; then continue; fi
@@ -225,7 +222,6 @@ _git_index_update_all_branches() {
       echo "=== Skipping $branch: remote and merge refs are not configured."
     fi
   done
-  unset IFS
 
   # Update all remotes if there are any branches to update
   if [ -n "${branches[*]}" ]; then git fetch --all 2> /dev/null; fi
@@ -268,7 +264,7 @@ function _git_index_batch_cmd() {
   cwd="$PWD"
   if [ -n "$1" ]; then
     echo -e "== Running command for $_bld_col$(_git_index_count)$_txt_col repos...\n"
-    unset IFS
+    local IFS=$'\n'
     local base_path
     for base_path in $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | \grep . | sort); do
       builtin cd "$base_path"
@@ -285,8 +281,7 @@ if [ $shell = 'bash' ]; then
 	# Bash tab completion function for git_index()
 	function _git_index_tab_completion() {
 		_check_git_index
-		local curw
-		IFS=$'\n'
+		local curw IFS=$'\n'
 		COMPREPLY=()
 		curw=${COMP_WORDS[COMP_CWORD]}
 
@@ -313,10 +308,9 @@ if [ $shell = 'bash' ]; then
 		else
 			COMPREPLY=($(compgen -W '$(sed -e "s:.*/::" -e "s:$:/:" "$GIT_REPO_DIR/.git_index" | sort)' -- $curw))
 		fi
-		unset IFS
 		return 0
 	}
-else
+else  # Zsh tab completion function for git_index()
 	function _git_index_tab_completion() {
 		typeset -A opt_args
 		local state state_descr context line
