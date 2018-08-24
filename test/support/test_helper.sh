@@ -26,10 +26,26 @@ tab_completions(){ echo "${COMPREPLY[@]}"; }
 silentGitCommands() {
   git() { /usr/bin/env git "$@" > /dev/null 2>&1; }
 }
+
 # Cancel silent git commands
 verboseGitCommands() {
   unset -f git
 }
+
+# Quote the contents of "$@" in single quotes
+# Avoid printf '%q' as  'a b'  becomes  a\ b  in both {ba,z}sh
+# See also quote_args and double_quote
+function token_quote {
+  if [[ $shell = bash ]]; then
+    # Single quotes are always added
+    echo "${@@Q}"
+  else  # zsh
+    # Single quotes only added when needed
+    #shellcheck disable=2154  # zsh
+    echo "${(qq)@}"
+  fi
+}
+
 
 # Asserts
 #-----------------------------------------------------------------------------

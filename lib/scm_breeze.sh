@@ -18,6 +18,20 @@ _alias() {
   fi
 }
 
+# Quote "$@" before `eval` to prevent arbitrary code execution.
+# Eg, the following will run `date`:
+# evil() { eval "$@"; }; evil "echo" "foo;date"
+function _safe_eval() {
+  if [[ $shell = bash ]]; then
+    # ${parameter@operator} where parameter is ${@} and operator is 'Q'
+    # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
+    eval "${@@Q}"
+  else  # zsh
+    # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion-Flags
+    eval "${(q-)@}"
+  fi
+}
+
 find_binary(){
   if [ $shell = "zsh" ]; then
     builtin type -p "$1" | sed "s/$1 is //" | head -1
