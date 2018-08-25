@@ -79,8 +79,8 @@ git_add_shortcuts() {
 git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
-    IFS=$'\t'
-    for file in $(scmb_expand_args "$@"); do
+    eval "args=$(scmb_expand_args "$@")"  # create $args array
+    for file in "${args[@]}"; do
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove == "yes" ]] && ! [ -e "$file" ]; then
         echo -n "# "
@@ -90,7 +90,6 @@ git_silent_add_shortcuts() {
         echo -e "# Added '$file'"
       fi
     done
-    unset IFS
     echo "#"
   fi
 }
@@ -121,32 +120,29 @@ scmb_expand_args() {
     shift
   fi
 
-  first=1
-  OLDIFS="$IFS"; IFS=" " # We need to split on spaces to loop over expanded range
+  local -a args=()  # initially empty array
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
-      if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
       if [ -e "$arg" ]; then
         # Don't expand files or directories with numeric names
-        printf '%s' "$arg"
+        args+=("$arg")
       else
-        _print_path "$relative" "$git_env_char$arg"
+        args+=("$(_print_path "$relative" "$git_env_char$arg")")
       fi
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
-
       for i in $(eval echo {${arg/-/..}}); do
-        if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
-        _print_path "$relative" "$git_env_char$i"
+        args+=("$(_print_path "$relative" "$git_env_char$i")")
       done
     else   # Otherwise, treat $arg as a normal string.
-      if [ "$first" -eq 1 ]; then first=0; else printf '\t'; fi
-      printf '%s' "$arg"
+      args+=("$arg")
     fi
   done
-  IFS="$OLDIFS"
+  args=$(declare -p args)  # Get $args array as a string which can be `eval`-ed to recreate itself
+  args=${args#*=}  # Remove `typeset -a args=` from beginning of string to allow caller to name variable
+  echo "$args"
 }
 
-# Expand a variable into a (possibly relative) pathname
+# Expand a variable (named by $2) into a (possibly relative) pathname
 _print_path() {
   local pathname=$(eval printf '%s' "\"\${$2}\"")
   if [ "$1" = 1 ]; then  # print relative
@@ -158,7 +154,8 @@ _print_path() {
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
-  eval "$(scmb_expand_args "$@" | sed -e "s/\([][|;()<>^ \"'&]\)/"'\\\1/g')"
+  eval "args=$(scmb_expand_args "$@")"  # create $args array
+  _safe_eval "${args[@]}"
 }
 
 # Clear numbered env variables
@@ -180,13 +177,12 @@ git_clear_vars() {
 _git_resolve_merge_conflict() {
   if [ -n "$2" ]; then
     # Expand args and process resulting set of files.
-    IFS=$'\t'
-    for file in $(scmb_expand_args "${@:2}"); do
+    eval "args=$(scmb_expand_args "$@")"  # create $args array
+    for file in "${args[@]:2}"; do
       git checkout "--$1""s" "$file"   # "--$1""s" is expanded to --ours or --theirs
       git add "$file"
       echo -e "# Added $1 version of '$file'"
     done
-    unset IFS
     echo -e "# -- If you have finished resolving conflicts, commit the resolutions with 'git commit'"
   fi
 }
