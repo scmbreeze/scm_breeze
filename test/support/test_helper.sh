@@ -4,9 +4,9 @@ orig_cwd="$PWD"
 source "$scmbDir/lib/git/helpers.sh"
 
 # Set up demo git user if not configured
-if [ -z "$(git config --global user.email)" ]; then
-  git config --global user.email "testuser@example.com"
-  git config --global user.name  "Test User"
+if [ -z "$(git config user.email)" ]; then
+  git config user.email "testuser@example.com"
+  git config user.name  "Test User"
 fi
 
 #
