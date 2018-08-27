@@ -70,6 +70,15 @@ assertAliasEquals(){
 
 
 #-----------------------------------------------------------------------------
+# Setup and tear down
+#-----------------------------------------------------------------------------
+
+setUp() {
+  unset QUOTING_STYLE  # Use default quoting style for ls
+}
+
+
+#-----------------------------------------------------------------------------
 # Unit tests
 #-----------------------------------------------------------------------------
 
@@ -93,7 +102,7 @@ test_ls_with_file_shortcuts() {
   # full physical path to be absolutely certain when doing comparisons later,
   # because thats how the Ruby status_shortcuts.rb script is going to obtain
   # them.
-  cd $TEST_DIR
+  cd "$TEST_DIR"
   TEST_DIR=$(pwd -P)
 
   touch 'test file' 'test_file'
@@ -103,8 +112,8 @@ test_ls_with_file_shortcuts() {
   # Run command in shell, load output from temp file into variable
   # (This is needed so that env variables are exported in the current shell)
   temp_file=$(mktemp -t scm_breeze.XXXXXXXXXX)
-  ls_with_file_shortcuts > $temp_file
-  ls_output=$(<$temp_file strip_colors)
+  ls_with_file_shortcuts > "$temp_file"
+  ls_output=$(<"$temp_file" strip_colors)
 
   # Compare as fixed strings (F), instead of normal grep behavior
   assertIncludes "$ls_output" '[1]  a "b"' F
