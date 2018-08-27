@@ -50,16 +50,22 @@ function token_quote {
 # Asserts
 #-----------------------------------------------------------------------------
 
+# Return 0 (shell's true) if "$1" contains string "$2"
 _includes() {
   if [ -n "$3" ]; then regex="$3"; else regex=''; fi
-  if echo "$1" | grep -q$regex "$2"; then echo 0; else echo 1; fi
+  echo "$1" | grep -q"$regex" "$2"  # exit status of quiet grep is returned
 }
 
 # assert $1 contains $2
 assertIncludes() {
-  assertTrue "'$1' should have contained '$2'" $(_includes "$@")
+  _includes "$@"
+  local grep_exit=$?
+  assertTrue "'$1' should have contained '$2'" '[[ $grep_exit == 0 ]]'
 }
+
 # assert $1 does not contain $2
 assertNotIncludes() {
-  assertFalse "'$1' should not have contained '$2'" $(_includes "$@")
+  _includes "$@"
+  local grep_return=$?
+  assertTrue "'$1' should not have contained '$2'" '[[ ! $grep_exit = 0 ]]'
 }
