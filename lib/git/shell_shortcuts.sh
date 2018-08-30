@@ -100,10 +100,10 @@ if ! ls --color=auto > /dev/null 2>&1; then
 fi
 
 # Test if readlink supports -f option, otherwise use perl (a bit slower)
-if ! readlink -f > /dev/null 2>&1; then
-  _abs_path_command='perl -e "use Cwd "abs_path"; print abs_path(shift)"'
+if ! readlink -f / > /dev/null 2>&1; then
+  _abs_path_command=(perl -e 'use Cwd abs_path; print abs_path(shift)')
 else
-  _abs_path_command="readlink -f"
+  _abs_path_command=(readlink -f)
 fi
 
 # Function wrapper around 'll'
