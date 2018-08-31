@@ -37,6 +37,7 @@ class GitStatus
   end
 
   def report
+    exit if all_changes.length > ENV["gs_max_changes"].to_i
     print_header
     print_groups
     puts filelist if @grouped_changes.any?
