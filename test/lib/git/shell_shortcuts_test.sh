@@ -67,8 +67,8 @@ assertAliasEquals(){
 #-----------------------------------------------------------------------------
 
 test_shell_command_wrapping() {
-  assertAliasEquals "exec_scmb_expand_args $rm_path --option"  "rm"
   assertAliasEquals "exec_scmb_expand_args nocorrect $mv_path" "mv"
+  assertAliasEquals "exec_scmb_expand_args $rm_path --option"  "rm"
   assertAliasEquals "exec_scmb_expand_args $sed_path"          "sed"
   assertAliasEquals "exec_scmb_expand_args $cat_path"          "cat"
   assertAliasEquals "exec_scmb_expand_args builtin cd"         "cd"
