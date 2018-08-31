@@ -94,16 +94,19 @@ test_repo_index_command() {
   git_index --rebuild > /dev/null
 
   # Test that all repos are detected, and sorted alphabetically
-  assertIncludes "$(index_no_newlines)" "bitbucket.*\
-blue_submodule.*\
-github.*\
-green_submodule.*\
-red_submodule.*\
-source_forge.*\
-submodules_everywhere.*\
-test_repo_11.*\
-test_repo_1"
-
+  assertIncludes "$(index_no_newlines)" $(
+    cat <<EXPECT | sort -t "." -k1,1 | tr --delete '\n' | awk '{print ".*"$1}'
+bitbucket.*
+blue_submodule.*
+github.*
+green_submodule.*
+red_submodule.*
+source_forge.*
+submodules_everywhere.*
+test_repo_11.*
+test_repo_1.*
+EXPECT
+  )
 }
 
 test_check_git_index() {
@@ -141,7 +144,7 @@ test_git_index_changing_directory() {
   git_index "_submod";      assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
   git_index "test_repo_1";  assertEquals "/tmp/test_repo_1" "$PWD"
   git_index "test_repo_11"; assertEquals "/tmp/test_repo_11" "$PWD"
-  git_index "test_repo_";   assertEquals "/tmp/test_repo_11" "$PWD"
+  git_index "test_repo_";   assertEquals "/tmp/test_repo_1" "$PWD"
   git_index "github/videos/octocat/live_action"; assertEquals "$GIT_REPO_DIR/github/videos/octocat/live_action" "$PWD"
 }
 

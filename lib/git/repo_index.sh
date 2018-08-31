@@ -68,8 +68,8 @@ function git_index() {
     elif [ "$1" = "--list" ] || [ "$1" = "-l" ]; then
       echo -e "$_bld_col$(_git_index_count)$_txt_col Git repositories in $_bld_col$GIT_REPO_DIR$_txt_col:\n"
       for repo in $(_git_index_dirs_without_home); do
-        echo $(basename $repo) : $repo
-      done | sort | column -t -s ':'
+        echo $(basename $repo | sed "s/ /_/g") : $repo
+      done | sort -t ":" -k1,1 | column -t -s ':'
     elif [ "$1" = "--count-by-host" ]; then
       echo -e "=== Producing a report of the number of repos per host...\n"
       _git_index_batch_cmd git remote -v | \grep "origin.*(fetch)" |
@@ -148,8 +148,8 @@ function _rebuild_git_index() {
   # Get repos from src dir and custom dirs, then sort by basename
   IFS=$'\n'
   for repo in $(echo -e "$(_find_git_repos)\n$(echo $GIT_REPOS | sed "s/:/\\\\n/g")"); do
-    echo $(basename $repo | sed "s/ /_/g") $repo
-  done | sort | cut -d " " -f2- >| "$GIT_REPO_DIR/.git_index"
+    echo $(basename $repo | sed "s/ /_/g"):$repo
+  done | sort -t ":" -k1,1 | cut -d ":" -f2- >| "$GIT_REPO_DIR/.git_index"
   unset IFS
 
   if [ "$1" != "--silent" ]; then
