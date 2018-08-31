@@ -280,6 +280,7 @@ class GitChange < GitStatus
   def initialize(file_and_message, status)
     @message = file_and_message.slice!(/\(.*\)/)
     @file = file_and_message.strip
+    @file = (@file.include? " ") ? "\"#{@file}\"" : @file
     @status = status.strip
   end
 
