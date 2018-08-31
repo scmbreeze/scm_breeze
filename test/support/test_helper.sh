@@ -15,7 +15,8 @@ fi
 
 # Strip color codes from a string
 strip_colors() {
-  perl -pe 's/\e\[[\d;]*m//g'
+  # Updated with info from: https://superuser.com/a/380778
+  perl -pe 's/\x1b\[[0-9;]*[mG]//g'
 }
 
 # Print space separated tab completion options
