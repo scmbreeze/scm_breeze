@@ -406,3 +406,7 @@ SCMs.
 
 ***Enjoy!***
 
+## Alternative Projects
+
+1. https://github.com/shinriyo/breeze `fish` support
+1. https://github.com/mroth/scmpuff static go binary
