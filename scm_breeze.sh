@@ -22,6 +22,7 @@ if [[ -s "$HOME/.git.scmbrc" ]]; then
   source "$scmbDir/lib/git/keybindings.sh"
   source "$scmbDir/lib/git/status_shortcuts.sh"
   source "$scmbDir/lib/git/branch_shortcuts.sh"
+  source "$scmbDir/lib/git/grep_shortcuts.sh"
   source "$scmbDir/lib/git/shell_shortcuts.sh"
   source "$scmbDir/lib/git/repo_index.sh"
   source "$scmbDir/lib/git/tools.sh"
