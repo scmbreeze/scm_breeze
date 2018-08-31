@@ -105,7 +105,7 @@ test_repo_index_command() {
 
   # Test that all repos are detected, and sorted alphabetically
   assertIncludes "$(index_no_newlines)" $(
-    cat <<EXPECT | sort -t "." -k1,1 | tr --delete '\n' | awk '{print ".*"$1}'
+    cat <<EXPECT | sort -t "." -k1,1 | tr -d '\n' | awk '{print ".*"$1}'
 bitbucket.*
 blue_submodule.*
 github.*
