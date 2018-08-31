@@ -89,6 +89,7 @@ _alias "$git_add_shortcuts_alias"     'git_add_shortcuts'
 _alias "$exec_scmb_expand_args_alias" 'exec_scmb_expand_args'
 _alias "$git_show_files_alias"        'git_show_affected_files'
 _alias "$git_commit_all_alias"        'git_commit_all'
+_alias "$git_grep_shortcuts_alias"    'git_grep_shortcuts'
 
 # Git Index alias
 _alias "$git_index_alias"             'git_index'
