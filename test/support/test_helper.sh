@@ -15,7 +15,7 @@ fi
 
 # Strip color codes from a string
 strip_colors() {
-  sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+  perl -pe 's/\e\[[\d;]*m//g'
 }
 
 # Print space separated tab completion options
@@ -34,7 +34,7 @@ verboseGitCommands() {
 #-----------------------------------------------------------------------------
 
 _includes() {
-  if [ -n "$3" ]; then regex="$3"; else regex=P; fi
+  if [ -n "$3" ]; then regex="$3"; else regex=''; fi
   if echo "$1" | grep -q$regex "$2"; then echo 0; else echo 1; fi
 }
 
@@ -46,4 +46,3 @@ assertIncludes() {
 assertNotIncludes() {
   assertFalse "'$1' should not have contained '$2'" $(_includes "$@")
 }
-
