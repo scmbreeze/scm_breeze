@@ -11,9 +11,6 @@ your interaction with git. It integrates with your shell to give you numbered
 file shortcuts, a repository index with tab completion, and many other useful
 features.
 
-![SCM Breeze Example Gif](http://i.imgur.com/3fD8cpo.gif)
-
-
 - [Installation](#installation)
 - [Usage](#usage)
   - [File Shortcuts](#file-shortcuts)
@@ -41,12 +38,6 @@ to your `.bashrc` or `.zshrc`:
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
 **Note:** SCM Breeze performs much faster if you have ruby installed.
-
-
-## Usage
-
-<center><a href="http://www.youtube.com/watch?v=iKdp6uBfrvc"
-target="_blank"><img src="http://i.imgur.com/l7aGG.png"></a></center>
 
 ### File Shortcuts
 
