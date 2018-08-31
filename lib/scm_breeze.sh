@@ -10,7 +10,13 @@ enable_nullglob()  { if [ $shell = "zsh" ]; then setopt NULL_GLOB;   else shopt 
 disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt -u nullglob; fi; }
 
 # Alias wrapper that ignores errors if alias is not defined.
-_alias(){ alias "$@" 2> /dev/null; }
+_safe_alias(){ alias "$@" 2> /dev/null; }
+_alias() {
+  if [ -n "$1" ]; then
+    local alias_str="$1"; local cmd="$2"
+    _safe_alias $alias_str="$cmd"
+  fi
+}
 
 find_binary(){
   if [ $shell = "zsh" ]; then
@@ -48,7 +54,7 @@ _create_or_patch_scmbrc() {
     # If file exists, attempt to update it with any new settings
     elif [ -n "$1" ]; then
       # Create diff of example file, substituting example file for user's config.
-      git diff $1 "$prefix""scmbrc.example" | sed "s/$prefix""scmbrc.example/.$prefix""scmbrc/g" > $patchfile
+      git diff $1 "$prefix""scmbrc.example" | sed "s/$prefix""scmbrc.example/.$prefix""scmbrc/g" >| $patchfile
       if [ -s $patchfile ]; then  # If patchfile is not empty
         cd "$HOME"
         # If the patch cannot be applied cleanly, show the updates and tell user to update file manually.

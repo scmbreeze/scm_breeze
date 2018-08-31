@@ -43,7 +43,7 @@ git_status_shortcuts() {
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
-  IFS=$' \t\n'
+  unset IFS
 
   if [ "${scmbDebug:-}" = "true" ]; then echo "------------------------"; fi
   # Print status
@@ -91,7 +91,7 @@ git_silent_add_shortcuts() {
         echo -e "# Added '$file'"
       fi
     done
-    IFS=$' \t\n'
+    unset IFS
     echo "#"
   fi
 }
@@ -158,7 +158,7 @@ _print_path() {
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
-  eval "$(scmb_expand_args "$@" | sed -e "s/\([][()<>^ \"']\)/"'\\\1/g')"
+  eval "$(scmb_expand_args "$@" | sed -e "s/\([][|;()<>^ \"'&]\)/"'\\\1/g')"
 }
 
 # Clear numbered env variables
@@ -166,7 +166,12 @@ git_clear_vars() {
   local i
   for (( i=1; i<=$gs_max_changes; i++ )); do
     # Stop clearing after first empty var
-    if [[ -z "$(eval echo "\${$git_env_char$i:-}")" ]]; then break; fi
+    local env_var_i=${git_env_char}${i}
+    if [[ -z "$(eval echo "\${$env_var_i:-}")" ]]; then
+      break
+    else
+      unset $env_var_i
+    fi
   done
 }
 
@@ -181,7 +186,7 @@ _git_resolve_merge_conflict() {
       git add "$file"
       echo -e "# Added $1 version of '$file'"
     done
-    IFS=$' \t\n'
+    unset IFS
     echo -e "# -- If you have finished resolving conflicts, commit the resolutions with 'git commit'"
   fi
 }
@@ -233,7 +238,7 @@ git_commit_all() {
       local appending=" | \033[0;36mappending '\033[1;36m$APPEND\033[0;36m' to commit message.\033[0m"
     fi
     echo -e "\033[0;33mCommitting all files (\033[0;31m$changes\033[0;33m)\033[0m$appending"
-    git_commit_prompt "git add -A"
+    git_commit_prompt "git add --all ."
   else
     echo "# No changed files to commit."
   fi

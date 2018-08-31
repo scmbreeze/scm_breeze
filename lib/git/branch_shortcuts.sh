@@ -13,8 +13,9 @@
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
 function _scmb_git_branch_shortcuts {
   fail_if_not_git_repo || return 1
+
   # Fall back to normal git branch, if any unknown args given
-  if [[ -n "$@" ]] && [[ "$@" != "-a" ]]; then
+  if [[ "$($_git_cmd branch | wc -l)" -gt 300 ]] || ([[ -n "$@" ]] && [[ "$@" != "-a" ]]); then
     exec_scmb_expand_args $_git_cmd branch "$@"
     return 1
   fi
@@ -32,14 +33,16 @@ EOF
 
   # Set numbered file shortcut in variable
   local e=1
+  IFS=$'\n'
   for branch in $($_git_cmd branch "$@" | sed "s/^[* ]\{2\}//"); do
     export $git_env_char$e="$branch"
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
     let e++
   done
+  unset IFS
 }
 
-__git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts"
+__git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts" ""
 __git_alias "$git_branch_all_alias"          "_scmb_git_branch_shortcuts" "-a"
 __git_alias "$git_branch_move_alias"         "_scmb_git_branch_shortcuts" "-m"
 __git_alias "$git_branch_delete_alias"       "_scmb_git_branch_shortcuts" "-d"

@@ -21,22 +21,38 @@ fi
 source "$scmbDir/test/support/test_helper.sh"
 source "$scmbDir/lib/scm_breeze.sh"
 
+bin_path() {
+  if [ -n "${ZSH_VERSION:-}" ];
+    then where "$@" | tail -1
+    else which "$@"
+  fi
+}
+
 # Setup
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
   export shell_command_wrapping_enabled="true"
   export scmb_wrapped_shell_commands="not_found cat rm cp mv ln cd sed"
+  export shell_ls_aliases_enabled="true"
 
   alias rvm="test" # Ensure tests run if RVM isn't loaded but $HOME/.rvm is present
 
   # Test functions
   function ln() { ln $@; }
+
+  # Before aliasing, get original locations so we can compare them in the test
+  unalias mv rm sed cat 2>/dev/null
+  export mv_path="$(bin_path mv)"
+  export rm_path="$(bin_path rm)"
+  export sed_path="$(bin_path sed)"
+  export cat_path="$(bin_path cat)"
+
   # Test aliases
-  alias mv="nocorrect mv"
-  alias rm="rm --option"
-  alias sed="sed"
+  alias mv="nocorrect $mv_path"
+  alias rm="$rm_path --option"
+  alias sed="$sed_path"
   # Test already wrapped commands
-  alias cat="exec_scmb_expand_args /bin/cat"
+  alias cat="exec_scmb_expand_args $cat_path"
 
   # Run shortcut wrapping
   source "$scmbDir/lib/git/shell_shortcuts.sh"
@@ -58,11 +74,11 @@ assertAliasEquals(){
 #-----------------------------------------------------------------------------
 
 test_shell_command_wrapping() {
-  assertAliasEquals "exec_scmb_expand_args /bin/rm --option"  "rm"
-  assertAliasEquals "exec_scmb_expand_args nocorrect /bin/mv" "mv"
-  assertAliasEquals "exec_scmb_expand_args /bin/sed"          "sed"
-  assertAliasEquals "exec_scmb_expand_args /bin/cat"          "cat"
-  assertAliasEquals "exec_scmb_expand_args builtin cd"        "cd"
+  assertAliasEquals "exec_scmb_expand_args nocorrect $mv_path" "mv"
+  assertAliasEquals "exec_scmb_expand_args $rm_path --option"  "rm"
+  assertAliasEquals "exec_scmb_expand_args $sed_path"          "sed"
+  assertAliasEquals "exec_scmb_expand_args $cat_path"          "cat"
+  assertAliasEquals "exec_scmb_expand_args builtin cd"         "cd"
   assertIncludes    "$(declare -f ln)" "ln ()"
   assertIncludes    "$(declare -f ln)" "exec_scmb_expand_args __original_ln"
 }
@@ -71,7 +87,15 @@ test_ls_with_file_shortcuts() {
   export git_env_char="e"
 
   TEST_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
+
+  # Darwin actually symlinks /var inside /private, but mktemp reports back the
+  # logical pathat time of file creation.  So make sure we always get the
+  # full physical path to be absolutely certain when doing comparisons later,
+  # because thats how the Ruby status_shortcuts.rb script is going to obtain
+  # them.
   cd $TEST_DIR
+  TEST_DIR=$(pwd -P)
+
   touch 'test file' 'test_file'
   mkdir -p "a [b]" 'a "b"' "a 'b'"
   touch "a \"b\"/c"
@@ -82,7 +106,7 @@ test_ls_with_file_shortcuts() {
   ls_with_file_shortcuts > $temp_file
   ls_output=$(<$temp_file strip_colors)
 
-  # Compare as fixed strings (F), instead of regex (P)
+  # Compare as fixed strings (F), instead of normal grep behavior
   assertIncludes "$ls_output" '[1]  a "b"' F
   assertIncludes "$ls_output" "[2]  a 'b'" F
   assertIncludes "$ls_output" '[3]  a [b]' F

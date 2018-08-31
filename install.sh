@@ -10,11 +10,19 @@ fi
 # This loads SCM Breeze into the shell session.
 exec_string="[ -s \"$HOME/.scm_breeze/scm_breeze.sh\" ] && source \"$HOME/.scm_breeze/scm_breeze.sh\""
 
-# Add line to bashrc and zshrc if not already present.
-for rc in bashrc zshrc; do
-  if [ -s "$HOME/.$rc" ] && ! grep -q "$exec_string" "$HOME/.$rc"; then
-    printf "\n$exec_string\n" >> "$HOME/.$rc"
-    printf "== Added SCM Breeze to '~/.$rc'\n"
+# Add line to bashrc, zshrc, and bash_profile if not already present.
+added_to_profile=false
+already_present=false
+for rc in bashrc zshrc bash_profile; do
+  if [ -s "$HOME/.$rc" ]; then
+    if grep -q "$exec_string" "$HOME/.$rc"; then
+      printf "== Already installed in '~/.$rc'\n"
+      already_present=true
+    else
+      printf "\n$exec_string\n" >> "$HOME/.$rc"
+      printf "== Added SCM Breeze to '~/.$rc'\n"
+      added_to_profile=true
+    fi
   fi
 done
 
@@ -23,5 +31,12 @@ source "$scmbDir/lib/scm_breeze.sh"
 # Create '~/.*.scmbrc' files from example files
 _create_or_patch_scmbrc
 
-
-echo "== Run 'source ~/.bashrc' or 'source ~/.zshrc' to load SCM Breeze into your current shell."
+if [ "$added_to_profile" = true ] || [ "$already_present" = true ]; then
+  echo "== SCM Breeze Installed! Run 'source ~/.bashrc || source ~/.bash_profile' or 'source ~/.zshrc'"
+  echo "   to load SCM Breeze into your current shell."
+else
+  echo "== Error:"
+  echo "   Found no profile to add SCM Breeze to."
+  echo "   Add line to your shell profile and source it to install manually:"
+  printf "   $exec_string\n"
+fi

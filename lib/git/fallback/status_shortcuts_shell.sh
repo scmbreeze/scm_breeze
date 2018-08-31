@@ -114,7 +114,7 @@ git_status_shortcuts() {
     # so just use plain 'git status'
     git status
   fi
-  IFS=$' \t\n'
+  unset IFS
   zsh_reset # Reset zsh environment to default
 }
 # Template function for 'git_status_shortcuts'.
@@ -127,7 +127,7 @@ _gs_output_file_group() {
     if [ -z "$project_root" ]; then
       relative="${stat_file[$i]}"
     else
-      dest="$project_root/${stat_file[$i]}"
+      dest=$(readlink -f "$project_root/${stat_file[$i]}")
       local pwd=$(readlink -f "$PWD")
       relative="$(_gs_relative_path "$pwd" "$dest" )"
     fi

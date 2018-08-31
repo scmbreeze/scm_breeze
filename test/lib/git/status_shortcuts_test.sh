@@ -29,6 +29,7 @@ oneTimeSetUp() {
   export ga_auto_remove="yes"
 
   testRepo=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
+  testRepo=$(cd $testRepo && pwd -P)
 }
 
 oneTimeTearDown() {
@@ -60,6 +61,10 @@ test_scmb_expand_args() {
                         "$(scmb_expand_args -ma "Test Commit Message" "Unquoted")"
 }
 
+test_command_wrapping_escapes_special_characters() {
+    assertEquals 'should escape | the pipe' "$(exec_scmb_expand_args echo "should escape | the pipe")"
+    assertEquals 'should escape ; the semicolon' "$(exec_scmb_expand_args echo "should escape ; the semicolon")"
+}
 
 test_git_status_shortcuts() {
   setupTestRepo
@@ -252,10 +257,10 @@ test_git_commit_prompt() {
   assertIncludes "$git_show_output"  "$commit_msg"
 
   # Test that history was appended correctly.
-  if [[ $shell == "zsh" ]]; then 
-    test_history="$(history)"    
+  if [[ $shell == "zsh" ]]; then
+    test_history="$(history)"
   else
-    test_history="$(cat $HISTFILE)"    
+    test_history="$(cat $HISTFILE)"
   fi
   assertIncludes "$test_history"  "$commit_msg"
   assertIncludes "$test_history"  "git commit -m \"$dbl_escaped_msg\""
@@ -285,10 +290,10 @@ test_git_commit_prompt_with_append() {
   assertIncludes "$git_show_output"  "$commit_msg \[ci skip\]"
 
   # Test that history was appended correctly.
-  if [[ $shell == "zsh" ]]; then 
-    test_history="$(history)"    
+  if [[ $shell == "zsh" ]]; then
+    test_history="$(history)"
   else
-    test_history="$(cat $HISTFILE)"    
+    test_history="$(cat $HISTFILE)"
   fi
   assertIncludes "$test_history"  "$commit_msg \[ci skip\]"
   assertIncludes "$test_history"  "git commit -m \"$commit_msg \[ci skip\]\""
@@ -312,4 +317,3 @@ test_adding_files_with_spaces() {
 
 # load and run shUnit2
 source "$scmbDir/test/support/shunit2"
-

@@ -1,3 +1,16 @@
-script: ./run_tests.sh
+os:
+  - linux
+  - osx
+
+env:
+  - TEST_SHELLS=bash
+  - TEST_SHELLS=zsh
+
+install:
+  - ./test/support/travisci_deps.sh
+
 before_script:
-  - sudo apt-get install zsh
+  - echo -e "test_repo_11\ntest_repo_1" | sort
+
+script:
+  - ./run_tests.sh

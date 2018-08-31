@@ -5,9 +5,9 @@
 # ------------------------------------------------------------------------------
 
 
-if test | sed -E 's///g' 2>/dev/null; then
+if sed -E 's///g' </dev/null &>/dev/null; then
   SED_REGEX_ARG="E"
-elif test | sed -r 's///g' 2>/dev/null; then
+elif sed -r 's///g' </dev/null &>/dev/null; then
   SED_REGEX_ARG="r"
 else
   echo "Cannot determine extended regex argument for sed! (Doesn't respond to either -E or -r)"
@@ -21,7 +21,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
   # Do it in a function so we don't bleed variables
   function _git_wrap_commands() {
     # Define 'whence' for bash, to get the value of an alias
-    type whence > /dev/null 2>&1 || function whence() { type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
+    type whence > /dev/null 2>&1 || function whence() { LC_MESSAGES="C" type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
     for cmd in $(echo $scmb_wrapped_shell_commands); do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
@@ -35,7 +35,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         fi
       fi
 
-      case "$(type $cmd 2>&1)" in
+      case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
 
       # Don't do anything if command already aliased, or not found.
       *'exec_scmb_expand_args'*)
@@ -52,7 +52,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         unalias $cmd
 
         # Detect original $cmd type, and escape
-        case "$(type $cmd 2>&1)" in
+        case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
           # Escape shell builtins with 'builtin'
           *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
           # Get full path for files with 'find_binary' function
@@ -108,50 +108,51 @@ fi
 
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
-unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
-function ls_with_file_shortcuts {
-  local ll_output
-  if [ "$_ls_bsd" != "BSD" ]; then
-  	ll_output="$(\ls -lhv --group-directories-first --color "$@")"
-  else
-    ll_output="$(CLICOLOR_FORCE=1 \ls -l -G "$@")"
-  fi
+if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
+  unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
+  function ls_with_file_shortcuts {
+    local ll_output
+    if [ "$_ls_bsd" != "BSD" ]; then
+      ll_output="$(\ls -lhv --group-directories-first --color "$@")"
+    else
+      ll_output="$(CLICOLOR_FORCE=1 \ls -l -G "$@")"
+    fi
 
-  if [[ $shell == "zsh" ]]; then
-    # Ensure sh_word_split is on
-    if setopt | grep -q shwordsplit; then SHWORDSPLIT_ON=true; fi
-    setopt shwordsplit
-  fi
+    if [[ $shell == "zsh" ]]; then
+      # Ensure sh_word_split is on
+      if setopt | grep -q shwordsplit; then SHWORDSPLIT_ON=true; fi
+      setopt shwordsplit
+    fi
 
-  # Parse path from args
-  OLDIFS="$IFS"; IFS=$'\n'
-  for arg in $@; do
-    if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
-  done
-  IFS="$OLDIFS"
+    # Parse path from args
+    IFS=$'\n'
+    for arg in $@; do
+      if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
+    done
+    unset IFS
 
-  # Replace user/group with user symbol, if defined at ~/.user_sym
-  # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
-  # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
-  if [ -e $HOME/.user_sym ]; then
-    # Little bit of ruby golf to rejustify the user/group/size columns after replacement
-    function rejustify_ls_columns(){
-      ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;\
-               u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};\
-               puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
-    }
+    # Replace user/group with user symbol, if defined at ~/.user_sym
+    # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
+    # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
+    if [ -e $HOME/.user_sym ]; then
+      # Little bit of ruby golf to rejustify the user/group/size columns after replacement
+      function rejustify_ls_columns(){
+        ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;\
+                 u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};\
+                 puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
+      }
 
-    ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
-  fi
+      ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+    fi
 
-  if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
-    echo -e "\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m"
-    echo "$ll_output"
-    return 1
-  fi
+    if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
+      echo -e "\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m"
+      echo "$ll_output"
+      return 1
+    fi
 
-  # Use ruby to inject numbers into ls output
-  echo "$ll_output" | ruby -e "$( \cat <<EOF
+    # Use ruby to inject numbers into ls output
+    echo "$ll_output" | ruby -e "$( \cat <<EOF
 output = STDIN.read
 e = 1
 re = /^(([^ ]* +){8})/
@@ -163,30 +164,31 @@ end
 EOF
 )"
 
-  # Set numbered file shortcut in variable
-  local e=1
-  local ll_files=''
-  local file=''
+    # Set numbered file shortcut in variable
+    local e=1
+    local ll_files=''
+    local file=''
 
-  if [ -z $_ls_bsd ]; then
-    ll_files="$(\ls -v --group-directories-first --color=never "$@")"
-  else
-    ll_files="$(\ls "$@")"
-  fi
+    if [ -z $_ls_bsd ]; then
+      ll_files="$(\ls -v --group-directories-first --color=never "$@")"
+    else
+      ll_files="$(\ls "$@")"
+    fi
 
-  OLDIFS="$IFS"; IFS=$'\n'
-  for file in $ll_files; do
-    if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
-    export $git_env_char$e="$(eval $_abs_path_command \"${file//\"/\\\"}\")"
-    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
-    let e++
-  done
-  IFS="$OLDIFS"
+    IFS=$'\n'
+    for file in $ll_files; do
+      if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
+      export $git_env_char$e="$(eval $_abs_path_command \"${file//\"/\\\"}\")"
+      if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+      let e++
+    done
+    unset IFS
 
-  # Turn off shwordsplit unless it was on previously
-  if [[ $shell == "zsh" ]] && [ -z "$SHWORDSPLIT_ON" ]; then unsetopt shwordsplit; fi
-}
+    # Turn off shwordsplit unless it was on previously
+    if [[ $shell == "zsh" ]] && [ -z "$SHWORDSPLIT_ON" ]; then unsetopt shwordsplit; fi
+  }
 
-# Setup aliases
-alias ll="exec_scmb_expand_args ls_with_file_shortcuts"
-alias la="ll -A"
+  # Setup aliases
+  alias ll="exec_scmb_expand_args ls_with_file_shortcuts"
+  alias la="ll -A"
+fi
