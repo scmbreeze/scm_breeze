@@ -21,6 +21,13 @@ fi
 source "$scmbDir/test/support/test_helper.sh"
 source "$scmbDir/lib/scm_breeze.sh"
 
+bin_path() {
+  if [ -n "${ZSH_VERSION:-}" ];
+    then where "$@" | tail -1
+    else which "$@"
+  fi
+}
+
 # Setup
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
@@ -35,10 +42,10 @@ oneTimeSetUp() {
 
   # Before aliasing, get original locations so we can compare them in the test
   unalias mv rm sed cat 2>/dev/null
-  export mv_path="$(which mv)"
-  export rm_path="$(which rm)"
-  export sed_path="$(which sed)"
-  export cat_path="$(which cat)"
+  export mv_path="$(bin_path mv)"
+  export rm_path="$(bin_path rm)"
+  export sed_path="$(bin_path sed)"
+  export cat_path="$(bin_path cat)"
 
   # Test aliases
   alias mv="nocorrect $mv_path"
