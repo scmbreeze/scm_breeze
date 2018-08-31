@@ -7,10 +7,14 @@
 #
 # Unit tests for git shell scripts
 
-export scmbDir="$( cd -P "$( dirname "$0" )" && pwd )/../../.."
+export scmbDir="$(cd -P "$(dirname "$0")" && pwd)/../../.."
 
 # Zsh compatibility
-if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; SHUNIT_PARENT=$0; setopt shwordsplit; fi
+if [ -n "${ZSH_VERSION:-}" ]; then
+  shell="zsh"
+  SHUNIT_PARENT=$0
+  setopt shwordsplit
+fi
 
 # Load test helpers
 source "$scmbDir/test/support/test_helper.sh"
@@ -18,7 +22,6 @@ source "$scmbDir/test/support/test_helper.sh"
 # Load functions to test
 source "$scmbDir/lib/scm_breeze.sh"
 source "$scmbDir/lib/git/repo_index.sh"
-
 
 # Setup and tear down
 #-----------------------------------------------------------------------------
@@ -34,7 +37,10 @@ oneTimeSetUp() {
   cd $GIT_REPO_DIR
   # Setup test repos in temp repo dir
   for repo in github bitbucket source_forge TestCaps; do
-    mkdir $repo; cd $repo; git init; cd - > /dev/null
+    mkdir $repo
+    cd $repo
+    git init
+    cd - >/dev/null
   done
 
   # Add some nested dirs for testing resursive tab completion
@@ -47,7 +53,7 @@ oneTimeSetUp() {
   mkdir submodules_everywhere
   cd submodules_everywhere
   git init
-  cat > .gitmodules <<EOF
+  cat >.gitmodules <<EOF
 [submodule "very/nested/directory/red_submodule"]
 [submodule "very/nested/directory/green_submodule"]
 [submodule "very/nested/directory/blue_submodule"]
@@ -55,13 +61,18 @@ EOF
   mkdir -p "very/nested/directory"
   cd "very/nested/directory"
   for repo in red_submodule green_submodule blue_submodule; do
-    mkdir $repo; cd $repo; git init; cd - > /dev/null
+    mkdir $repo
+    cd $repo
+    git init
+    cd - >/dev/null
   done
 
   # Setup some custom repos outside the main repo dir
   IFS=":"
   for dir in $GIT_REPOS; do
-    mkdir -p $dir; cd $dir; git init;
+    mkdir -p $dir
+    cd $dir
+    git init
   done
   unset IFS
 
@@ -85,13 +96,12 @@ index_no_newlines() {
   tr "\\n" " " < $git_index_file
 }
 
-
 #-----------------------------------------------------------------------------
 # Unit tests
 #-----------------------------------------------------------------------------
 
 test_repo_index_command() {
-  git_index --rebuild > /dev/null
+  git_index --rebuild >/dev/null
 
   # Test that all repos are detected, and sorted alphabetically
   assertIncludes "$(index_no_newlines)" $(
@@ -111,7 +121,7 @@ EXPECT
 
 test_check_git_index() {
   ensureIndex
-  echo "should not be regenerated" >> $git_index_file
+  echo "should not be regenerated" >>$git_index_file
   _check_git_index
   # Test that index is not rebuilt unless empty
   assertIncludes "$(index_no_newlines)" "should not be regenerated"
@@ -128,7 +138,7 @@ test_git_index_count() {
 test_repo_list() {
   ensureIndex
   list=$(git_index --list)
-  assertIncludes "$list" "bitbucket"      || return
+  assertIncludes "$list" "bitbucket" || return
   assertIncludes "$list" "blue_submodule" || return
   assertIncludes "$list" "test_repo_11"
 }
@@ -136,16 +146,26 @@ test_repo_list() {
 # Test matching rules for changing directory
 test_git_index_changing_directory() {
   ensureIndex
-  git_index "github";       assertEquals "$GIT_REPO_DIR/github" "$PWD"
-  git_index "github/";      assertEquals "$GIT_REPO_DIR/github" "$PWD"
-  git_index "bucket";       assertEquals "$GIT_REPO_DIR/bitbucket" "$PWD"
-  git_index "testcaps";     assertEquals "$GIT_REPO_DIR/TestCaps" "$PWD"
-  git_index "green_sub";    assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/green_submodule" "$PWD"
-  git_index "_submod";      assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
-  git_index "test_repo_1";  assertEquals "/tmp/test_repo_1" "$PWD"
-  git_index "test_repo_11"; assertEquals "/tmp/test_repo_11" "$PWD"
-  git_index "test_repo_";   assertEquals "/tmp/test_repo_1" "$PWD"
-  git_index "github/videos/octocat/live_action"; assertEquals "$GIT_REPO_DIR/github/videos/octocat/live_action" "$PWD"
+  git_index "github"
+  assertEquals "$GIT_REPO_DIR/github" "$PWD"
+  git_index "github/"
+  assertEquals "$GIT_REPO_DIR/github" "$PWD"
+  git_index "bucket"
+  assertEquals "$GIT_REPO_DIR/bitbucket" "$PWD"
+  git_index "testcaps"
+  assertEquals "$GIT_REPO_DIR/TestCaps" "$PWD"
+  git_index "green_sub"
+  assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/green_submodule" "$PWD"
+  git_index "_submod"
+  assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
+  git_index "test_repo_1"
+  assertEquals "/tmp/test_repo_1" "$PWD"
+  git_index "test_repo_11"
+  assertEquals "/tmp/test_repo_11" "$PWD"
+  git_index "test_repo_"
+  assertEquals "/tmp/test_repo_1" "$PWD"
+  git_index "github/videos/octocat/live_action"
+  assertEquals "$GIT_REPO_DIR/github/videos/octocat/live_action" "$PWD"
 }
 
 test_git_index_tab_completion() {
@@ -166,15 +186,14 @@ test_git_index_tab_completion() {
     # Test completion for project sub-directories when project ends with '/'
     COMP_WORDS="github/"
     _git_index_tab_completion
-    assertIncludes    "$(tab_completions)" "github/videos/"
+    assertIncludes "$(tab_completions)" "github/videos/"
     # Check that '.git/' is filtered from completion, but other hidden dirs are available
     assertNotIncludes "$(tab_completions)" "github/.git/"
-    assertIncludes    "$(tab_completions)" "github/.im_hidden/"
+    assertIncludes "$(tab_completions)" "github/.im_hidden/"
 
     COMP_WORDS="github/videos/"
     _git_index_tab_completion
     assertIncludes "$(tab_completions)" "github/videos/octocat/"
-
 
     # Test that completion checks for other matching projects even if one matches perfectly
     COMP_WORDS="test_repo_1"
@@ -183,7 +202,6 @@ test_git_index_tab_completion() {
   fi
 }
 
-
 # Test changing to top-level directory (when arg begins with '/')
 test_changing_to_top_level_directory() {
   mkdir "$GIT_REPO_DIR/gems"
@@ -191,8 +209,6 @@ test_changing_to_top_level_directory() {
   assertEquals "$GIT_REPO_DIR/gems" "$PWD"
 }
 
-
 # load and run shUnit2
 # Call this function to run tests
 source "$scmbDir/test/support/shunit2"
-
