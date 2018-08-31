@@ -138,6 +138,9 @@ test_ls_with_file_shortcuts() {
   # Test arg with no quotes
   ls_output=$(ls_with_file_shortcuts a\ \"b\" | strip_colors)
   assertIncludes "$ls_output" '[1]  c' F
+
+  cd -
+  rm -r "$TEST_DIR" "$temp_file"
 }
 
 # load and run shUnit2
