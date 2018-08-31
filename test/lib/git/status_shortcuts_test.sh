@@ -29,6 +29,7 @@ oneTimeSetUp() {
   export ga_auto_remove="yes"
 
   testRepo=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
+  testRepo=$(cd $testRepo && pwd -P)
 }
 
 oneTimeTearDown() {

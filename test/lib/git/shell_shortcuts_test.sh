@@ -32,11 +32,15 @@ oneTimeSetUp() {
 
   # Test functions
   function ln() { ln $@; }
-  # Test aliases
+
+  # Before aliasing, get original locations so we can compare them in the test
+  unalias mv rm sed cat 2>/dev/null
   export mv_path="$(which mv)"
   export rm_path="$(which rm)"
   export sed_path="$(which sed)"
-  export cat_pathj="$(which cat)"
+  export cat_path="$(which cat)"
+
+  # Test aliases
   alias mv="nocorrect $mv_path"
   alias rm="$rm_path --option"
   alias sed="$sed_path"
@@ -67,7 +71,7 @@ test_shell_command_wrapping() {
   assertAliasEquals "exec_scmb_expand_args nocorrect $mv_path" "mv"
   assertAliasEquals "exec_scmb_expand_args $sed_path"          "sed"
   assertAliasEquals "exec_scmb_expand_args $cat_path"          "cat"
-  assertAliasEquals "exec_scmb_expand_args builtin cd"            "cd"
+  assertAliasEquals "exec_scmb_expand_args builtin cd"         "cd"
   assertIncludes    "$(declare -f ln)" "ln ()"
   assertIncludes    "$(declare -f ln)" "exec_scmb_expand_args __original_ln"
 }
@@ -76,7 +80,15 @@ test_ls_with_file_shortcuts() {
   export git_env_char="e"
 
   TEST_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
+
+  # Darwin actually symlinks /var inside /private, but mktemp reports back the
+  # logical pathat time of file creation.  So make sure we always get the
+  # full physical path to be absolutely certain when doing comparisons later,
+  # because thats how the Ruby status_shortcuts.rb script is going to obtain
+  # them.
   cd $TEST_DIR
+  TEST_DIR=$(pwd -P)
+
   touch 'test file' 'test_file'
   mkdir -p "a [b]" 'a "b"' "a 'b'"
   touch "a \"b\"/c"
@@ -87,7 +99,7 @@ test_ls_with_file_shortcuts() {
   ls_with_file_shortcuts > $temp_file
   ls_output=$(<$temp_file strip_colors)
 
-  # Compare as fixed strings (F), instead of regex (P)
+  # Compare as fixed strings (F), instead of normal grep behavior
   assertIncludes "$ls_output" '[1]  a "b"' F
   assertIncludes "$ls_output" "[2]  a 'b'" F
   assertIncludes "$ls_output" '[3]  a [b]' F
