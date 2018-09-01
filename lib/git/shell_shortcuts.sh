@@ -23,7 +23,7 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
     # Define 'whence' for bash, to get the value of an alias
     type whence > /dev/null 2>&1 || function whence() { LC_MESSAGES="C" type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
-    for cmd in $(echo $scmb_wrapped_shell_commands); do
+    for cmd in $scmb_wrapped_shell_commands; do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
 
       # Special check for 'cd', to make sure SCM Breeze is loaded after RVM
