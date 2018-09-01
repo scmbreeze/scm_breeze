@@ -29,13 +29,13 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       # Special check for 'cd', to make sure SCM Breeze is loaded after RVM
       if [ "$cmd" = 'cd' ]; then
         if [ -e "$HOME/.rvm" ] && ! type rvm > /dev/null 2>&1; then
-          echo -e "\033[0;31mSCM Breeze must be loaded \033[1;31mafter\033[0;31m RVM, otherwise there will be a conflict when RVM wraps the 'cd' command.\033[0m"
-          echo -e "\033[0;31mPlease move the line that loads SCM Breeze to the bottom of your ~/.bashrc\033[0m"
+          echo -e "\\033[0;31mSCM Breeze must be loaded \\033[1;31mafter\\033[0;31m RVM, otherwise there will be a conflict when RVM wraps the 'cd' command.\\033[0m"
+          echo -e "\\033[0;31mPlease move the line that loads SCM Breeze to the bottom of your ~/.bashrc\\033[0m"
           continue
         fi
       fi
 
-      case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
+      case "$(LC_MESSAGES="C" type "$cmd" 2>&1)" in
 
       # Don't do anything if command already aliased, or not found.
       *'exec_scmb_expand_args'*)
@@ -49,10 +49,10 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         # Store original alias
         local original_alias="$(whence $cmd)"
         # Remove alias, so that we can find binary
-        unalias $cmd
+        unalias "$cmd"
 
         # Detect original $cmd type, and escape
-        case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
+        case "$(LC_MESSAGES="C" type "$cmd" 2>&1)" in
           # Escape shell builtins with 'builtin'
           *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
           # Get full path for files with 'find_binary' function
@@ -67,9 +67,9 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       *'is a'*'function'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a function"; fi
         # Copy old function into new name
-        eval "$(declare -f $cmd | sed -$SED_REGEX_ARG "s/^$cmd \(\)/__original_$cmd ()/")"
+        eval "$(declare -f "$cmd" | sed -"$SED_REGEX_ARG" "s/^$cmd \\(\\)/__original_$cmd ()/")"
         # Remove function
-        unset -f $cmd
+        unset -f "$cmd"
         # Create function that wraps old function
         eval "${cmd}(){ exec_scmb_expand_args __original_${cmd} \"\$@\"; }";;
 
@@ -133,7 +133,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
     # Replace user/group with user symbol, if defined at ~/.user_sym
     # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
     # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
-    if [ -e $HOME/.user_sym ]; then
+    if [ -e "$HOME"/.user_sym ]; then
       # Little bit of ruby golf to rejustify the user/group/size columns after replacement
       function rejustify_ls_columns(){
         ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;\
@@ -178,7 +178,7 @@ EOF
     local IFS=$'\n'
     for file in $ll_files; do
       if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
-      export $git_env_char$e="$(eval $_abs_path_command \"${file//\"/\\\"}\")"
+      export $git_env_char$e="$(_safe_eval "${_abs_path_command[@]}" "$file")"
       if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
     done
