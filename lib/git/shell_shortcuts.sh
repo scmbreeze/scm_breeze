@@ -120,7 +120,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
 
     if [[ $shell == "zsh" ]]; then
       # Ensure sh_word_split is on
-      if setopt | grep -q shwordsplit; then SHWORDSPLIT_ON=true; fi
+      [[ -o shwordsplit ]] && SHWORDSPLIT_ON=true
       setopt shwordsplit
     fi
 
@@ -144,6 +144,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
       ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat "$HOME/.user_sym")/g" | rejustify_ls_columns)
     fi
 
+    # Bail if there are two many lines to process
     if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
       echo -e "\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m"
       echo "$ll_output"
@@ -183,7 +184,7 @@ EOF
     done
 
     # Turn off shwordsplit unless it was on previously
-    if [[ $shell == "zsh" ]] && [ -z "$SHWORDSPLIT_ON" ]; then unsetopt shwordsplit; fi
+    if [[ $shell == "zsh" && -z $SHWORDSPLIT_ON ]]; then unsetopt shwordsplit; fi
   }
 
   # Setup aliases
