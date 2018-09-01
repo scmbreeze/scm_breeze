@@ -67,6 +67,19 @@ test_scmb_expand_args() {
     "$(eval a=$(scmb_expand_args 7 1-1 8); token_quote "${a[@]}")"
 }
 
+test_exec_scmb_expand_args() {
+  local e1="one" e2="a b c" e3='$dollar' e4="single'quote" e5='double"quote' e6='a(){:;};a&'
+  assertEquals "literals with spaces not preserved" "'foo' 'bar baz'" \
+    "$(eval a="$(scmb_expand_args foo 'bar baz')"; token_quote "${a[@]}")"
+  assertEquals "variables with spaces not preserved" "'one' 'a b c'" \
+    "$(eval a="$(scmb_expand_args 1-2)"; token_quote "${a[@]}")"
+  # Expecting text: '$dollar' "single'quote" 'double"quote'
+  # Generate quoted expected string with:  token_quote "$(cat)"  then copy/paste, ^D
+  assertEquals "special characters are preserved" \
+    "'\$dollar' 'single'\\''quote' 'double\"quote' 'a(){:;};a&'" \
+    "$(eval a="$(scmb_expand_args 3-6)"; token_quote "${a[@]}")"
+}
+
 test_command_wrapping_escapes_special_characters() {
     assertEquals 'should escape | the pipe' "$(exec_scmb_expand_args echo "should escape | the pipe")"
     assertEquals 'should escape ; the semicolon' "$(exec_scmb_expand_args echo "should escape ; the semicolon")"
