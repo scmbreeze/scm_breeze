@@ -146,7 +146,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
 
     # Bail if there are two many lines to process
     if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
-      echo -e "\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m"
+      echo -e '\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m' >&2
       echo "$ll_output"
       return 1
     fi
