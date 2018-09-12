@@ -18,18 +18,45 @@ _alias() {
   fi
 }
 
+# Quote the contents of "$@"
+function token_quote {
+    # Older versions of {ba,z}sh don't support the built-in quoting, so fall back to printf %q
+  local quoted=()
+  for token; do
+    quoted+=( "$(printf '%q' "$token")" )
+  done
+  printf '%s\n' "${quoted[*]}"
+
+  # Keep this code for use when minimum versions of {ba,z}sh can be increased.
+  # See https://github.com/scmbreeze/scm_breeze/issues/260
+  #
+  # if [[ $shell = bash ]]; then
+  #   # ${parameter@operator} where parameter is ${@} and operator is 'Q'
+  #   # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
+  #   eval "${@@Q}"
+  # else  # zsh
+  #   # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion-Flags
+  #   eval "${(q-)@}"
+  # fi
+}
+
 # Quote "$@" before `eval` to prevent arbitrary code execution.
 # Eg, the following will run `date`:
 # evil() { eval "$@"; }; evil "echo" "foo;date"
 function _safe_eval() {
-  if [[ $shell = bash ]]; then
-    # ${parameter@operator} where parameter is ${@} and operator is 'Q'
-    # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
-    eval "${@@Q}"
-  else  # zsh
-    # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion-Flags
-    eval "${(q-)@}"
-  fi
+  eval $(token_quote "$@")
+
+  # Keep this code for use when minimum versions of {ba,z}sh can be increased.
+  # See https://github.com/scmbreeze/scm_breeze/issues/260
+  #
+  # if [[ $shell = bash ]]; then
+  #   # ${parameter@operator} where parameter is ${@} and operator is 'Q'
+  #   # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
+  #   eval "${@@Q}"
+  # else  # zsh
+  #   # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion-Flags
+  #   eval "${(q-)@}"
+  # fi
 }
 
 find_binary(){

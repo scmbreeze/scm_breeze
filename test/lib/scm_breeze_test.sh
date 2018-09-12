@@ -16,9 +16,9 @@ source "$scmbDir/lib/scm_breeze.sh"
 #-----------------------------------------------------------------------------
 
 test__safe_eval() {
-  assertEquals "runs eval with simple words" "'one' 'two' 'three'" "$(_safe_eval token_quote one two three)"
-  assertEquals "quotes spaces" "'a' 'b c' 'd'" "$(_safe_eval token_quote a b\ c d)"
-  assertEquals "quotes special chars" "'a b' '\$dollar' '\\slash' 'c d'" "$(_safe_eval token_quote a\ b '$dollar' '\slash' c\ d)"
+  assertEquals "runs eval with simple words" 'one two three' "$(_safe_eval token_quote one two three)"
+  assertEquals "quotes spaces" 'a b\ c d' "$(_safe_eval token_quote a b\ c d)"
+  assertEquals "quotes special chars" 'a\ b \$dollar \\slash c\ d' "$(_safe_eval token_quote a\ b '$dollar' '\slash' c\ d)"
 }
 
 
