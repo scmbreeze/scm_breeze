@@ -82,7 +82,7 @@ git_silent_add_shortcuts() {
     eval "args=$(scmb_expand_args "$@")"  # create $args array
     for file in "${args[@]}"; do
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
-      if [[ $ga_auto_remove == "yes" ]] && ! [ -e "$file" ]; then
+      if [[ $ga_auto_remove = yes && ! -e $file ]]; then
         echo -n "# "
         git rm "$file"
       else
@@ -98,7 +98,7 @@ git_silent_add_shortcuts() {
 # and exports numbered environment variables for each file.
 git_show_affected_files(){
   fail_if_not_git_repo || return 1
-  f=0  # File count
+  local f=0  # File count
   # Show colored revision and commit message
   echo -n "# "; git show --oneline --name-only "$@" | head -n1; echo "# "
   for file in $(git show --pretty="format:" --name-only "$@" | \grep -v '^$'); do
