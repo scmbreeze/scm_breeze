@@ -17,7 +17,7 @@ unalias git > /dev/null 2>&1
 unset -f git > /dev/null 2>&1
 
 # Use the full path to git to avoid infinite loop with git function
-export _git_cmd="$(\which git)"
+export _git_cmd="$(bin_path git)"
 # Wrap git with the 'hub' github wrapper, if installed (https://github.com/defunkt/hub)
 if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 

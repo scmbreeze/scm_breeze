@@ -21,13 +21,6 @@ fi
 source "$scmbDir/test/support/test_helper.sh"
 source "$scmbDir/lib/scm_breeze.sh"
 
-bin_path() {
-  if [ -n "${ZSH_VERSION:-}" ];
-    then where "$@" | tail -1
-    else which "$@"
-  fi
-}
-
 # Setup
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {

@@ -108,7 +108,7 @@ fi
 
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
-if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
+if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby > /dev/null 2>&1; then
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
     local ll_output
