@@ -112,10 +112,13 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
     local ll_output
+    local ll_command  # Ensure sort ordering of the two invocations is the same
     if [ "$_ls_bsd" != "BSD" ]; then
-      ll_output="$(\ls -lhv --group-directories-first --color "$@")"
+      ll_command=(\ls -hv --group-directories-first)
+      ll_output="$("${ll_command[@]}" -l --color "$@")"
     else
-      ll_output="$(CLICOLOR_FORCE=1 \ls -l -G "$@")"
+      ll_command=(\ls)
+      ll_output="$(CLICOLOR_FORCE=1 "${ll_command[@]}" -lG "$@")"
     fi
 
     if [[ $shell == "zsh" ]]; then
@@ -187,10 +190,14 @@ EOF
     local ll_files=''
     local file=''
 
+    # XXX FIXME XXX
+    # There is a race condition here: If a file is removed between the above
+    # and this second call of `ls` then the $e# variables can refer to the
+    # wrong files.
     if [ -z $_ls_bsd ]; then
-      ll_files="$(\ls -v --group-directories-first --color=never "$@")"
+      ll_files="$(QUOTING_STYLE=literal "${ll_command[@]}" --color=never "$@")"
     else
-      ll_files="$(\ls "$@")"
+      ll_files="$("${ll_command[@]}" "$@")"
     fi
 
     local IFS=$'\n'
