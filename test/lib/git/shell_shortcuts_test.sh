@@ -107,7 +107,7 @@ test_ls_with_file_shortcuts() {
 
   touch 'test file' 'test_file'
   mkdir -p "a [b]" 'a "b"' "a 'b'"
-  touch "a \"b\"/c"
+  touch 'a "b"/c'
 
   # Run command in shell, load output from temp file into variable
   # (This is needed so that env variables are exported in the current shell)
@@ -134,10 +134,21 @@ test_ls_with_file_shortcuts() {
   ls_output=$(<$temp_file strip_colors)
   assertIncludes "$ls_output" '[1]  c' F
   # Test that env variable is set correctly
-  assertEquals "$TEST_DIR/a \"b\"/c" "$e1"
+  assertEquals "$TEST_DIR/"'a "b"/c' "$e1"
   # Test arg with no quotes
   ls_output=$(ls_with_file_shortcuts a\ \"b\" | strip_colors)
   assertIncludes "$ls_output" '[1]  c' F
+
+  # Listing two directories fails (see issue #275)
+  mkdir 1 2
+  touch 1/file
+  assertFalse 'Only one directory supported' 'ls_with_file_shortcuts 1 2'
+  assertFalse 'Fails on <directory> <file>' 'ls_with_file_shortcuts 1 test_file'
+  assertFalse 'Fails on <file> <directory>' 'ls_with_file_shortcuts test_file 1'
+  assertFalse 'Fails on <directory> <directory>/<file>' 'ls_with_file_shortcuts 1 1/file'
+
+  # Files under the root directory
+  assertTrue 'Shortcuts under /' 'ls_with_file_shortcuts / > /dev/null && [[ $e1 =~ ^/[^/]+$ ]]'
 
   cd -
   rm -r "$TEST_DIR" "$temp_file"

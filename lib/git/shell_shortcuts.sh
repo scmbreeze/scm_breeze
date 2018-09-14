@@ -124,11 +124,29 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
       setopt shwordsplit
     fi
 
-    # Parse path from args
+    # Get the directory that `ls` is being run relative to.
+    # Only allow one directory to avoid incorrect $e# variables when listing
+    # multiple directories (issue #274)
     local IFS=$'\n'
+    local rel_path
     for arg in "$@"; do
-      if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
+      if [[ -e $arg ]]; then        # Path rather than option to ls
+        if [[ -z $rel_path ]]; then # We are seeing our first pathname
+          if [[ -d $arg ]]; then    # It's a directory
+            rel_path=$arg
+          else                      # It's a file, expand the current directory
+            rel_path=.
+          fi
+        elif [[ -d $arg || ( -f $arg && $rel_path != . ) ]]; then
+          if [[ -f $arg ]]; then arg=$PWD; fi  # Get directory for current argument
+          # We've already seen a different directory. Quit to avoid damage (issue #274)
+          printf 'scm_breeze: Cannot list relative to both directories:\n  %s\n  %s\n' "$arg" "$rel_path" >&2
+          printf 'Currently only listing a single directory is supported. See issue #274.\n' >&2
+          return 1
+        fi
+      fi
     done
+    rel_path=$("${_abs_path_command[@]}" ${rel_path:-$PWD})
 
     # Replace user/group with user symbol, if defined at ~/.user_sym
     # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
@@ -177,9 +195,9 @@ EOF
 
     local IFS=$'\n'
     for file in $ll_files; do
-      if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
-      export $git_env_char$e="$(_safe_eval "${_abs_path_command[@]}" "$file")"
-      if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+      file=$rel_path/$file
+      export $git_env_char$e=$("${_abs_path_command[@]}" "$file")
+      if [[ ${scmbDebug:-} = true ]]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
     done
 
