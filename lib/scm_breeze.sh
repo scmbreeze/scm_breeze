@@ -21,7 +21,8 @@ _alias() {
 # Quote the contents of "$@"
 function token_quote {
     # Older versions of {ba,z}sh don't support the built-in quoting, so fall back to printf %q
-  local quoted=()
+  local quoted
+  quoted=()  # Assign separately for zsh 5.0.2 of Ubuntu 14.04
   for token; do
     quoted+=( "$(printf '%q' "$token")" )
   done

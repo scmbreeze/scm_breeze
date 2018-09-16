@@ -79,7 +79,8 @@ git_add_shortcuts() {
 git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
-    eval "args=$(scmb_expand_args "$@")"  # create $args array
+    local args
+    eval args="$(scmb_expand_args "$@")"  # populate $args array
     for file in "${args[@]}"; do
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove = yes && ! -e $file ]]; then
@@ -108,8 +109,8 @@ git_show_affected_files(){
   done; echo "# "
 }
 
-
 # Allows expansion of numbered shortcuts, ranges of shortcuts, or standard paths.
+# Return a string which can be `eval`ed like: eval args="$(scmb_expand_args "$@")"
 # Numbered shortcut variables are produced by various commands, such as:
 # * git_status_shortcuts()  - git status implementation
 # * git_show_affected_files() - shows files affected by a given SHA1, etc.
@@ -120,7 +121,8 @@ scmb_expand_args() {
     shift
   fi
 
-  local -a args=()  # initially empty array
+  local args
+  args=()  # initially empty array. zsh 5.0.2 from Ubuntu 14.04 requires this to be separated
   for arg in "$@"; do
     if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ -e "$arg" ]; then
@@ -137,14 +139,22 @@ scmb_expand_args() {
       args+=("$arg")
     fi
   done
-  args=$(declare -p args)  # Get $args array as a string which can be `eval`-ed to recreate itself
-  args=${args#*=}  # Remove `typeset -a args=` from beginning of string to allow caller to name variable
-  echo "$args"
+
+  # "declare -p" with zsh 5.0.2 on Ubuntu 14.04 creates a string that it cannot process:
+  # typeset -a args args=(one three six)
+  # There should be a ; between the two "args" tokens
+  # "declare -p" with bash 4.3.11(1) on Ubuntu 14.04 creates a string like:
+  # declare -a a='([0]="a" [1]="b c" [2]="d")'
+  # The RHS of this string is incompatible with zsh 5.0.2 and "eval args="
+
+  # Generate a quoted array string to assign to "eval args="
+  echo "( $(token_quote "${args[@]}") )"
 }
 
 # Expand a variable (named by $2) into a (possibly relative) pathname
 _print_path() {
-  local pathname=$(eval printf '%s' "\"\${$2}\"")
+  local pathname
+  pathname=$(eval printf '%s' "\"\${$2}\"")
   if [ "$1" = 1 ]; then  # print relative
     pathname=${pathname#$PWD/}  # Remove $PWD from beginning of the path
   fi
@@ -154,7 +164,8 @@ _print_path() {
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
-  eval "args=$(scmb_expand_args "$@")"  # create $args array
+  local args
+  eval "args=$(scmb_expand_args "$@")"  # populate $args array
   _safe_eval "${args[@]}"
 }
 
@@ -177,7 +188,8 @@ git_clear_vars() {
 _git_resolve_merge_conflict() {
   if [ -n "$2" ]; then
     # Expand args and process resulting set of files.
-    eval "args=$(scmb_expand_args "$@")"  # create $args array
+    local args
+    eval "args=$(scmb_expand_args "$@")"  # populate $args array
     for file in "${args[@]:2}"; do
       git checkout "--$1""s" "$file"   # "--$1""s" is expanded to --ours or --theirs
       git add "$file"

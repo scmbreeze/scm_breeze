@@ -202,15 +202,16 @@ _git_index_update_all_branches() {
     return
   fi
 
-  local remotes merges branches
+  # zsh 5.0.2 requires local separate to assignment for arrays
+  local remote merge remotes merges branches
   # Get branch configuration from .git/config
   local IFS=$'\n'
   for branch in $($GIT_BINARY branch 2> /dev/null | sed -e 's/.\{2\}\(.*\)/\1/'); do
     # Skip '(no branch)'
     if [[ "$branch" = "(no branch)" ]]; then continue; fi
 
-    local remote=$(git config --get branch.$branch.remote)
-    local merge=$(git config --get branch.$branch.merge)
+    remote=$(git config --get "branch.$branch.remote")
+    merge=$(git config --get "branch.$branch.merge")
 
     # Ignore branch if remote and merge is not configured
     if [[ -n "$remote" ]] && [[ -n "$merge" ]]; then
