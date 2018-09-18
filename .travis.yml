@@ -6,6 +6,8 @@ env:
   - TEST_SHELLS=bash
   - TEST_SHELLS=zsh
 
+sudo: required
+
 install:
   - ./test/support/travisci_deps.sh
 
