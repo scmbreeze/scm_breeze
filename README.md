@@ -353,9 +353,9 @@ If you already have an alias like `alias gco="git checkout"`, you can now type
 ## Custom emojis for username and "staff" group
 
 The `ll` command adds numbered shortcuts to files, but another fun feature is replacing your
-username and the "staff" group with custom emojis:
+username and the "staff" group with custom emojis. You can set these in `~/.user_sym` and `~/.staff_sym`.
 
-![Custom user and staff emojis](/docs/images/custom_user_and_staff_symbols.jpg)
+<img src="/scmbreeze/scm_breeze/raw/master/docs/images/custom_user_and_staff_symbols.jpg" alt="Custom user and staff emojis" style="max-width:400px;">
 
 Set your own emojis by running:
 
