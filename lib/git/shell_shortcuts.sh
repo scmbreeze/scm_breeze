@@ -142,7 +142,18 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
                  puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
       }
 
-      ll_output=$(echo "$ll_output" | \sed -$SED_REGEX_ARG "s/ $USER/ $(/bin/cat $HOME/.user_sym)/g" | rejustify_ls_columns)
+      if [ -f "$HOME/.user_sym" ]; then
+        local USER_SYM=$(/bin/cat $HOME/.user_sym)
+        if [ -f "$HOME/.staff_sym" ]; then
+          local STAFF_SYM=$(/bin/cat $HOME/.staff_sym)
+          ll_output=$(echo "$ll_output" | \
+            \sed -$SED_REGEX_ARG "s/ $USER  staff/ $USER_SYM  $STAFF_SYM /g")
+        fi
+        ll_output=$(echo "$ll_output" | \
+          \sed -$SED_REGEX_ARG "s/ $USER/ $USER_SYM /g")
+      fi
+
+      ll_output=$(echo "$ll_output" | rejustify_ls_columns)
     fi
 
     if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then

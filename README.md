@@ -350,6 +350,22 @@ as `gs` for the extended `git status`, and `ga` for the `git add` function.
 If you already have an alias like `alias gco="git checkout"`, you can now type
 `gco 1` to checkout the first file in the output of SCM Breeze's `git status`.
 
+## Custom emojis for username and "staff" group
+
+The `ll` command adds numbered shortcuts to files, but another fun feature is replacing your
+username and the "staff" group with custom emojis:
+
+![Custom user and staff emojis](/docs/images/custom_user_and_staff_symbols.jpg)
+
+Set your own emojis by running:
+
+```bash
+echo 🍀 > ~/.user_sym
+echo 🖥 > ~/.staff_sym
+```
+
+I also like using `~/.user_sym` [in my Bash prompt](https://github.com/ndbroadbent/dotfiles/blob/master/bashrc/prompt.sh#L71).
+
 
 ## Notes about Tab Completion for Aliases
 
