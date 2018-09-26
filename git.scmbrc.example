@@ -113,9 +113,10 @@ git_pull_request_alias="gpr"
 # ----------------------------------------------
 # Keyboard shortcuts are on by default. Set this to 'false' to disable them.
 git_keyboard_shortcuts_enabled="true"
-git_commit_all_keys="\C-x "        		  # CTRL+x, SPACE
-git_add_and_commit_keys="\C-xc"    		  # CTRL+x, c
-git_commit_all_with_ci_skip_keys="\C-xv"  # CTRL+x, v    (Appends [ci skip] to commit message)
+git_commit_all_keys="\C-x "               # CTRL+x, SPACE
+git_add_and_commit_keys="\C-xc"           # CTRL+x, c
+git_commit_all_with_ci_skip_keys="\C-xv"  # CTRL+x, v    (Appends [ci skip] to message)
+git_add_and_amend_commit_keys="\C-xz"     # CTRL+x, z
 
 
 # Shell Command Wrapping

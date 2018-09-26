@@ -36,10 +36,12 @@ if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
           _bind "$git_commit_all_keys"              " git_commit_all""$RETURN_CHAR"
           _bind "$git_add_and_commit_keys"          " \033[1~ git_add_and_commit ""$RETURN_CHAR"
           _bind "$git_commit_all_with_ci_skip_keys" " \033[1~ GIT_COMMIT_MSG_SUFFIX='[ci skip]' git_commit_all ""$RETURN_CHAR"
+          _bind "$git_add_and_amend_commit_keys"    " git add --all . && git commit --amend -C HEAD""$RETURN_CHAR"
         else
           _bind "$git_commit_all_keys"              "\" git_commit_all$RETURN_CHAR\""
           _bind "$git_add_and_commit_keys"          "\"\C-A git_add_and_commit $RETURN_CHAR\""
           _bind "$git_commit_all_with_ci_skip_keys" "\"\C-A GIT_COMMIT_MSG_SUFFIX='[ci skip]' git_commit_all $RETURN_CHAR\""
+          _bind "$git_add_and_amend_commit_keys"    "\" git add --all . && git commit --amend -C HEAD$RETURN_CHAR\""
         fi
       fi
 
