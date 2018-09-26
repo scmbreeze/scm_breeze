@@ -260,9 +260,10 @@ test_git_commit_prompt() {
   if [[ $shell == "zsh" ]]; then
     test_history="$(history)"
   else
+    # Need to load history from $HISTFILE
+    # (Couldn't get the 'history' builtin to work during tests.)
     test_history="$(cat $HISTFILE)"
   fi
-  assertIncludes "$test_history"  "$commit_msg"
   assertIncludes "$test_history"  "git commit -m \"$dbl_escaped_msg\""
 }
 
@@ -284,7 +285,7 @@ test_git_commit_prompt_with_append() {
 
   # Test the git commit prompt, by piping a commit message
   # instead of user input.
-  echo "$commit_msg" | APPEND="[ci skip]" git_commit_prompt > /dev/null
+  echo "$commit_msg" | GIT_COMMIT_MSG_SUFFIX="[ci skip]" git_commit_prompt > /dev/null
 
   git_show_output=$(git show --oneline --name-only)
   assertIncludes "$git_show_output"  "$commit_msg \[ci skip\]"

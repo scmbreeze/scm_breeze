@@ -203,29 +203,62 @@ theirs(){ _git_resolve_merge_conflict "their" "$@"; }
 # * Add escaped commit command and unescaped message to bash history.
 git_commit_prompt() {
   local commit_msg
+  local saved_commit_msg
+  if [ -f "/tmp/.git_commit_message~" ]; then
+    saved_commit_msg="$(cat /tmp/.git_commit_message~)"
+    echo -e "\033[0;36mLeave blank to use saved commit message: \033[0m$saved_commit_msg"
+  fi
   if [[ $shell == "zsh" ]]; then
     vared -h -p "Commit Message: " commit_msg
   else
     read -r -e -p "Commit Message: " commit_msg
   fi
 
-  if [ -n "$commit_msg" ]; then
-    eval $@ # run any prequisite commands
-    # Add $APPEND to commit message, if given. (Used to append things like [ci skip] for Travis CI)
-    if [ -n "$APPEND" ]; then commit_msg="$commit_msg $APPEND"; fi
-    echo $commit_msg | git commit -F - | tail -n +2
-  else
-    echo -e "\033[0;31mAborting commit due to empty commit message.\033[0m"
+  if [ -z "$commit_msg" ]; then
+    if [ -n "$saved_commit_msg" ]; then
+      commit_msg="$saved_commit_msg"
+    else
+      echo -e "\033[0;31mAborting commit due to empty commit message.\033[0m"
+      return
+    fi
   fi
-  escaped=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e 's/!/"'"'"'!'"'"'"/g')
 
+  # Add $GIT_COMMIT_MSG_SUFFIX to commit message, if given.
+  # (Used to append things like [ci skip] for Travis CI)
+  if [ -n "$GIT_COMMIT_MSG_SUFFIX" ]; then
+    commit_msg="$commit_msg $GIT_COMMIT_MSG_SUFFIX"
+  fi
+
+  # Exclamation marks are really difficult to escape properly in a bash prompt.
+  # They must always be enclosed with single quotes.
+  escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
+  # Add command to bash history, so that if a git pre-commit hook fails,
+  # you can just press "up" and "return" to retry the commit.
   if [[ $shell == "zsh" ]]; then
-    print -s "git commit -m \"${escaped//\\/\\\\}\"" # zsh's print needs double escaping
-    print -s "$commit_msg"
+    # zsh's print needs double escaping
+    print -s "git commit -m \"${escaped_msg//\\/\\\\}\""
   else
-    echo "git commit -m \"$escaped\"" >> $HISTFILE
-    # Also add unescaped commit message, for git prompt
-    echo "$commit_msg" >> $HISTFILE
+    history -s "git commit -m \"$escaped_msg\""
+    # Need to write history to a file for tests
+    if [ -n "$SHUNIT_VERSION" ]; then history -w $HISTFILE; fi
+  fi
+
+  # Also save the commit message to a temp file in case git commit fails
+  echo "$commit_msg" > "/tmp/.git_commit_message~"
+  eval $@ # run any prequisite commands
+
+  echo "$commit_msg" | git commit -F - | tail -n +2
+
+  # Fetch the pipe status (for both bash and zsh):
+  GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
+  if [[ $shell == "zsh" ]]; then
+    git_exit_status="${GIT_PIPE_STATUS[2]}" # zsh array indexes start at 1
+  else
+    git_exit_status="${GIT_PIPE_STATUS[1]}"
+  fi
+  if [[ "$git_exit_status" == 0 ]]; then
+    # Delete saved commit message if commit was successful
+    rm -f "/tmp/.git_commit_message~"
   fi
 }
 
@@ -234,8 +267,8 @@ git_commit_all() {
   fail_if_not_git_repo || return 1
   changes=$(git status --porcelain | wc -l | tr -d ' ')
   if [ "$changes" -gt 0 ]; then
-    if [ -n "$APPEND" ]; then
-      local appending=" | \033[0;36mappending '\033[1;36m$APPEND\033[0;36m' to commit message.\033[0m"
+    if [ -n "$GIT_COMMIT_MSG_SUFFIX" ]; then
+      local appending=" | \033[0;36mappending '\033[1;36m$GIT_COMMIT_MSG_SUFFIX\033[0;36m' to commit message.\033[0m"
     fi
     echo -e "\033[0;33mCommitting all files (\033[0;31m$changes\033[0;33m)\033[0m$appending"
     git_commit_prompt "git add --all ."
