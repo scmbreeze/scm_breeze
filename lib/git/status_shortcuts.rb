@@ -6,323 +6,213 @@
 # Released under the LGPL (GNU Lesser General Public License)
 # ------------------------------------------------------------------------------
 #
-# Original work by Nathan Broadbent
-# Rewritten by LFDM
-#
 # A much faster implementation of git_status_shortcuts() in ruby
-# (original benchmarks - bash: 0m0.549s, ruby: 0m0.045s, the updated
-# version is twice as fast, especially noticable in big repos)
-#
+# (bash: 0m0.549s, ruby: 0m0.045s)
 #
 # Last line of output contains the ordered absolute file paths,
 # which need to be extracted by the shell and exported as numbered env variables.
 #
-# Processes 'git status', and exports numbered
+# Processes 'git status --porcelain', and exports numbered
 # env variables that contain the path of each affected file.
 # Output is also more concise than standard 'git status'.
 #
 # Call with optional <group> parameter to just show one modification state
 # # groups => 1: staged, 2: unmerged, 3: unstaged, 4: untracked
 # --------------------------------------------------------------------
-#
-require 'strscan'
 
-class GitStatus
-  def initialize(request = nil)
-    @request = request.to_s # capture nils
-    @status = get_status
-    @ahead, @behind = parse_remote_stat
-    @grouped_changes = parse_changes
-    @index = 0
-  end
+@project_root = File.exist?(".git") ? Dir.pwd : `\git rev-parse --show-toplevel 2> /dev/null`.strip
 
-  def report
-    exit if all_changes.length > ENV["gs_max_changes"].to_i
-    print_header
-    print_groups
-    puts filelist if @grouped_changes.any?
-  end
+@git_status = `\git status --porcelain -b 2> /dev/null`
+
+git_status_lines = @git_status.split("\n")
+git_branch = git_status_lines[0]
+@branch = git_branch[/^## (?:Initial commit on )?([^ \.]+)/, 1]
+@ahead  = git_branch[/\[ahead ?(\d+).*\]/, 1]
+@behind = git_branch[/\[.*behind ?(\d+)\]/, 1]
+
+@changes = git_status_lines[1..-1]
+# Exit if too many changes
+exit if @changes.size > ENV["gs_max_changes"].to_i
+
+# Colors
+@c = {
+  :rst => "\033[0m",
+  :del => "\033[0;31m",
+  :mod => "\033[0;32m",
+  :new => "\033[0;33m",
+  :ren => "\033[0;34m",
+  :cpy => "\033[0;33m",
+  :typ => "\033[0;35m",
+  :unt => "\033[0;36m",
+  :dark => "\033[2;37m",
+  :branch => "\033[1m",
+  :header => "\033[0m"
+}
 
 
-  ######### Parsing methods #########
+# Following colors must be prepended with modifiers e.g. '\033[1;', '\033[0;'
+@group_c = {
+  :staged    => "33m",
+  :unmerged  => "31m",
+  :unstaged  => "32m",
+  :untracked => "36m"
+}
 
-  def get_status
-    `git status 2>/dev/null`
-  end
+@stat_hash = {
+  :staged    => [],
+  :unmerged  => [],
+  :unstaged  => [],
+  :untracked => []
+}
 
-  # Remote info is always on the second line of git status
-  def parse_remote_stat
-    remote_line = @status.lines[1].strip
-    if remote_line.match(/diverged/)
-      remote_line.match(/.*(\d*).*(\d*)/).captures
-    else
-      [remote_line[/is ahead of.*by (\d*).*/, 1], remote_line[/is behind.*by (\d*).*/, 1]]
-    end
-  end
+@output_files = []
 
-  # We have to resort to the StringScanner to stay away from overly complex
-  #   regular expressions.
-  # The individual blocks are always formatted the same
-  #
-  # identifier                        Changes not staged for commit
-  # helper text                         (use "git add <file>..." ...
-  # empty line
-  # changed files, leaded by a tab          modified: file
-  #                                         deleted:  other_file
-  # empty line
-  # next identifier                   Untracked files
-  # ...
-  #
-  # We parse each requested group and return a grouped hash, its values are
-  # arrays of GitChange objects.
-  def parse_changes
-    scanner = StringScanner.new(@status)
-    requested_groups.each_with_object({}) do |(type, identifier), h|
-      if scanner.scan_until(/#{identifier}/)
-        scan_until_next_empty_line(scanner)
-        file_block = scan_until_next_empty_line(scanner)
-        h[type] = extract_changes(file_block)
-      end
-      scanner.reset
-    end
-  end
+# Counter for env variables
+@e = 0
 
-  def scan_until_next_empty_line(scanner)
-    scanner.scan_until(/\n\n/)
-  end
+# Show how many commits we are ahead and/or behind origin
+difference = ["-#{@behind}", "+#{@ahead}"].select{|d| d.length > 1}.join('/')
+difference = difference.length > 0 ? "  #{@c[:dark]}|  #{@c[:new]}#{difference}#{@c[:rst]}" : ""
 
-  # Matches
-  #      modified: file                       # usual output in git status
-  #      modified: file (untracked content)   # output for submodules
-  #      file                                 # untracked files have no additional info
-  def extract_changes(str)
-    str.lines.map do |line|
-      new_git_change(*Regexp.last_match.captures) if line.match(/\t(.*:)?(.*)/)
-    end.compact # in case there were any non matching lines left
-  end
 
-  def new_git_change(status, file_and_message)
-    status = 'untracked:' unless status
-    GitChange.new(file_and_message, status)
-  end
+# If no changes, just display green no changes message and exit here
+if @git_status == ""
+  puts "%s#%s On branch: %s#{@branch}#{difference}  %s|  \033[0;32mNo changes (working directory clean)%s" % [
+    @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst]
+  ]
+  exit
+end
 
-  GROUPS = {
-    staged:    'Changes to be committed',
-    unmerged:  'Unmerged paths',
-    unstaged:  'Changes not staged for commit',
-    untracked: 'Untracked files'
-  }
 
-  # Returns all possible groups when there was no request at all,
-  # otherwise selects groups by name or integer
-  def requested_groups
-    @request.empty? ? GROUPS : select_groups
-  end
+puts "%s#%s On branch: %s#{@branch}#{difference}  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
+  @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
+]
 
-  def select_groups
-    req = parse_request
-    GROUPS.select { |k, _| k == req }
-  end
+def has_modules?
+  @has_modules ||= File.exists?(File.join(@project_root, '.gitmodules'))
+end
 
-  def parse_request
-    if @request.match(/\d/)
-      GROUPS.keys[@request.to_i - 1]
-    else
-      @request.to_sym
+# Index modification states
+@changes.each do |change|
+  x, y, file = change[0, 1], change[1, 1], change[3..-1]
+
+  # Fetch the long git status once, but only if any submodules have changed
+  if not @git_status_long and has_modules?
+    @gitmodules ||= File.read(File.join(@project_root, '.gitmodules'))
+    # If changed 'file' is actually a git submodule
+    if @gitmodules.include?(file)
+      # Parse long git status for submodule summaries
+      @git_status_long = `git status`.gsub(/\033\[[^m]*m/, "") # (strip colors)
     end
   end
 
 
-  ######### Outputting methods #########
-
-  def print_header
-    puts delimiter(:header) + header
-    puts delimiter(:header) if anything_changed?
+  msg, col, group = case change[0..1]
+  when "DD"; ["   both deleted",  :del, :unmerged]
+  when "AU"; ["    added by us",  :new, :unmerged]
+  when "UD"; ["deleted by them",  :del, :unmerged]
+  when "UA"; ["  added by them",  :new, :unmerged]
+  when "DU"; ["  deleted by us",  :del, :unmerged]
+  when "AA"; ["     both added",  :new, :unmerged]
+  when "UU"; ["  both modified",  :mod, :unmerged]
+  when /M./; ["  modified",       :mod, :staged]
+  when /A./; ["  new file",       :new, :staged]
+  when /D./; ["   deleted",       :del, :staged]
+  when /R./; ["   renamed",       :ren, :staged]
+  when /C./; ["    copied",       :cpy, :staged]
+  when /T./; ["typechange",       :typ, :staged]
+  when "??"; [" untracked",       :unt, :untracked]
   end
 
-  def print_groups
-    @grouped_changes.each do |type, changes|
-      print_group_header(type)
-      puts delimiter(type)
-      changes.each do |change|
-        raise_index!
-        print delimiter(type)
-        puts change.report_with_index(@index, type, padding)
-      end
-      puts delimiter(type)
-    end
-  end
+  # Store data
+  @stat_hash[group] << {:msg => msg, :col => col, :file => file} if msg
 
-  def print_group_header(type)
-    puts "#{gmu('➤', type, 1)} #{GROUPS[type]}"
-  end
-
-
-  ######### Items of interest #########
-
-  def branch
-    @status.lines.first.strip[/^On branch (.*)$/, 1]
-  end
-
-  def ahead
-    "+#{@ahead}" if @ahead
-  end
-
-  def behind
-    "-#{@behind}" if @behind
-  end
-
-  def difference
-    [behind, ahead].compact.join('/')
-  end
-
-  def header
-    parts = [[:branch, :branch], [:difference, :new]]
-    parts << (anything_changed? ? [:hotkey, :dark] : [:clean_state, :mod]) # mod is green
-    # compact because difference might return nil
-    "On branch: #{parts.map { |meth, col| mu(send(meth), col) }.compact.join('  |  ')}"
-  end
-
-  def clean_state
-    "No changes (working directory clean)"
-  end
-
-  def hotkey
-    "[*] => $#{ENV['git_env_char']}"
-  end
-
-  # used to delimit the left side of the screen - looks nice
-  def delimiter(col)
-    gmu("# ", col)
-  end
-
-  def filelist
-    "@@filelist@@::#{all_changes.map(&:absolute_path).join('|')}"
-  end
-
-
-  ######### Helper Methods #########
-
-  # To know about changes we could ask if there are any parsing results, as in
-  # @grouped_changes.any?, but that is not a good idea, since
-  # we might have selected a requested group before parsing already.
-  # Groups could be empty while there are in fact changes present,
-  # there we look into the original status string once
-  def anything_changed?
-    @any_changes ||=
-      ! @status.match(/nothing to commit.*working directory clean/)
-  end
-
-  # needed by hotkey filelist
-  def raise_index!
-    @index += 1
-  end
-
-  def all_changes
-    @all_changes ||= @grouped_changes.values.flatten
-  end
-
-  # Dynamic padding, always looks for the longest status string present
-  # and adds a little whitespace
-  def padding
-    @padding ||= all_changes.map { |change| change.status.size }.max + 5
-  end
-
-
-  ######### Markup/Color methods #########
-
-  COL = {
-    :rst    => "0",
-    :header => "0",
-    :branch => "1",
-    :del    => "0;31",
-    :mod    => "0;32",
-    :new    => "0;33",
-    :ren    => "0;34",
-    :cpy    => "0;33",
-    :typ    => "0;35",
-    :unt    => "0;36",
-    :dark   => "2;37",
-  }
-
-  GR_COL = {
-    :staged    => "33",
-    :unmerged  => "31",
-    :unstaged  => "32",
-    :untracked => "36",
-  }
-
-  # markup
-  def mu(str, col_in, col_out = :rst)
-    return if str.empty?
-    col_in  = "\033[#{COL[col_in]}m"
-    col_out = "\033[#{COL[col_out]}m"
-    with_color(str, col_in, col_out)
-  end
-
-  # group markup
-  def gmu(str, group, boldness = 0, col_out = :rst)
-    group_col = "\033[#{boldness};#{GR_COL[group]}m"
-    col_out   = "\033[#{COL[col_out]}m"
-    with_color(str, group_col, col_out)
-  end
-
-  def with_color(str, col_in, col_out)
-    "#{col_in}#{str}#{col_out}"
+  # Work tree modification states
+  if x == "R" && y == "M"
+    # Extract the second file name from the format x -> y
+    quoted, unquoted = /^(?:"(?:[^"\\]|\\.)*"|[^"].*) -> (?:"((?:[^"\\]|\\.)*)"|(.*[^"]))$/.match(file)[1..2]
+    renamed_file = quoted || unquoted
+    @stat_hash[:unstaged] << {:msg => "  modified", :col => :mod, :file => renamed_file}
+  elsif x != "R" && y == "M"
+    @stat_hash[:unstaged] << {:msg => "  modified", :col => :mod, :file => file}
+  elsif y == "D" && x != "D" && x != "U"
+    # Don't show deleted 'y' during a merge conflict.
+    @stat_hash[:unstaged] << {:msg => "   deleted", :col => :del, :file => file}
+  elsif y == "T"
+    @stat_hash[:unstaged] << {:msg => "typechange", :col => :typ, :file => file}
   end
 end
 
-class GitChange < GitStatus
-  attr_reader :status
+def relative_path(base, target)
+  back = ""
+  while target.sub(base,'') == target
+    base = base.sub(/\/[^\/]*$/, '')
+    back = "../#{back}"
+  end
+  "#{back}#{target.sub("#{base}/",'')}"
+end
 
-  # Restructively singles out the submodules message and
-  # strips the remaining string to get rid of padding
-  def initialize(file_and_message, status)
-    @message = file_and_message.slice!(/\(.*\)/)
-    @file = file_and_message.strip
-    @file = (@file.include? " ") ? "\"#{@file}\"" : @file
-    @status = status.strip
+
+# Output files
+def output_file_group(group)
+  # Print colored hashes & files based on modification groups
+  c_group = "\033[0;#{@group_c[group]}"
+
+  @stat_hash[group].each do |h|
+    @e += 1
+    padding = (@e < 10 && @changes.size >= 10) ? " " : ""
+
+    # Find relative path, i.e. ../../lib/path/to/file
+    rel_file = relative_path(Dir.pwd, File.join(@project_root, h[:file]))
+
+    # If some submodules have changed, parse their summaries from long git status
+    sub_stat = nil
+    if @git_status_long && (sub_stat = @git_status_long[/#{h[:file]} \((.*)\)/, 1])
+      # Format summary with parantheses
+      sub_stat = "(#{sub_stat})"
+    end
+
+    puts "#{c_group}##{@c[:rst]}     #{@c[h[:col]]}#{h[:msg]}:\
+#{padding}#{@c[:dark]} [#{@c[:rst]}#{@e}#{@c[:dark]}] #{c_group}#{rel_file}#{@c[:rst]} #{sub_stat}"
+    # Save the ordered list of output files
+    # fetch first file (in the case of oldFile -> newFile) and remove quotes
+    @output_files << if h[:msg] == "typechange"
+      # Only use relative paths for 'typechange' modifications.
+      "~#{rel_file}"
+    elsif h[:file] =~ /^"([^\\"]*(\\.[^"]*)*)"/
+      # Handle the regex above..
+      $1.gsub(/\\(.)/,'\1')
+    else
+      # Else, strip file
+      h[:file].strip
+    end
   end
 
-  def absolute_path
-    File.expand_path(@file, Dir.pwd)
-  end
+  puts "#{c_group}##{@c[:rst]}" # Extra '#'
+end
 
-  STATUS_COLORS = {
-    "copied"          => :cpy,
-    "both deleted"    => :del,
-    "deleted by us"   => :del,
-    "deleted by them" => :del,
-    "deleted"         => :del,
-    "both modified"   => :mod,
-    "modified"        => :mod,
-    "added by them"   => :new,
-    "added by us"     => :new,
-    "both added"      => :new,
-    "new file"        => :new,
-    "renamed"         => :ren,
-    "typechange"      => :typ,
-    "untracked"       => :unt,
-  }
 
-  # Looks like this
-  #
-  # PADDING   STATUS   INDEX    FILE       MESSAGE (optional)
-  #           modified: [1]  changed_file (untracked content)
-  #
-  def report_with_index(index, type, padding = 0)
-    "#{pad(padding)}#{mu(@status, color_key)} " +
-    "#{mu("[#{index}]", :dark)} #{gmu(@file, type)} #{@message}"
-  end
+[[:staged,   'Changes to be committed'],
+[:unmerged,  'Unmerged paths'],
+[:unstaged,  'Changes not staged for commit'],
+[:untracked, 'Untracked files']
+].each_with_index do |data, i|
+  group, heading = *data
 
-  # we most likely have a : with us which we don't need here
-  def color_key
-    STATUS_COLORS[@status.chomp(':')]
-  end
-
-  def pad(padding)
-    ' ' * (padding - @status.size)
+  # Allow filtering by specific group (by string or integer)
+  if !ARGV[0] || ARGV[0] == group.to_s || ARGV[0] == (i+1).to_s; then
+    if !@stat_hash[group].empty?
+      c_arrow="\033[1;#{@group_c[group]}"
+      c_hash="\033[0;#{@group_c[group]}"
+      puts "#{c_arrow}➤#{@c[:header]} #{heading}\n#{c_hash}##{@c[:rst]}"
+      output_file_group(group)
+    end
   end
 end
 
-GitStatus.new(ARGV.first).report
+print "@@filelist@@::"
+puts @output_files.map {|f|
+  # If file starts with a '~', treat it as a relative path.
+  # This is important when dealing with symlinks
+  f.start_with?("~") ? f.sub(/~/, '') : File.join(@project_root, f)
+}.join("|")
