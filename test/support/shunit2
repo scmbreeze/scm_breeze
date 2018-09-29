@@ -25,9 +25,9 @@ SHUNIT_ERROR=2
 # enable strict mode by default
 SHUNIT_STRICT=${SHUNIT_STRICT:-${SHUNIT_TRUE}}
 
-_shunit_warn() { echo "shunit2:WARN $@" >&2; }
-_shunit_error() { echo "shunit2:ERROR $@" >&2; }
-_shunit_fatal() { echo "shunit2:FATAL $@" >&2; exit ${SHUNIT_ERROR}; }
+_shunit_warn() { echo "shunit2:WARN $*" >&2; }
+_shunit_error() { echo "shunit2:ERROR $*" >&2; }
+_shunit_fatal() { echo "shunit2:FATAL $*" >&2; exit ${SHUNIT_ERROR}; }
 
 # specific shell checks
 if [ -n "${ZSH_VERSION:-}" ]; then

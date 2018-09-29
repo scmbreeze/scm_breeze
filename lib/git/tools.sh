@@ -23,8 +23,9 @@ git_remove_history() {
       return
   fi
   # Remove all paths passed as arguments from the history of the repo
-  files=$@
-  $_git_cmd filter-branch --index-filter "$_git_cmd rm -rf --cached --ignore-unmatch $files" HEAD
+  local files
+  files=("$@")
+  $_git_cmd filter-branch --index-filter "$_git_cmd rm -rf --cached --ignore-unmatch ${files[*]}" HEAD
   # Remove the temporary history git-filter-branch otherwise leaves behind for a long time
   rm -rf .git/refs/original/ && $_git_cmd reflog expire --all &&  $_git_cmd gc --aggressive --prune
 }

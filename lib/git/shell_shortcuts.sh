@@ -23,19 +23,19 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
     # Define 'whence' for bash, to get the value of an alias
     type whence > /dev/null 2>&1 || function whence() { LC_MESSAGES="C" type "$@" | sed -$SED_REGEX_ARG -e "s/.*is aliased to \`//" -e "s/'$//"; }
     local cmd=''
-    for cmd in $(echo $scmb_wrapped_shell_commands); do
+    for cmd in $scmb_wrapped_shell_commands; do
       if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: Wrapping $cmd..."; fi
 
       # Special check for 'cd', to make sure SCM Breeze is loaded after RVM
       if [ "$cmd" = 'cd' ]; then
         if [ -e "$HOME/.rvm" ] && ! type rvm > /dev/null 2>&1; then
-          echo -e "\033[0;31mSCM Breeze must be loaded \033[1;31mafter\033[0;31m RVM, otherwise there will be a conflict when RVM wraps the 'cd' command.\033[0m"
-          echo -e "\033[0;31mPlease move the line that loads SCM Breeze to the bottom of your ~/.bashrc\033[0m"
+          echo -e "\\033[0;31mSCM Breeze must be loaded \\033[1;31mafter\\033[0;31m RVM, otherwise there will be a conflict when RVM wraps the 'cd' command.\\033[0m"
+          echo -e "\\033[0;31mPlease move the line that loads SCM Breeze to the bottom of your ~/.bashrc\\033[0m"
           continue
         fi
       fi
 
-      case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
+      case "$(LC_MESSAGES="C" type "$cmd" 2>&1)" in
 
       # Don't do anything if command already aliased, or not found.
       *'exec_scmb_expand_args'*)
@@ -49,10 +49,10 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
         # Store original alias
         local original_alias="$(whence $cmd)"
         # Remove alias, so that we can find binary
-        unalias $cmd
+        unalias "$cmd"
 
         # Detect original $cmd type, and escape
-        case "$(LC_MESSAGES="C" type $cmd 2>&1)" in
+        case "$(LC_MESSAGES="C" type "$cmd" 2>&1)" in
           # Escape shell builtins with 'builtin'
           *'is a shell builtin'*) local escaped_cmd="builtin $cmd";;
           # Get full path for files with 'find_binary' function
@@ -67,9 +67,9 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
       *'is a'*'function'*)
         if [ "${scmbDebug:-}" = "true" ]; then echo "SCMB: $cmd is a function"; fi
         # Copy old function into new name
-        eval "$(declare -f $cmd | sed -$SED_REGEX_ARG "s/^$cmd \(\)/__original_$cmd ()/")"
+        eval "$(declare -f "$cmd" | sed -"$SED_REGEX_ARG" "s/^$cmd \\(\\)/__original_$cmd ()/")"
         # Remove function
-        unset -f $cmd
+        unset -f "$cmd"
         # Create function that wraps old function
         eval "${cmd}(){ exec_scmb_expand_args __original_${cmd} \"\$@\"; }";;
 
@@ -100,64 +100,85 @@ if ! ls --color=auto > /dev/null 2>&1; then
 fi
 
 # Test if readlink supports -f option, otherwise use perl (a bit slower)
-if ! readlink -f > /dev/null 2>&1; then
-  _abs_path_command='perl -e "use Cwd "abs_path"; print abs_path(shift)"'
+if ! readlink -f / > /dev/null 2>&1; then
+  _abs_path_command=(perl -e 'use Cwd abs_path; print abs_path(shift)')
 else
-  _abs_path_command="readlink -f"
+  _abs_path_command=(readlink -f)
 fi
 
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
-if [ "$shell_ls_aliases_enabled" = "true" ] && which ruby > /dev/null 2>&1; then
+if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby > /dev/null 2>&1; then
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
     local ll_output
+    local ll_command  # Ensure sort ordering of the two invocations is the same
     if [ "$_ls_bsd" != "BSD" ]; then
-      ll_output="$(\ls -lhv --group-directories-first --color "$@")"
+      ll_command=(\ls -hv --group-directories-first)
+      ll_output="$("${ll_command[@]}" -l --color "$@")"
     else
-      ll_output="$(CLICOLOR_FORCE=1 \ls -l -G "$@")"
+      ll_command=(\ls)
+      ll_output="$(CLICOLOR_FORCE=1 "${ll_command[@]}" -lG "$@")"
     fi
 
     if [[ $shell == "zsh" ]]; then
       # Ensure sh_word_split is on
-      if setopt | grep -q shwordsplit; then SHWORDSPLIT_ON=true; fi
+      [[ -o shwordsplit ]] && SHWORDSPLIT_ON=true
       setopt shwordsplit
     fi
 
-    # Parse path from args
-    IFS=$'\n'
-    for arg in $@; do
-      if [ -d "$arg" ]; then local rel_path="${arg%/}"; fi
+    # Get the directory that `ls` is being run relative to.
+    # Only allow one directory to avoid incorrect $e# variables when listing
+    # multiple directories (issue #274)
+    local IFS=$'\n'
+    local rel_path
+    for arg in "$@"; do
+      if [[ -e $arg ]]; then        # Path rather than option to ls
+        if [[ -z $rel_path ]]; then # We are seeing our first pathname
+          if [[ -d $arg ]]; then    # It's a directory
+            rel_path=$arg
+          else                      # It's a file, expand the current directory
+            rel_path=.
+          fi
+        elif [[ -d $arg || ( -f $arg && $rel_path != . ) ]]; then
+          if [[ -f $arg ]]; then arg=$PWD; fi  # Get directory for current argument
+          # We've already seen a different directory. Quit to avoid damage (issue #274)
+          printf 'scm_breeze: Cannot list relative to both directories:\n  %s\n  %s\n' "$arg" "$rel_path" >&2
+          printf 'Currently only listing a single directory is supported. See issue #274.\n' >&2
+          return 1
+        fi
+      fi
     done
-    unset IFS
+    rel_path=$("${_abs_path_command[@]}" ${rel_path:-$PWD})
 
     # Replace user/group with user symbol, if defined at ~/.user_sym
     # Before : -rw-rw-r-- 1 ndbroadbent ndbroadbent 1.1K Sep 19 21:39 scm_breeze.sh
     # After  : -rw-rw-r-- 1 𝐍  𝐍  1.1K Sep 19 21:39 scm_breeze.sh
-    if [ -e $HOME/.user_sym ]; then
+    if [ -e "$HOME"/.user_sym ]; then
       # Little bit of ruby golf to rejustify the user/group/size columns after replacement
+      # TODO(ghthor): Convert this to a cat <<EOF to improve readibility
       function rejustify_ls_columns(){
         ruby -e "o=STDIN.read;re=/^(([^ ]* +){2})(([^ ]* +){3})/;\
                  u,g,s=o.lines.map{|l|l[re,3]}.compact.map(&:split).transpose.map{|a|a.map(&:size).max+1};\
                  puts o.lines.map{|l|l.sub(re){|m|\"%s%-#{u}s %-#{g}s%#{s}s \"%[\$1,*\$3.split]}}"
       }
 
-      if [ -f "$HOME/.user_sym" ]; then
-        local USER_SYM=$(/bin/cat $HOME/.user_sym)
-        if [ -f "$HOME/.staff_sym" ]; then
-          local STAFF_SYM=$(/bin/cat $HOME/.staff_sym)
-          ll_output=$(echo "$ll_output" | \
-            \sed -$SED_REGEX_ARG "s/ $USER  staff/ $USER_SYM  $STAFF_SYM /g")
-        fi
+      local USER_SYM=$(/bin/cat $HOME/.user_sym)
+      if [ -f "$HOME/.staff_sym" ]; then
+        local STAFF_SYM=$(/bin/cat $HOME/.staff_sym)
         ll_output=$(echo "$ll_output" | \
-          \sed -$SED_REGEX_ARG "s/ $USER/ $USER_SYM /g")
+          \sed -$SED_REGEX_ARG "s/ $USER  staff/ $USER_SYM  $STAFF_SYM /g" | \
+          rejustify_ls_columns)
+      else
+        ll_output=$(echo "$ll_output" | \
+          \sed -$SED_REGEX_ARG "s/ $USER/ $USER_SYM /g" | \
+          rejustify_ls_columns)
       fi
-
-      ll_output=$(echo "$ll_output" | rejustify_ls_columns)
     fi
 
+    # Bail if there are two many lines to process
     if [ "$(echo "$ll_output" | wc -l)" -gt "50" ]; then
-      echo -e "\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m"
+      echo -e '\033[33mToo many files to create shortcuts. Running plain ll command...\033[0m' >&2
       echo "$ll_output"
       return 1
     fi
@@ -180,23 +201,26 @@ EOF
     local ll_files=''
     local file=''
 
+    # XXX FIXME XXX
+    # There is a race condition here: If a file is removed between the above
+    # and this second call of `ls` then the $e# variables can refer to the
+    # wrong files.
     if [ -z $_ls_bsd ]; then
-      ll_files="$(\ls -v --group-directories-first --color=never "$@")"
+      ll_files="$(QUOTING_STYLE=literal "${ll_command[@]}" --color=never "$@")"
     else
-      ll_files="$(\ls "$@")"
+      ll_files="$("${ll_command[@]}" "$@")"
     fi
 
-    IFS=$'\n'
+    local IFS=$'\n'
     for file in $ll_files; do
-      if [ -n "$rel_path" ]; then file="$rel_path/$file"; fi
-      export $git_env_char$e="$(eval $_abs_path_command \"${file//\"/\\\"}\")"
-      if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+      file=$rel_path/$file
+      export $git_env_char$e=$("${_abs_path_command[@]}" "$file")
+      if [[ ${scmbDebug:-} = true ]]; then echo "Set \$$git_env_char$e  => $file"; fi
       let e++
     done
-    unset IFS
 
     # Turn off shwordsplit unless it was on previously
-    if [[ $shell == "zsh" ]] && [ -z "$SHWORDSPLIT_ON" ]; then unsetopt shwordsplit; fi
+    if [[ $shell == "zsh" && -z $SHWORDSPLIT_ON ]]; then unsetopt shwordsplit; fi
   }
 
   # Setup aliases

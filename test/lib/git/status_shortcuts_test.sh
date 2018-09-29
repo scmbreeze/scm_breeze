@@ -49,21 +49,72 @@ setupTestRepo() {
 #-----------------------------------------------------------------------------
 
 test_scmb_expand_args() {
-  local e1="one"; local e2="two"; local e3="three"; local e4="four"; local e5="five"; local e6="six"; local e7="seven"
+  local e1="one" e2="two" e3="three" e4="four" e5="five" e6="six" e7='$dollar' e8='two words'
   local error="Args not expanded correctly"
-  assertEquals "$error" "$(printf 'one\tthree\tseven')" "$(scmb_expand_args 1 3 7)"
-  assertEquals "$error" "$(printf 'one\ttwo\tthree\tsix')" "$(scmb_expand_args 1-3 6)"
-  assertEquals "$error" "$(printf 'seven\ttwo\tthree\tfour\tfive\tone')" "$(scmb_expand_args seven 2-5 1)"
+  assertEquals "$error" 'one three six' \
+    "$(eval args="$(scmb_expand_args 1 3 6)"; token_quote "${args[@]}")"
+  assertEquals "$error" 'one two three five' \
+    "$(eval args="$(scmb_expand_args 1-3 5)"; token_quote "${args[@]}")"
+  assertEquals "$error" '\$dollar two three four one' \
+    "$(eval args="$(scmb_expand_args 7 2-4 1)"; token_quote "${args[@]}")"
 
   # Test that any args with spaces remain quoted
-  assertEquals "$error" "$(printf -- '-m\tTest Commit Message\tone')" "$(scmb_expand_args -m "Test Commit Message" 1)"
-  assertEquals "$error" "$(printf -- '-ma\tTest Commit Message\tUnquoted')"\
-                        "$(scmb_expand_args -ma "Test Commit Message" "Unquoted")"
+  assertEquals "$error" '-m Test\ Commit\ Message one' \
+    "$(eval args="$(scmb_expand_args -m "Test Commit Message" 1)"; token_quote "${args[@]}")"
+  assertEquals "$error" '-ma Test\ Commit\ Message Unquoted'\
+    "$(eval args="$(scmb_expand_args -ma "Test Commit Message" "Unquoted")"; token_quote "${args[@]}")"
+  assertEquals "$error" '\$dollar one two\ words' \
+    "$(eval args="$(scmb_expand_args 7 1-1 8)"; token_quote "${args[@]}")"
+
+  # Keep this code for use when minimum versions of {ba,z}sh can be increased.
+  # See token_quote() source and https://github.com/scmbreeze/scm_breeze/issues/260
+  # local e1="one" e2="two" e3="three" e4="four" e5="five" e6="six" e7='$dollar' e8='two words'
+  # local error="Args not expanded correctly"
+  # assertEquals "$error" "'one' 'three' 'six'" \
+  #   "$(eval a=$(scmb_expand_args 1 3 6); token_quote "${a[@]}")"
+  # assertEquals "$error" "'one' 'two' 'three' 'five'" \
+  #   "$(eval a=$(scmb_expand_args 1-3 5); token_quote "${a[@]}")"
+  # assertEquals "$error" "'\$dollar' 'two' 'three' 'four' 'one'" \
+  #   "$(eval a=$(scmb_expand_args 7 2-4 1); token_quote "${a[@]}")"
+  #
+  # # Test that any args with spaces remain quoted
+  # assertEquals "$error" "'-m' 'Test Commit Message' 'one'" \
+  #   "$(eval a=$(scmb_expand_args -m "Test Commit Message" 1); token_quote "${a[@]}")"
+  # assertEquals "$error" "'-ma' 'Test Commit Message' 'Unquoted'"\
+  #   "$(eval a=$(scmb_expand_args -ma "Test Commit Message" "Unquoted"); token_quote "${a[@]}")"
+  # assertEquals "$error" "'\$dollar' 'one' 'two words'" \
+  #   "$(eval a=$(scmb_expand_args 7 1-1 8); token_quote "${a[@]}")"
+}
+
+test_exec_scmb_expand_args() {
+  local e1="one" e2="a b c" e3='$dollar' e4="single'quote" e5='double"quote' e6='a(){:;};a&'
+  assertEquals "literals with spaces not preserved" 'foo bar\ baz' \
+    "$(eval args="$(scmb_expand_args foo 'bar baz')"; token_quote "${args[@]}")"
+  assertEquals "variables with spaces not preserved" 'one a\ b\ c' \
+    "$(eval args="$(scmb_expand_args 1-2)"; token_quote "${args[@]}")"
+  # Expecting text: '$dollar' "single'quote" 'double"quote'
+  # Generate quoted expected string with:  token_quote "$(cat)"  then copy/paste, ^D
+  assertEquals "special characters are preserved" \
+    '\$dollar single\'\''quote double\"quote a\(\)\{:\;\}\;a\&' \
+    "$(eval args="$(scmb_expand_args 3-6)"; token_quote "${args[@]}")"
+
+  # Keep this code for use when minimum versions of {ba,z}sh can be increased.
+  # See token_quote() source and https://github.com/scmbreeze/scm_breeze/issues/260
+  # local e1="one" e2="a b c" e3='$dollar' e4="single'quote" e5='double"quote' e6='a(){:;};a&'
+  # assertEquals "literals with spaces not preserved" "'foo' 'bar baz'" \
+  #   "$(eval a="$(scmb_expand_args foo 'bar baz')"; token_quote "${a[@]}")"
+  # assertEquals "variables with spaces not preserved" "'one' 'a b c'" \
+  #   "$(eval a="$(scmb_expand_args 1-2)"; token_quote "${a[@]}")"
+  # # Expecting text: '$dollar' "single'quote" 'double"quote'
+  # # Generate quoted expected string with:  token_quote "$(cat)"  then copy/paste, ^D
+  # assertEquals "special characters are preserved" \
+  #   "'\$dollar' 'single'\\''quote' 'double\"quote' 'a(){:;};a&'" \
+  #   "$(eval a="$(scmb_expand_args 3-6)"; token_quote "${a[@]}")"
 }
 
 test_command_wrapping_escapes_special_characters() {
-    assertEquals 'should escape | the pipe' "$(exec_scmb_expand_args echo "should escape | the pipe")"
-    assertEquals 'should escape ; the semicolon' "$(exec_scmb_expand_args echo "should escape ; the semicolon")"
+    assertEquals 'should escape | the pipe' "$(exec_scmb_expand_args echo should escape '|' the pipe)"
+    assertEquals 'should escape ; the semicolon' "$(exec_scmb_expand_args echo should escape ';' the semicolon)"
 }
 
 test_git_status_shortcuts() {

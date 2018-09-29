@@ -17,7 +17,7 @@ unalias git > /dev/null 2>&1
 unset -f git > /dev/null 2>&1
 
 # Use the full path to git to avoid infinite loop with git function
-export _git_cmd="$(\which git)"
+export _git_cmd="$(bin_path git)"
 # Wrap git with the 'hub' github wrapper, if installed (https://github.com/defunkt/hub)
 if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 
@@ -71,7 +71,7 @@ __git_alias () {
     alias_str="$1"; cmd_prefix="$2"; cmd="$3";
     if [ $# -gt 2 ]; then
       shift 3 2>/dev/null
-      cmd_args=$@
+      cmd_args=("$@")
     fi
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"

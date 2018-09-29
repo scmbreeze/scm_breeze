@@ -4,9 +4,9 @@ orig_cwd="$PWD"
 source "$scmbDir/lib/git/helpers.sh"
 
 # Set up demo git user if not configured
-if [ -z "$(git config --global user.email)" ]; then
-  git config --global user.email "testuser@example.com"
-  git config --global user.name  "Test User"
+if [ -z "$(git config user.email)" ]; then
+  git config user.email "testuser@example.com"
+  git config user.name  "Test User"
 fi
 
 #
@@ -26,24 +26,32 @@ tab_completions(){ echo "${COMPREPLY[@]}"; }
 silentGitCommands() {
   git() { /usr/bin/env git "$@" > /dev/null 2>&1; }
 }
+
 # Cancel silent git commands
 verboseGitCommands() {
   unset -f git
 }
 
+
 # Asserts
 #-----------------------------------------------------------------------------
 
+# Return 0 (shell's true) if "$1" contains string "$2"
 _includes() {
   if [ -n "$3" ]; then regex="$3"; else regex=''; fi
-  if echo "$1" | grep -q$regex "$2"; then echo 0; else echo 1; fi
+  echo "$1" | grep -q"$regex" "$2"  # exit status of quiet grep is returned
 }
 
 # assert $1 contains $2
 assertIncludes() {
-  assertTrue "'$1' should have contained '$2'" $(_includes "$@")
+  _includes "$@"
+  local grep_exit=$?
+  assertTrue "'$1' should have contained '$2'" '[[ $grep_exit == 0 ]]'
 }
+
 # assert $1 does not contain $2
 assertNotIncludes() {
-  assertFalse "'$1' should not have contained '$2'" $(_includes "$@")
+  _includes "$@"
+  local grep_return=$?
+  assertTrue "'$1' should not have contained '$2'" '[[ ! $grep_exit = 0 ]]'
 }
