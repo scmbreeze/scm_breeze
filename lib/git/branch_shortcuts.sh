@@ -20,9 +20,9 @@ function _scmb_git_branch_shortcuts {
     return 1
   fi
 
-  # Use ruby to inject numbers into ls output
+  # Use ruby to inject numbers into git branch output
   ruby -e "$( cat <<EOF
-    output = %x($_git_cmd branch --color=always "$@")
+    output = %x($_git_cmd branch --color=always $(token_quote "$@"))
     line_count = output.lines.to_a.size
     output.lines.each_with_index do |line, i|
       spaces = (line_count > 9 && i < 9 ? "  " : " ")
