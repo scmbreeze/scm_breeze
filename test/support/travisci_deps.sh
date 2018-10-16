@@ -23,10 +23,10 @@ if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then
   if [[ -z "$TEST_SHELLS" ]]; then needs_zsh=true; fi
 
   # finally, we install zsh if needed!
-  if $needs_zsh ; then
+  if $needs_zsh; then
+    sudo apt-get update
     sudo apt-get install zsh
   else
     echo "No deps required."
   fi
-
 fi
