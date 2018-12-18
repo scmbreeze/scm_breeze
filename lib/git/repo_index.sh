@@ -126,7 +126,7 @@ _git_index_dirs_without_home() {
 function _find_git_repos() {
   # Find all unarchived projects
   local IFS=$'\n'
-  for repo in $(find -L "$GIT_REPO_DIR" -maxdepth 5 -name ".git" -type d \! -wholename '*/archive/*'); do
+  for repo in $(find -L "$GIT_REPO_DIR" -maxdepth 3 -name ".git" -type d \! -wholename '*/archive/*'); do
     echo ${repo%/.git}          # Return project folder, with trailing ':'
     _find_git_submodules $repo  # Detect any submodules
   done
