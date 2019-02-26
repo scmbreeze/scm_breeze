@@ -181,8 +181,9 @@ doesn't need to 'learn' anything, and it can do SCM-specific stuff like:
 
 The default alias for `git_index` is 'c', which might stand for 'code'
 
-You will first need to configure your repository directory, and then build the
-index:
+You will first need to configure your repository directory by setting `GIT_REPO_DIR` in `~/.git.sbmrc`.
+
+Then, build the index:
 
 ```bash
 $ c --rebuild
