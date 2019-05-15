@@ -126,9 +126,10 @@ _gs_output_file_group() {
     if [ -z "$project_root" ]; then
       relative="${stat_file[$i]}"
     else
-      dest=$(readlink -f "$project_root/${stat_file[$i]}")
+      absolute="$project_root/${stat_file[$i]}"
+      dest=$(readlink -f "$absolute")
       local pwd=$(readlink -f "$PWD")
-      relative="$(_gs_relative_path "$pwd" "$dest" )"
+      relative="$(_gs_relative_path "$pwd" "${dest:-$absolute}" )"
     fi
 
     if [[ $f -gt 10 && $e -lt 10 ]]; then local pad=" "; else local pad=""; fi   # (padding)
@@ -149,7 +150,7 @@ _gs_relative_path(){
   # Credit to 'pini' for the following script.
   # (http://stackoverflow.com/questions/2564634/bash-convert-absolute-path-into-relative-path-given-a-current-directory)
   target=$2; common_part=$1; back=""
-  while [[ "${target#$common_part}" == "${target}" ]]; do
+  while [[ -n "${common_part}" && "${target#$common_part}" == "${target}" ]]; do
     common_part="${common_part%/*}"
     back="../${back}"
   done
