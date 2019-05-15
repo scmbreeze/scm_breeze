@@ -118,6 +118,8 @@ git_status_shortcuts() {
 }
 # Template function for 'git_status_shortcuts'.
 _gs_output_file_group() {
+  local relative
+
   for i in ${stat_grp[$1]}; do
     # Print colored hashes & files based on modification groups
     local c_group="\033[0;$(eval echo -e \$c_grp_$1)"
@@ -126,8 +128,8 @@ _gs_output_file_group() {
     if [ -z "$project_root" ]; then
       relative="${stat_file[$i]}"
     else
-      absolute="$project_root/${stat_file[$i]}"
-      dest=$(readlink -f "$absolute")
+      local absolute="$project_root/${stat_file[$i]}"
+      local dest=$(readlink -f "$absolute")
       local pwd=$(readlink -f "$PWD")
       relative="$(_gs_relative_path "$pwd" "${dest:-$absolute}" )"
     fi
