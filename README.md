@@ -37,7 +37,7 @@ to your `.bashrc` or `.zshrc`:
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
-**Note:** SCM Breeze performs much faster if you have ruby installed.
+**Note:** You need to install ruby for some SCM Breeze commands to work. This also improves performance. See [ruby-lang.org](https://www.ruby-lang.org/en/documentation/installation/) for installation information.
 
 ### File Shortcuts
 
