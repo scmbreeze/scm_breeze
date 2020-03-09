@@ -29,7 +29,7 @@ features.
 ```bash
 git clone git://github.com/scmbreeze/scm_breeze.git ~/.scm_breeze
 ~/.scm_breeze/install.sh
-source ~/.bashrc   # or source ~/.zshrc
+source ~/.bashrc   # or source "${ZDOTDIR:-$HOME}/.zshrc"
 ```
 
 The install script creates required default configs and adds the following line
@@ -253,7 +253,7 @@ default base subdirectories are: Images, Backgrounds, Logos, Icons, Mockups,
 and Screenshots.
 
 After you have changed these settings, remember to run `source ~/.bashrc` or
-`source ~/.zshrc`.
+`source "${ZDOTDIR:-$HOME}/.zshrc"`.
 
 
 #### 2) Initialize design directories for your projects
@@ -324,7 +324,7 @@ Each feature is modular, so you are free to ignore the parts you don't want to
 use.  Just comment out the relevant line in `~/.scm_breeze/scm_breeze.sh`.
 
 **Note:** After changing any settings, you will need to run `source ~/.bashrc`
-(or `source ~/.zshrc`)
+(or `source "${ZDOTDIR:-$HOME}/.zshrc"`)
 
 I know we grow attached to the aliases we use every day, so I've made the alias
 system completely customizable.  You have two options when it comes to aliases:

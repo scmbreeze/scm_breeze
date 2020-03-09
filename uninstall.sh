@@ -7,9 +7,12 @@ if [[ $OSTYPE == "Darwin" ]]; then
   sed="sed -i ''"
 fi
 
-for rc in bashrc zshrc; do
-  if [ -f "$HOME/.$rc" ]; then
-    $sed '/scm_breeze/d' "$HOME/.$rc" &&
-      printf "Removed SCM Breeze from %s\n" "$HOME/.$rc"
-  fi
-done
+if [ -f "$HOME/.bashrc" ]; then
+  $sed '/scm_breeze/d' "$HOME/.bashrc" &&
+  printf "Removed SCM Breeze from '%s'\n" "$HOME/.bashrc"
+fi
+
+if [ -f "${ZDOTDIR:-$HOME}/.zshrc" ]; then
+  $sed '/scm_breeze/d' "${ZDOTDIR:-$HOME}/.zshrc" &&
+  printf "Removed SCM Breeze from '%s'\n" "${ZDOTDIR:-$HOME}/.zshrc" 
+fi
