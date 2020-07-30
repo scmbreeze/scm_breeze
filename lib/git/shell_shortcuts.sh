@@ -92,25 +92,25 @@ if [ "$shell_command_wrapping_enabled" = "true" ] || [ "$bash_command_wrapping_e
 fi
 
 
-# BSD ls is different to Linux (GNU) ls
-# Test for BSD ls
-if ! ls --color=auto > /dev/null 2>&1; then
-  # ls is BSD
-  _ls_bsd="BSD"
-fi
-
-# Test if readlink supports -f option, test for greadlink on Mac, then fallback to perl
-if \readlink -f / > /dev/null 2>&1; then
-  _abs_path_command=(readlink -f)
-elif greadlink -f / > /dev/null 2>&1; then
-  _abs_path_command=(greadlink -f)
-else
-  _abs_path_command=(perl -e 'use Cwd abs_path; print abs_path(shift)')
-fi
-
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby > /dev/null 2>&1; then
+  # BSD ls is different to Linux (GNU) ls
+  # Test for BSD ls
+  if ! ls --color=auto > /dev/null 2>&1; then
+    # ls is BSD
+    _ls_bsd="BSD"
+  fi
+
+  # Test if readlink supports -f option, test for greadlink on Mac, then fallback to perl
+  if \readlink -f / > /dev/null 2>&1; then
+    _abs_path_command=(readlink -f)
+  elif greadlink -f / > /dev/null 2>&1; then
+    _abs_path_command=(greadlink -f)
+  else
+    _abs_path_command=(perl -e 'use Cwd abs_path; print abs_path(shift)')
+  fi
+
   unalias ll > /dev/null 2>&1; unset -f ll > /dev/null 2>&1
   function ls_with_file_shortcuts {
     local ll_output
