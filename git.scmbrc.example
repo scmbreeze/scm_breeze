@@ -105,6 +105,8 @@ git_submodule_update_rec_alias="gsur"
 git_top_level_alias="gtop"
 git_whatchanged_alias="gwc"
 git_apply_alias="gapp"
+git_switch_alias="gsw"
+git_restore_alias="grt"
 # Hub aliases (https://github.com/github/hub)
 git_pull_request_alias="gpr"
 
