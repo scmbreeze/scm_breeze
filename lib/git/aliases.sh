@@ -28,9 +28,9 @@ if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 function git(){
   # Only expand args for git commands that deal with paths or branches
   case $1 in
-    commit|blame|add|log|rebase|merge|difftool)
+    commit|blame|add|log|rebase|merge|difftool|switch)
       exec_scmb_expand_args "$_git_cmd" "$@";;
-    checkout|diff|rm|reset)
+    checkout|diff|rm|reset|restore)
       exec_scmb_expand_args --relative "$_git_cmd" "$@";;
     branch)
       _scmb_git_branch_shortcuts "${@:2}";;
@@ -114,6 +114,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_add_updated_alias"              'git' 'add' '-u'
   __git_alias "$git_difftool_alias"                 'git' 'difftool'
   __git_alias "$git_mergetool_alias"                'git' 'mergetool'
+  __git_alias "$git_restore_alias"                  'git' 'restore'
 
   # Custom default format for git log
   git_log_command="log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
@@ -156,6 +157,7 @@ if [ "$git_setup_aliases" = "yes" ]; then
   __git_alias "$git_submodule_update_rec_alias"     'git' 'submodule' 'update' '--init' '--recursive'
   __git_alias "$git_whatchanged_alias"              'git' 'whatchanged'
   __git_alias "$git_apply_alias"                    'git' 'apply'
+  __git_alias "$git_switch_alias"                   'git' 'switch'
 
   # Compound/complex commands
   _alias "$git_fetch_all_alias"           'git fetch --all'
