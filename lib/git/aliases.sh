@@ -57,7 +57,7 @@ let COMP_CWORD+=1
 
 local cur words cword prev
 _get_comp_words_by_ref -n =: cur words cword prev
-_git
+__git_wrap__git_main
 }
 "
 }
@@ -184,7 +184,7 @@ if [ $shell = "bash" ]; then
   [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
   # new path in Ubuntu 13.04
   [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
-  complete -o default -o nospace -F _git $git_alias
+  complete -o default -o nospace -F __git_wrap__git_main $git_alias
 
   # Git repo management & aliases.
   # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
