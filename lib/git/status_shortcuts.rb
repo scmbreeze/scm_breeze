@@ -26,7 +26,7 @@
 
 git_status_lines = @git_status.split("\n")
 git_branch = git_status_lines[0]
-@branch = git_branch[/^## (?:Initial commit on )?([^ \.]+)/, 1]
+@branch = git_branch[/^## (?:Initial commit on )?([^ ]+)/, 1]
 @ahead  = git_branch[/\[ahead ?(\d+).*\]/, 1]
 @behind = git_branch[/\[.*behind ?(\d+)\]/, 1]
 
@@ -76,16 +76,15 @@ difference = difference.length > 0 ? "  #{@c[:dark]}|  #{@c[:new]}#{difference}#
 
 
 # If no changes, just display green no changes message and exit here
-if @git_status == ""
-  puts "%s#%s On branch: %s#{@branch}#{difference}  %s|  \033[0;32mNo changes (working directory clean)%s" % [
-    @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst]
+if @changes.size == 0
+  puts "%s#%s On branch: %s#{@branch}#{difference}%s  %s|  \033[0;32mNo changes (working directory clean)%s" % [
+    @c[:dark], @c[:rst], @c[:branch], @c[:rst], @c[:dark], @c[:rst]
   ]
   exit
 end
 
-
-puts "%s#%s On branch: %s#{@branch}#{difference}  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
-  @c[:dark], @c[:rst], @c[:branch], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
+puts "%s#%s On branch: %s#{@branch}#{difference}%s  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
+  @c[:dark], @c[:rst], @c[:branch], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
 ]
 
 def has_modules?
