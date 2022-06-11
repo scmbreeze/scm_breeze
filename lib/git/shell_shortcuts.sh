@@ -97,7 +97,7 @@ fi
 if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby > /dev/null 2>&1; then
   # BSD ls is different to Linux (GNU) ls
   # Test for BSD ls
-  if ! ls --color=auto > /dev/null 2>&1; then
+  if ! ls --author > /dev/null 2>&1; then
     # ls is BSD
     _ls_bsd="BSD"
   fi
