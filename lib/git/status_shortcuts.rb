@@ -88,7 +88,7 @@ puts "%s#%s On branch: %s#{@branch}#{difference}%s  %s|  [%s*%s]%s => $#{ENV["gi
 ]
 
 def has_modules?
-  @has_modules ||= File.exists?(File.join(@project_root, '.gitmodules'))
+  @has_modules ||= File.exist?(File.join(@project_root, '.gitmodules'))
 end
 
 # Index modification states
