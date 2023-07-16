@@ -17,7 +17,7 @@ function _scmb_git_branch_shortcuts {
   # Fall back to normal git branch, if any unknown args given
   if [[ "$($_git_cmd branch | wc -l)" -gt 300 ]] || ([[ -n "$@" ]] && [[ "$@" != "-a" ]]); then
     exec_scmb_expand_args $_git_cmd branch "$@"
-    return 1
+    return $?
   fi
 
   # Use ruby to inject numbers into git branch output

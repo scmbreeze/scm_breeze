@@ -171,7 +171,7 @@ function is_git_dirty {
     [[ $($GIT_BINARY status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
  }
 function parse_git_branch {
-    $GIT_BINARY branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1/"
+    git rev-parse --abbrev-ref HEAD 2> /dev/null
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
