@@ -3,7 +3,7 @@
 # Remove line from bashrc and zshrc if present.
 
 sed="sed -i"
-if [[ $OSTYPE == "Darwin" ]]; then
+if [[ $OSTYPE == "Darwin" || $OSTYPE == *"darwin"* ]]; then
   sed="sed -i ''"
 fi
 
