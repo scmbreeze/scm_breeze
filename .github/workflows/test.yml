@@ -31,7 +31,10 @@ jobs:
           git config --global init.defaultBranch master
           git config --global user.name  scm_breeze@scm_breeze
           git config --global user.email "SCM Breeze"
-      - run: nix-shell -p ruby bash zsh --run ./run_tests.sh
+      - name: test
+        env:
+          TEST_SHELLS: ${{ matrix.test_shell }}
+        run: nix-shell -p ruby $TEST_SHELLS --run ./run_tests.sh
       # - run: nix-shell -p shunit2 -i ./run_tests.sh
       # - run: nix build
       # - run: nix flake check
