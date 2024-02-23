@@ -1,0 +1,33 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        test_shell:
+          - bash
+          - zsh
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Test
+        uses: sudo-bot/action-shunit2@latest
+        env:
+          TEST_SHELLS: ${{ matrix.test_shell }}
+        with:
+          cli: ./run_tests.sh
