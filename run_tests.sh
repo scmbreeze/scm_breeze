@@ -3,6 +3,8 @@
 
 failed=false
 
+env | grep ^SHELL
+
 # allow list of shells to run tests in to be overriden by environment variable
 # if empty or null, use defaults
 if [ -z "$TEST_SHELLS" ]; then
