@@ -26,5 +26,12 @@ jobs:
       - uses: cachix/install-nix-action@v25
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - run: nix build
-      - run: nix flake check
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: |
+          git config --global init.defaultBranch master
+          git config --global user.name  scm_breeze@scm_breeze
+          git config --global user.email "SCM Breeze"
+      - run: nix-shell -p bash zsh --run ./run_tests.sh
+      # - run: nix-shell -p shunit2 -i ./run_tests.sh
+      # - run: nix build
+      # - run: nix flake check
