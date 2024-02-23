@@ -321,14 +321,7 @@ test_git_commit_prompt() {
   export HISTFILESIZE=1000
   export HISTSIZE=1000
 
-  if [[ $shell == "zsh" ]]; then
-    export SAVEHIST=1000
-    zsh_appendhistory=$( (setopt | grep -q appendhistory) && echo "true")
-    if [ "$zsh_appendhistory" != "true" ]; then
-      setopt appendhistory
-      trap "unsetopt appendhistory" EXIT
-    fi
-  fi
+  export SAVEHIST=1000
 
   touch a b c d
   git add . >/dev/null
@@ -345,8 +338,6 @@ test_git_commit_prompt() {
 
   # Test that history was appended correctly.
   if [[ $shell == "zsh" ]]; then
-    setopt
-    cat $HISTFILE
     test_history="$(history)"
   else
     # Need to load history from $HISTFILE
