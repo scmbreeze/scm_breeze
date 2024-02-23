@@ -49,6 +49,8 @@ oneTimeSetUp() {
   # Test already wrapped commands
   alias cat="exec_scmb_expand_args $cat_path"
 
+  sudo mkdir /aaa
+
   # Run shortcut wrapping
   source "$scmbDir/lib/git/shell_shortcuts.sh"
 
@@ -141,10 +143,14 @@ test_ls_with_file_shortcuts() {
   assertFalse 'Fails on <directory> <directory>/<file>' 'ls_with_file_shortcuts 1 1/file'
 
   # Files under the root directory
-  assertTrue 'Shortcuts under /' 'ls_with_file_shortcuts / > /dev/null && [[ $e1 =~ ^/[^/]+$ ]]'
+  assertTrue 'Shortcuts under /' 'ls_with_file_shortcuts / >/dev/null && [[ $e1 =~ ^/[^/]+$ ]]'
+
+  ls_with_file_shortcuts / >/dev/null
+  assertTrue "$e1 == /aaa" '[[ "$e1" == "/aaa" ]]'
 
   cd -
   rm -r "$TEST_DIR" "$temp_file"
+  sudo rmdir /aaa
 }
 
 # load and run shUnit2
