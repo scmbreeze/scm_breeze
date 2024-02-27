@@ -321,8 +321,6 @@ test_git_commit_prompt() {
   export HISTFILESIZE=1000
   export HISTSIZE=1000
 
-  export SAVEHIST=1000
-
   touch a b c d
   git add . >/dev/null
 
