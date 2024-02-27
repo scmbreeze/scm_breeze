@@ -3,6 +3,8 @@
 
 failed=false
 
+env | grep ^SHELL
+
 # allow list of shells to run tests in to be overriden by environment variable
 # if empty or null, use defaults
 if [ -z "$TEST_SHELLS" ]; then
@@ -10,11 +12,12 @@ if [ -z "$TEST_SHELLS" ]; then
 fi
 echo "== Will run all tests with following shells: ${TEST_SHELLS}"
 
-cd -P -- "${0%/*}"  # Change to directory this script lives in
+cd -P -- "${0%/*}" # Change to directory this script lives in
 for test in $(find test/lib -name *_test.sh); do
   for shell in $TEST_SHELLS; do
     echo "== Running tests with [$shell]: $test"
     $shell $test || failed=true
+    printf '==\n\n'
   done
 done
 
