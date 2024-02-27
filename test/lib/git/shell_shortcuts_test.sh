@@ -49,7 +49,12 @@ oneTimeSetUp() {
   # Test already wrapped commands
   alias cat="exec_scmb_expand_args $cat_path"
 
-  sudo mkdir /aaa
+  root_test_dir=/aaa
+  if [ "$(uname)" = "Darwin" ]; then
+    root_test_dir=/Applications
+  else
+    sudo mkdir $root_test_dir
+  fi
 
   # Run shortcut wrapping
   source "$scmbDir/lib/git/shell_shortcuts.sh"
@@ -146,11 +151,13 @@ test_ls_with_file_shortcuts() {
   assertTrue 'Shortcuts under /' 'ls_with_file_shortcuts / >/dev/null && [[ $e1 =~ ^/[^/]+$ ]]'
 
   ls_with_file_shortcuts / >/dev/null
-  assertTrue "$e1 == /aaa" '[[ "$e1" == "/aaa" ]]'
+  assertTrue "$e1 == $root_test_dir" '[[ "$e1" == "$root_test_dir" ]]'
 
   cd -
   rm -r "$TEST_DIR" "$temp_file"
-  sudo rmdir /aaa
+  if [ "$(uname)" != "Darwin" ]; then
+    sudo rmdir "$root_test_dir"
+  fi
 }
 
 # load and run shUnit2
