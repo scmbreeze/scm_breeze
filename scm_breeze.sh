@@ -9,8 +9,13 @@ export scmbDir="$(dirname ${BASH_SOURCE:-$0})"
 
 # Shared functions
 source "$scmbDir/lib/scm_breeze.sh"
-# Design assets management
-source "$scmbDir/lib/design.sh"
+
+SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT=${SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT:-""}
+
+if [ "$SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT" != "true" ]; then
+  echo "scm_breeze: Design Assets management enabled"
+  source "$scmbDir/lib/design.sh"
+fi
 
 # Git
 # ------------------------------------------------------------
@@ -24,13 +29,14 @@ if [[ -s "$HOME/.git.scmbrc" ]]; then
   source "$scmbDir/lib/git/branch_shortcuts.sh"
   source "$scmbDir/lib/git/grep_shortcuts.sh"
   source "$scmbDir/lib/git/shell_shortcuts.sh"
-  source "$scmbDir/lib/git/repo_index.sh"
+  if [ "$SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT" != "true" ]; then
+    source "$scmbDir/lib/git/repo_index.sh"
+  fi
   source "$scmbDir/lib/git/tools.sh"
 
-  if ! type ruby > /dev/null 2>&1; then
+  if ! type ruby >/dev/null 2>&1; then
     # If Ruby is not installed, fall back to the
     # slower bash/zsh implementation of 'git_status_shortcuts'
     source "$scmbDir/lib/git/fallback/status_shortcuts_shell.sh"
   fi
 fi
-

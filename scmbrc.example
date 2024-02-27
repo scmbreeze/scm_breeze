@@ -11,3 +11,7 @@ export design_av_dirs="Animations Videos Flash Music Samples"
 # Directories for global design assets (not symlinked into projects)
 export design_ext_dirs="Fonts IconSets"
 
+# Set =true to disable the design/assets management features
+# export SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT=true
+
+# vi: ft=sh
