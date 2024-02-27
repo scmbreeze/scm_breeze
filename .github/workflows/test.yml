@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        test_shell:
+          - bash
+          - zsh
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v25
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: |
+          git config --global init.defaultBranch master
+          git config --global user.name  scm_breeze@scm_breeze
+          git config --global user.email "SCM Breeze"
+      - name: test
+        env:
+          TEST_SHELLS: ${{ matrix.test_shell }}
+        run: nix-shell -p ruby $TEST_SHELLS --command ./run_tests.sh
+      # - run: nix-shell -p shunit2 -i ./run_tests.sh
+      # - run: nix build
+      # - run: nix flake check
