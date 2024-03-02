@@ -184,7 +184,7 @@ test_git_status_shortcuts() {
   # (This is needed so that env variables are exported in the current shell)
   temp_file=$(mktemp -t scm_breeze.XXXXXXXXXX)
   git_status_shortcuts >$temp_file
-  git_status=$(<$temp_file strip_colors)
+  git_status=$(strip_colors <$temp_file)
 
   assertIncludes "$git_status" "new file: *\[1\] *new_file" || return
   assertIncludes "$git_status" "deleted: *\[2\] *deleted_file" || return
@@ -335,7 +335,7 @@ test_git_commit_prompt() {
   assertIncludes "$git_show_output" "$commit_msg"
 
   # Test that history was appended correctly.
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     test_history="$(history)"
     # TODO(ghthor): zsh isn't working here
     # assertIncludes "$test_history" "git commit -m \"$dbl_escaped_msg\""
@@ -371,7 +371,7 @@ test_git_commit_prompt_with_append() {
   assertIncludes "$git_show_output" "$commit_msg \[ci skip\]"
 
   # Test that history was appended correctly.
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     test_history="$(history)"
     # TODO(ghthor): zsh isn't working here
     # assertIncludes "$test_history" "$commit_msg \[ci skip\]"
