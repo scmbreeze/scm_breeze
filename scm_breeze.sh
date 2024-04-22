@@ -13,7 +13,6 @@ source "$scmbDir/lib/scm_breeze.sh"
 SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT=${SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT:-""}
 
 if [ "$SCM_BREEZE_DISABLE_ASSETS_MANAGEMENT" != "true" ]; then
-  echo "scm_breeze: Design Assets management enabled"
   source "$scmbDir/lib/design.sh"
 fi
 
