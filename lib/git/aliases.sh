@@ -13,45 +13,48 @@ list_aliases() { alias | grep "$*" --color=never | sed -e 's/alias //' -e "s/=/:
 alias git_aliases="list_aliases git"
 
 # Remove any existing git alias or function
-unalias git > /dev/null 2>&1
-unset -f git > /dev/null 2>&1
+unalias git >/dev/null 2>&1
+unset -f git >/dev/null 2>&1
 
 # Use the full path to git to avoid infinite loop with git function
 export _git_cmd="$(bin_path git)"
 # Wrap git with the 'hub' github wrapper, if installed (https://github.com/defunkt/hub)
-if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
+if type hub >/dev/null 2>&1; then export _git_cmd="hub"; fi
 
 # gh is now deprecated, and merged into the `hub` command line tool.
 #if type gh  > /dev/null 2>&1; then export _git_cmd="gh"; fi
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
-function git(){
+function git() {
   # Only expand args for git commands that deal with paths or branches
   case $1 in
-    commit|blame|add|log|rebase|merge|difftool|switch)
-      exec_scmb_expand_args "$_git_cmd" "$@";;
-    checkout|diff|rm|reset|restore)
-      exec_scmb_expand_args --relative "$_git_cmd" "$@";;
-    branch)
-      _scmb_git_branch_shortcuts "${@:2}";;
-    *)
-      "$_git_cmd" "$@";;
+  commit | blame | add | log | rebase | merge | difftool | switch)
+    exec_scmb_expand_args "$_git_cmd" "$@"
+    ;;
+  checkout | diff | rm | reset | restore)
+    exec_scmb_expand_args --relative "$_git_cmd" "$@"
+    ;;
+  branch)
+    _scmb_git_branch_shortcuts "${@:2}"
+    ;;
+  *)
+    "$_git_cmd" "$@"
+    ;;
   esac
 }
 
 _alias "$git_alias" "git"
-
 
 # --------------------------------------------------------------------
 # Thanks to Scott Bronson for coming up the following git tab completion workaround,
 # which I've altered slightly to be more flexible.
 # https://github.com/bronson/dotfiles/blob/731bfd951be68f395247982ba1fb745fbed2455c/.bashrc#L81
 # (only works for bash)
-__define_git_completion () {
-eval "
+__define_git_completion() {
+  eval "
 _git_$1_shortcut () {
 COMP_LINE=\"git $2 \${COMP_LINE/$1 }\"
-let COMP_POINT+=$((4+${#2}-${#1}))
+let COMP_POINT+=$((4 + ${#2} - ${#1}))
 COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
 let COMP_CWORD+=1
 
@@ -64,18 +67,20 @@ __git_wrap__git_main
 
 # Define git alias with tab completion
 # Usage: __git_alias <alias> <command_prefix> <command>
-__git_alias () {
+__git_alias() {
   if [ -n "$1" ]; then
     local alias_str cmd_prefix cmd cmd_args
 
-    alias_str="$1"; cmd_prefix="$2"; cmd="$3";
+    alias_str="$1"
+    cmd_prefix="$2"
+    cmd="$3"
     if [ $# -gt 2 ]; then
       shift 3 2>/dev/null
       cmd_args=("$@")
     fi
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
-    if [ "$shell" = "bash" ]; then
+    if breeze_shell_is "bash"; then
       __define_git_completion "$alias_str" "$cmd"
       complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
     fi
@@ -177,10 +182,9 @@ if [ "$git_setup_aliases" = "yes" ]; then
   _alias "$git_pull_request_alias"        'gh pr'
 fi
 
-
-
+# TODO(ghthor): apply these same fixes for NixOS
 # Tab completion
-if [ $shell = "bash" ]; then
+if breeze_shell_is "bash"; then
   # Fix to preload Arch bash completion for git
   [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
   # new path in Ubuntu 13.04

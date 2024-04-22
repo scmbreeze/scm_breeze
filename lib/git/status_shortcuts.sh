@@ -8,7 +8,6 @@
 # Numbered file shortcuts for git commands
 # ------------------------------------------------------------------------------
 
-
 # Processes 'git status --porcelain', and exports numbered
 # env variables that contain the path of each affected file.
 # Output is also more concise than standard 'git status'.
@@ -17,6 +16,11 @@
 # 1 || staged,  2 || unmerged,  3 || unstaged,  4 || untracked
 # --------------------------------------------------------------------
 git_status_shortcuts() {
+  if [ "${scmbDebug:-}" = "true" ]; then
+    set -x
+    trap "set +x;" RETURN
+  fi
+
   fail_if_not_git_repo || return 1
   zsh_compat # Ensure shwordsplit is on for zsh
   git_clear_vars
@@ -50,8 +54,6 @@ git_status_shortcuts() {
   zsh_reset # Reset zsh environment to default
 }
 
-
-
 # 'git add' & 'git rm' wrapper
 # This shortcut means 'stage the change to the file'
 # i.e. It will add new and changed files, and remove deleted files.
@@ -80,7 +82,7 @@ git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
     local args
-    eval args="$(scmb_expand_args "$@")"  # populate $args array
+    eval args="$(scmb_expand_args "$@")" # populate $args array
     for file in "${args[@]}"; do
       # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
       if [[ $ga_auto_remove = yes && ! -e $file ]]; then
@@ -97,16 +99,19 @@ git_silent_add_shortcuts() {
 
 # Prints a list of all files affected by a given SHA1,
 # and exports numbered environment variables for each file.
-git_show_affected_files(){
+git_show_affected_files() {
   fail_if_not_git_repo || return 1
-  local f=0  # File count
+  local f=0 # File count
   # Show colored revision and commit message
-  echo -n "# "; git show --oneline --name-only "$@" | head -n1; echo "# "
+  echo -n "# "
+  git show --oneline --name-only "$@" | head -n1
+  echo "# "
   for file in $(git show --pretty="format:" --name-only "$@" | \grep -v '^$'); do
     let f++
-    export $git_env_char$f=$file     # Export numbered variable.
+    export $git_env_char$f=$file # Export numbered variable.
     echo -e "#     \033[2;37m[\033[0m$f\033[2;37m]\033[0m $file"
-  done; echo "# "
+  done
+  echo "# "
 }
 
 # Allows expansion of numbered shortcuts, ranges of shortcuts, or standard paths.
@@ -122,20 +127,20 @@ scmb_expand_args() {
   fi
 
   local args
-  args=()  # initially empty array. zsh 5.0.2 from Ubuntu 14.04 requires this to be separated
+  args=() # initially empty array. zsh 5.0.2 from Ubuntu 14.04 requires this to be separated
   for arg in "$@"; do
-    if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
+    if [[ "$arg" =~ ^[0-9]{0,4}$ ]]; then # Substitute $e{*} variables for any integers
       if [ -e "$arg" ]; then
         # Don't expand files or directories with numeric names
         args+=("$arg")
       else
         args+=("$(_print_path "$relative" "$git_env_char$arg")")
       fi
-    elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
+    elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then # Expand ranges into $e{*} variables
       for i in $(eval echo {${arg/-/..}}); do
         args+=("$(_print_path "$relative" "$git_env_char$i")")
       done
-    else   # Otherwise, treat $arg as a normal string.
+    else # Otherwise, treat $arg as a normal string.
       args+=("$arg")
     fi
   done
@@ -155,8 +160,8 @@ scmb_expand_args() {
 _print_path() {
   local pathname
   pathname=$(eval printf '%s' "\"\${$2}\"")
-  if [ "$1" = 1 ]; then  # print relative
-    pathname=${pathname#$PWD/}  # Remove $PWD from beginning of the path
+  if [ "$1" = 1 ]; then        # print relative
+    pathname=${pathname#$PWD/} # Remove $PWD from beginning of the path
   fi
   printf '%s' "$pathname"
 }
@@ -165,14 +170,14 @@ _print_path() {
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
   local args
-  eval "args=$(scmb_expand_args "$@")"  # populate $args array
+  eval "args=$(scmb_expand_args "$@")" # populate $args array
   _safe_eval "${args[@]}"
 }
 
 # Clear numbered env variables
 git_clear_vars() {
   local i
-  for (( i=1; i<=$gs_max_changes; i++ )); do
+  for ((i = 1; i <= $gs_max_changes; i++)); do
     # Stop clearing after first empty var
     local env_var_i=${git_env_char}${i}
     if [[ -z "$(eval echo "\${$env_var_i:-}")" ]]; then
@@ -183,24 +188,22 @@ git_clear_vars() {
   done
 }
 
-
 # Shortcuts for resolving merge conflicts.
 _git_resolve_merge_conflict() {
   if [ -n "$2" ]; then
     # Expand args and process resulting set of files.
     local args
-    eval "args=$(scmb_expand_args "$@")"  # populate $args array
+    eval "args=$(scmb_expand_args "$@")" # populate $args array
     for file in "${args[@]:2}"; do
-      git checkout "--$1""s" "$file"   # "--$1""s" is expanded to --ours or --theirs
+      git checkout "--$1""s" "$file" # "--$1""s" is expanded to --ours or --theirs
       git add "$file"
       echo -e "# Added $1 version of '$file'"
     done
     echo -e "# -- If you have finished resolving conflicts, commit the resolutions with 'git commit'"
   fi
 }
-ours(){   _git_resolve_merge_conflict "our" "$@"; }
-theirs(){ _git_resolve_merge_conflict "their" "$@"; }
-
+ours() { _git_resolve_merge_conflict "our" "$@"; }
+theirs() { _git_resolve_merge_conflict "their" "$@"; }
 
 # Git commit prompts
 # ------------------------------------------------------------------------------
@@ -216,7 +219,7 @@ git_commit_prompt() (
     saved_commit_msg="$(cat /tmp/.git_commit_message~)"
     echo -e "\033[0;36mLeave blank to use saved commit message: \033[0m$saved_commit_msg"
   fi
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     vared -h -p "Commit Message: " commit_msg
   else
     read -r -e -p "Commit Message: " commit_msg
@@ -242,7 +245,7 @@ git_commit_prompt() (
   escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
   # Add command to bash history, so that if a git pre-commit hook fails,
   # you can just press "up" and "return" to retry the commit.
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     # zsh's print needs double escaping
     print -s "git commit -m \"${escaped_msg//\\/\\\\}\""
   else
@@ -252,14 +255,14 @@ git_commit_prompt() (
   fi
 
   # Also save the commit message to a temp file in case git commit fails
-  echo "$commit_msg" > "/tmp/.git_commit_message~"
+  echo "$commit_msg" >"/tmp/.git_commit_message~"
   eval $@ # run any prequisite commands
 
   echo "$commit_msg" | git commit -F - | tail -n +2
 
   # Fetch the pipe status (for both bash and zsh):
   GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     git_exit_status="${GIT_PIPE_STATUS[2]}" # zsh array indexes start at 1
   else
     git_exit_status="${GIT_PIPE_STATUS[1]}"
@@ -291,7 +294,7 @@ git_add_and_commit() (
   git_silent_add_shortcuts "$@"
   changes=$(git diff --cached --numstat | wc -l)
   if [ "$changes" -gt 0 ]; then
-    git_status_shortcuts 1  # only show staged changes
+    git_status_shortcuts 1 # only show staged changes
     git_commit_prompt
   else
     echo "# No staged changes to commit."
