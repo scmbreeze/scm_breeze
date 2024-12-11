@@ -47,20 +47,22 @@ _alias "$git_alias" "git"
 # which I've altered slightly to be more flexible.
 # https://github.com/bronson/dotfiles/blob/731bfd951be68f395247982ba1fb745fbed2455c/.bashrc#L81
 # (only works for bash)
-__define_git_completion () {
-eval "
-_git_$1_shortcut () {
-COMP_LINE=\"git $2 \${COMP_LINE/$1 }\"
-let COMP_POINT+=$((4+${#2}-${#1}))
-COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
-let COMP_CWORD+=1
+if [ "$git_skip_shell_completion" != "yes" ]; then
+  __define_git_completion () {
+  eval "
+  _git_$1_shortcut () {
+  COMP_LINE=\"git $2 \${COMP_LINE/$1 }\"
+  let COMP_POINT+=$((4+${#2}-${#1}))
+  COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
+  let COMP_CWORD+=1
 
-local cur words cword prev
-_get_comp_words_by_ref -n =: cur words cword prev
-__git_wrap__git_main
-}
-"
-}
+  local cur words cword prev
+  _get_comp_words_by_ref -n =: cur words cword prev
+  __git_wrap__git_main
+  }
+  "
+  }
+fi
 
 # Define git alias with tab completion
 # Usage: __git_alias <alias> <command_prefix> <command>
@@ -75,9 +77,11 @@ __git_alias () {
     fi
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
-    if [ "$shell" = "bash" ]; then
-      __define_git_completion "$alias_str" "$cmd"
-      complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
+    if [ "$git_skip_shell_completion" != "yes" ]; then
+      if [ "$shell" = "bash" ]; then
+        __define_git_completion "$alias_str" "$cmd"
+        complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
+      fi
     fi
   fi
 }
@@ -180,17 +184,19 @@ fi
 
 
 # Tab completion
-if [ $shell = "bash" ]; then
-  # Fix to preload Arch bash completion for git
-  [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
-  # new path in Ubuntu 13.04
-  [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
-  complete -o default -o nospace -F __git_wrap__git_main $git_alias
+if [ "$git_skip_shell_completion" != "yes" ]; then
+  if [ $shell = "bash" ]; then
+    # Fix to preload Arch bash completion for git
+    [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
+    # new path in Ubuntu 13.04
+    [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
+    complete -o default -o nospace -F __git_wrap__git_main $git_alias
 
-  # Git repo management & aliases.
-  # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
-  complete -o nospace -F _git_index_tab_completion git_index
-  complete -o nospace -F _git_index_tab_completion $git_index_alias
-else
-  compdef _git_index_tab_completion git_index $git_index_alias
+    # Git repo management & aliases.
+    # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
+    complete -o nospace -F _git_index_tab_completion git_index
+    complete -o nospace -F _git_index_tab_completion $git_index_alias
+  else
+    compdef _git_index_tab_completion git_index $git_index_alias
+  fi
 fi
