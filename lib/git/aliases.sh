@@ -47,22 +47,20 @@ _alias "$git_alias" "git"
 # which I've altered slightly to be more flexible.
 # https://github.com/bronson/dotfiles/blob/731bfd951be68f395247982ba1fb745fbed2455c/.bashrc#L81
 # (only works for bash)
-if [ "$git_skip_shell_completion" != "yes" ]; then
-  __define_git_completion () {
-  eval "
-  _git_$1_shortcut () {
-  COMP_LINE=\"git $2 \${COMP_LINE/$1 }\"
-  let COMP_POINT+=$((4+${#2}-${#1}))
-  COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
-  let COMP_CWORD+=1
+__define_git_completion () {
+eval "
+_git_$1_shortcut () {
+COMP_LINE=\"git $2 \${COMP_LINE/$1 }\"
+let COMP_POINT+=$((4+${#2}-${#1}))
+COMP_WORDS=(git $2 \"\${COMP_WORDS[@]:1}\")
+let COMP_CWORD+=1
 
-  local cur words cword prev
-  _get_comp_words_by_ref -n =: cur words cword prev
-  __git_wrap__git_main
-  }
-  "
-  }
-fi
+local cur words cword prev
+_get_comp_words_by_ref -n =: cur words cword prev
+__git_wrap__git_main
+}
+"
+}
 
 # Define git alias with tab completion
 # Usage: __git_alias <alias> <command_prefix> <command>
