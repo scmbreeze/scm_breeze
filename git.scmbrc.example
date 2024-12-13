@@ -14,6 +14,8 @@ export ga_auto_remove="yes"
 #   Note: Bash tab completion will not be automatically set up for your aliases if you disable this option.
 export git_setup_aliases="yes"
 
+# - Set the following option to 'yes' if you want to turn off shell completion setup
+# export git_skip_shell_completion="yes" 
 
 # Git Index Config
 # ----------------------------------------------

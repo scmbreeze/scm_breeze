@@ -75,9 +75,11 @@ __git_alias () {
     fi
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
-    if [ "$shell" = "bash" ]; then
-      __define_git_completion "$alias_str" "$cmd"
-      complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
+    if [ "$git_skip_shell_completion" != "yes" ]; then
+      if [ "$shell" = "bash" ]; then
+        __define_git_completion "$alias_str" "$cmd"
+        complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
+      fi
     fi
   fi
 }
@@ -180,17 +182,19 @@ fi
 
 
 # Tab completion
-if [ $shell = "bash" ]; then
-  # Fix to preload Arch bash completion for git
-  [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
-  # new path in Ubuntu 13.04
-  [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
-  complete -o default -o nospace -F __git_wrap__git_main $git_alias
+if [ "$git_skip_shell_completion" != "yes" ]; then
+  if [ $shell = "bash" ]; then
+    # Fix to preload Arch bash completion for git
+    [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
+    # new path in Ubuntu 13.04
+    [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
+    complete -o default -o nospace -F __git_wrap__git_main $git_alias
 
-  # Git repo management & aliases.
-  # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
-  complete -o nospace -F _git_index_tab_completion git_index
-  complete -o nospace -F _git_index_tab_completion $git_index_alias
-else
-  compdef _git_index_tab_completion git_index $git_index_alias
+    # Git repo management & aliases.
+    # If you know how to rewrite _git_index_tab_completion() for zsh, please send me a pull request!
+    complete -o nospace -F _git_index_tab_completion git_index
+    complete -o nospace -F _git_index_tab_completion $git_index_alias
+  else
+    compdef _git_index_tab_completion git_index $git_index_alias
+  fi
 fi
