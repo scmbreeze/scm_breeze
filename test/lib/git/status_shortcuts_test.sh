@@ -44,7 +44,7 @@ setupTestRepo() {
   rm -rf "${testRepo}"
   mkdir -p "$testRepo"
   cd "$testRepo"
-  git init >/dev/null
+  git init -b main >/dev/null
 }
 
 #-----------------------------------------------------------------------------
@@ -252,14 +252,14 @@ test_git_status_shortcuts_merge_conflicts() {
   git add both_added both_modified deleted_by_us
   git commit -m "Branch commit"
 
-  git checkout master
-  echo "added by master" >both_added
-  echo "master line" >both_modified
+  git checkout main
+  echo "added by main" >both_added
+  echo "main line" >both_modified
   echo "deleted by them" >deleted_by_them
   git rm deleted_by_us both_deleted
-  git mv renamed_file renamed_file_on_master
+  git mv renamed_file renamed_file_on_main
   git add both_added both_modified deleted_by_them
-  git commit -m "Master commit"
+  git commit -m "main commit"
 
   git merge conflict_branch
 
@@ -273,7 +273,7 @@ test_git_status_shortcuts_merge_conflicts() {
   assertIncludes "$git_status" "deleted by us: *\[[0-9]*\] *deleted_by_us" || return
   assertIncludes "$git_status" "both deleted: *\[[0-9]*\] *renamed_file" || return
   assertIncludes "$git_status" "added by them: *\[[0-9]*\] *renamed_file_on_branch" || return
-  assertIncludes "$git_status" "added by us: *\[[0-9]*\] *renamed_file_on_master" || return
+  assertIncludes "$git_status" "added by us: *\[[0-9]*\] *renamed_file_on_main" || return
 }
 
 test_git_status_shortcuts_max_changes() {
