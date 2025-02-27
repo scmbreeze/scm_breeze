@@ -29,7 +29,7 @@ git_status_shortcuts() {
   if [[ -z "$cmd_output" ]]; then
     # Just show regular git status if ruby script returns nothing.
     git status
-    echo -e "\n\033[33mThere were more than $gs_max_changes changed files. SCM Breeze has fallen back to standard \`git status\` for performance reasons.\033[0m"
+    echo -e "\n\033[33mThere were more than $GS_MAX_CHANGES changed files. SCM Breeze has fallen back to standard \`git status\` for performance reasons.\033[0m"
     return 1
   fi
   # Fetch list of files from last line of script output
@@ -39,8 +39,8 @@ git_status_shortcuts() {
   local IFS="|"
   local e=1
   for file in $files; do
-    export $git_env_char$e="$file"
-    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+    export $GIT_ENV_CHAR$e="$file"
+    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$GIT_ENV_CHAR$e  => $file"; fi
     let e++
   done
 
@@ -65,7 +65,7 @@ git_add_shortcuts() {
     echo "       ga 1       => git add \$e1"
     echo "       ga 2-4    => git add \$e2 \$e3 \$e4"
     echo "       ga 2 5-7  => git add \$e2 \$e5 \$e6 \$e7"
-    if [[ $ga_auto_remove == "yes" ]]; then
+    if [[ $GA_AUTO_REMOVE == "yes" ]]; then
       echo -e "\nNote: Deleted files will also be staged using this shortcut."
       echo "      To turn off this behaviour, change the 'auto_remove' option."
     fi
@@ -82,8 +82,8 @@ git_silent_add_shortcuts() {
     local args
     eval args="$(scmb_expand_args "$@")"  # populate $args array
     for file in "${args[@]}"; do
-      # Use 'git rm' if file doesn't exist and 'ga_auto_remove' is enabled.
-      if [[ $ga_auto_remove = yes && ! -e $file ]]; then
+      # Use 'git rm' if file doesn't exist and GA_AUTO_REMOVE is enabled.
+      if [[ $GA_AUTO_REMOVE = yes && ! -e $file ]]; then
         echo -n "# "
         git rm "$file"
       else
@@ -104,7 +104,7 @@ git_show_affected_files(){
   echo -n "# "; git show --oneline --name-only "$@" | head -n1; echo "# "
   for file in $(git show --pretty="format:" --name-only "$@" | \grep -v '^$'); do
     let f++
-    export $git_env_char$f=$file     # Export numbered variable.
+    export $GIT_ENV_CHAR$f=$file     # Export numbered variable.
     echo -e "#     \033[2;37m[\033[0m$f\033[2;37m]\033[0m $file"
   done; echo "# "
 }
@@ -129,11 +129,11 @@ scmb_expand_args() {
         # Don't expand files or directories with numeric names
         args+=("$arg")
       else
-        args+=("$(_print_path "$relative" "$git_env_char$arg")")
+        args+=("$(_print_path "$relative" "$GIT_ENV_CHAR$arg")")
       fi
     elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
       for i in $(eval echo {${arg/-/..}}); do
-        args+=("$(_print_path "$relative" "$git_env_char$i")")
+        args+=("$(_print_path "$relative" "$GIT_ENV_CHAR$i")")
       done
     else   # Otherwise, treat $arg as a normal string.
       args+=("$arg")
@@ -172,9 +172,9 @@ exec_scmb_expand_args() {
 # Clear numbered env variables
 git_clear_vars() {
   local i
-  for (( i=1; i<=$gs_max_changes; i++ )); do
+  for (( i=1; i<=$GS_MAX_CHANGES; i++ )); do
     # Stop clearing after first empty var
-    local env_var_i=${git_env_char}${i}
+    local env_var_i=${GIT_ENV_CHAR}${i}
     if [[ -z "$(eval echo "\${$env_var_i:-}")" ]]; then
       break
     else

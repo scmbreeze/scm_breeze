@@ -334,8 +334,8 @@ you can type `gco <tab>` to tab complete your list of branches.
 
 ### 2) Use your own aliases
 
-In your `git.scmbrc` config file, just set the `git_setup_aliases` option to
-`no`. Your existing git aliases will then be used, and you will still be able
+In your `git.scmbrc` config file, just set `GIT_SETUP_ALIASES` to `no`.
+Your existing git aliases will then be used, and you will still be able
 to use the numeric shortcuts feature. SCM Breeze creates a function to wrap
 the 'git' command, which expands numeric arguments, and uses `hub` if
 available.

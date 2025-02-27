@@ -75,7 +75,7 @@ __git_alias () {
     fi
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
-    if [ "$git_skip_shell_completion" != "yes" ]; then
+    if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
       if [ "$shell" = "bash" ]; then
         __define_git_completion "$alias_str" "$cmd"
         complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
@@ -96,8 +96,8 @@ _alias "$git_grep_shortcuts_alias"    'git_grep_shortcuts'
 # Git Index alias
 _alias "$git_index_alias"             'git_index'
 
-# Only set up the following aliases if 'git_setup_aliases' is 'yes'
-if [ "$git_setup_aliases" = "yes" ]; then
+# Only set up the following aliases if GIT_SETUP_ALIASES is 'yes'
+if [ "$GIT_SETUP_ALIASES" = "yes" ]; then
 
   # Commands that deal with paths
   __git_alias "$git_checkout_alias"                 'git' 'checkout'
@@ -182,7 +182,7 @@ fi
 
 
 # Tab completion
-if [ "$git_skip_shell_completion" != "yes" ]; then
+if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
   if [ $shell = "bash" ]; then
     # Fix to preload Arch bash completion for git
     [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"

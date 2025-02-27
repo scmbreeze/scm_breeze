@@ -20,10 +20,10 @@ git_status_shortcuts() {
   local git_status="$(git status --porcelain 2> /dev/null)"
   local i
 
-  if [ -n "$git_status" ] && [[ $(echo "$git_status" | wc -l) -le $gs_max_changes ]]; then
+  if [ -n "$git_status" ] && [[ $(echo "$git_status" | wc -l) -le $GS_MAX_CHANGES ]]; then
     unset stat_file; unset stat_col; unset stat_msg; unset stat_grp; unset stat_x; unset stat_y
     # Clear numbered env variables.
-    for (( i=1; i<=$gs_max_changes; i++ )); do unset $git_env_char$i; done
+    for (( i=1; i<=$GS_MAX_CHANGES; i++ )); do unset $GIT_ENV_CHAR$i; done
 
     # Get branch
     local branch=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
@@ -50,7 +50,7 @@ git_status_shortcuts() {
 
     local f=1; local e=1  # Counters for number of files, and ENV variables
 
-    echo -e "$c_dark#$c_rst On branch: $c_branch$branch$c_rst  $c_dark|  [$c_rst*$c_dark]$c_rst => \$$git_env_char*\n$c_dark#$c_rst"
+    echo -e "$c_dark#$c_rst On branch: $c_branch$branch$c_rst  $c_dark|  [$c_rst*$c_dark]$c_rst => \$$GIT_ENV_CHAR*\n$c_dark#$c_rst"
 
     for line in $git_status; do
       if [[ $shell == *bash ]]; then
@@ -141,7 +141,7 @@ $pad$c_dark [$c_rst$e$c_dark] $c_group$relative$c_rst"
     # (Exports full path, but displays relative path)
     # fetch first file (in the case of oldFile -> newFile) and remove quotes
     local filename=$(eval echo $(echo ${stat_file[$i]} | grep -E -o '^"([^\\"]*(\\.[^"]*)*)"|^[^ ]+'))
-    export $git_env_char$e="$project_root/$filename"
+    export $GIT_ENV_CHAR$e="$project_root/$filename"
     let e++
   done
   echo -e "$c_hash#$c_rst"

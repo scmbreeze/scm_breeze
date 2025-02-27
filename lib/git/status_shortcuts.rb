@@ -32,7 +32,7 @@ git_branch = git_status_lines[0]
 
 @changes = git_status_lines[1..-1]
 # Exit if too many changes
-exit if @changes.size > ENV["gs_max_changes"].to_i
+exit if @changes.size > ENV["GS_MAX_CHANGES"].to_i
 
 # Colors
 @c = {
@@ -83,7 +83,7 @@ if @changes.size == 0
   exit
 end
 
-puts "%s#%s On branch: %s#{@branch}#{difference}%s  %s|  [%s*%s]%s => $#{ENV["git_env_char"]}*\n%s#%s" % [
+puts "%s#%s On branch: %s#{@branch}#{difference}%s  %s|  [%s*%s]%s => $#{ENV["GIT_ENV_CHAR"]}*\n%s#%s" % [
   @c[:dark], @c[:rst], @c[:branch], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst], @c[:dark], @c[:rst]
 ]
 

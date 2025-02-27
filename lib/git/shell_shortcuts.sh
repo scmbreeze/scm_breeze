@@ -221,8 +221,8 @@ EOF
     local IFS=$'\n'
     for file in $ll_files; do
       file=$rel_path/$file
-      export $git_env_char$e=$("${_abs_path_command[@]}" "$file")
-      if [[ ${scmbDebug:-} = true ]]; then echo "Set \$$git_env_char$e  => $file"; fi
+      export $GIT_ENV_CHAR$e=$("${_abs_path_command[@]}" "$file")
+      if [[ ${scmbDebug:-} = true ]]; then echo "Set \$$GIT_ENV_CHAR$e  => $file"; fi
       let e++
     done
 
