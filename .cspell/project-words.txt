@@ -1,0 +1,25 @@
+# SCM Breeze options and vars, bash, awk, etc.
+autojump
+filelist
+funcs
+gitmodules
+lockfiles
+nocorrect
+nullglob
+oneline
+patchfile
+scm_breeze
+scmb
+scmbrc
+scmbreeze
+setopt
+shellcheck
+shunit
+shwordsplit
+subfolders
+tolower
+typechange
+unarchived
+urandom
+vared
+ZDOTDIR

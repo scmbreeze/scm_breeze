@@ -1,0 +1,33 @@
+# Disable warnings about not being able to follow sourced files
+disable=SC1090
+disable=SC1091
+
+# Disable warnings about missing shebangs
+disable=SC2148
+
+# Disable warnings about using source instead of .
+disable=SC1091
+
+# Disable warnings about using local variables in functions
+disable=SC2039
+
+# Disable warnings about using $() instead of backticks
+disable=SC2006
+
+# Disable warnings about using [ instead of [[
+disable=SC2039
+
+# Disable warnings about using == in [ ] (use = instead)
+disable=SC2039
+
+# Disable warnings about using $"" for locale translation
+disable=SC2039
+
+# Disable warnings about using cd with a variable
+disable=SC2164
+
+# Disable warnings about using echo with -e
+disable=SC2039
+
+# Disable warnings about using command -v instead of which
+disable=SC2230

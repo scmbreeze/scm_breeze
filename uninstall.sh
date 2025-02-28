@@ -1,5 +1,6 @@
 #!/bin/sh
-# uninstall by (github: bernardofire)
+# cspell:disable-next-line
+# uninstall by (github: @bernardofire)
 # Remove line from bashrc and zshrc if present.
 
 OS=$(uname -s | awk '{print tolower($0)}')

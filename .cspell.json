@@ -1,0 +1,33 @@
+{
+  "ignorePaths": ["support/shunit2"],
+  "overrides": [
+    {
+      "filename": "test/**/**",
+      "dictionaries": ["bash"]
+    },
+    {
+      "filename": "README.md",
+      "words": ["istra"]
+    }
+  ],
+  "ignoreRegExpList": [],
+  "useGitignore": true,
+  "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": "./.cspell/project-words.txt",
+      "addWords": true
+    },
+    {
+      "name": "org-user-words",
+      "path": "./.cspell/org-user-words.txt",
+      "addWords": true
+    },
+    {
+      "name": "lockfile-words",
+      "path": "./.cspell/lockfile-words.txt",
+      "addWords": false
+    }
+  ],
+  "dictionaries": ["project-words", "org-user-words", "lockfile-words"]
+}

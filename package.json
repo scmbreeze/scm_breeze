@@ -1,0 +1,33 @@
+{
+  "name": "scm_breeze",
+  "version": "1.1.0",
+  "description": "CSpell plugin to extract words from lockfiles and create dictionaries",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "cspell-lockfile-dicts": "dist/cli.js"
+  },
+  "files": [
+    "dist/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "shellcheck": "shellcheck",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "cspell": "cspell --config .cspell.json .",
+    "cspell:fix": "cspell --config .cspell.json --fix .",
+    "generate-lockfile-dict": "npx @docspring/cspell-lockfile-dicts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "engines": {},
+  "devDependencies": {
+    "cspell": "^8.17.5",
+    "prettier": "^3.5.2",
+    "@docspring/cspell-lockfile-dicts": "^1.1.0"
+  }
+}
