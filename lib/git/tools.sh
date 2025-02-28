@@ -122,7 +122,7 @@ git_swap_remotes() {
   echo "Swapped $1 <-> $2"
 }
 # (use git fetch tab completion)
-if [ "$git_skip_shell_completion" != "yes" ]; then
+if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
   if [ "$shell" = "bash" ]; then
     complete -o default -o nospace -F _git_fetch git_swap_remotes
   fi

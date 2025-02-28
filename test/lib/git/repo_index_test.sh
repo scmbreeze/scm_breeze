@@ -28,7 +28,7 @@ source "$scmbDir/lib/git/repo_index.sh"
 oneTimeSetUp() {
   GIT_REPO_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
   GIT_REPOS="/tmp/test_repo_1:/tmp/test_repo_11"
-  git_status_command="git status"
+  GIT_STATUS_COMMAND="git status"
 
   git_index_file="$GIT_REPO_DIR/.git_index"
 

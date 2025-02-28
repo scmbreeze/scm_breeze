@@ -3,19 +3,19 @@
 # ----------------------------------------------
 # - Set your preferred prefix for env variable file shortcuts.
 #   (I chose 'e' because it is easy to slide your finger to it from '$'.)
-export git_env_char="e"
+export GIT_ENV_CHAR="e"
 # - Max changed files before reverting to 'git status'. git_status_shortcuts() will be slower for lots of changed files.
-export gs_max_changes="150"
-# - When using the git_add_shorcuts() command, automatically invoke 'git rm' to remove deleted files?
-export ga_auto_remove="yes"
+export GS_MAX_CHANGES="150"
+# - When using the git_add_shortcuts() command, automatically invoke 'git rm' to remove deleted files?
+export GA_AUTO_REMOVE="yes"
 
 # - Set the following option to 'no' if you want to use your existing git aliases
 #   instead of overwriting them.
 #   Note: Bash tab completion will not be automatically set up for your aliases if you disable this option.
-export git_setup_aliases="yes"
+export GIT_SETUP_ALIASES="yes"
 
 # - Set the following option to 'yes' if you want to turn off shell completion setup
-# export git_skip_shell_completion="yes" 
+# export GIT_SKIP_SHELL_COMPLETION="yes"
 
 # Git Index Config
 # ----------------------------------------------
@@ -24,7 +24,7 @@ export GIT_REPO_DIR="$HOME/code"
 # Add the full paths of any extra repos to GIT_REPOS, separated with ':'
 # e.g. "/opt/rails/project:/opt/rails/another project:$HOME/other/repo"
 export GIT_REPOS=""
-export git_status_command="git_status_shortcuts"
+export GIT_STATUS_COMMAND="git_status_shortcuts"
 # Alias
 git_index_alias="c"    # Switch to a repo in the (c)ode directory
 

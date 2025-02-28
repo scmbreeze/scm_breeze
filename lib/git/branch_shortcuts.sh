@@ -34,8 +34,8 @@ EOF
   # Set numbered file shortcut in variable
   local e=1 IFS=$'\n'
   for branch in $($_git_cmd branch "$@" | sed "s/^[* ]\{2\}//"); do
-    export $git_env_char$e="$branch"
-    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$git_env_char$e  => $file"; fi
+    export $GIT_ENV_CHAR$e="$branch"
+    if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$GIT_ENV_CHAR$e  => $file"; fi
     let e++
   done
 }
@@ -47,7 +47,7 @@ __git_alias "$git_branch_delete_alias"       "_scmb_git_branch_shortcuts" "-d"
 __git_alias "$git_branch_delete_force_alias" "_scmb_git_branch_shortcuts" "-D"
 
 # Define completions for git branch shortcuts
-if [ "$git_skip_shell_completion" != "yes" ]; then
+if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
   if [ "$shell" = "bash" ]; then
     for alias_str in $git_branch_alias $git_branch_all_alias $git_branch_move_alias $git_branch_delete_alias; do
       __define_git_completion $alias_str branch

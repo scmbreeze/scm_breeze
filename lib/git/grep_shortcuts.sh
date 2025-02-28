@@ -13,7 +13,7 @@ git_grep_shortcuts() {
   IFS="|"
   local e=1
   for file in ${=files}; do
-    export $git_env_char$e="$file"
+    export $GIT_ENV_CHAR$e="$file"
     let e++
   done
   IFS=$' \t\n'

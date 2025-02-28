@@ -93,7 +93,7 @@ test_shell_command_wrapping() {
 }
 
 test_ls_with_file_shortcuts() {
-  export git_env_char="e"
+  export GIT_ENV_CHAR="e"
 
   TEST_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
 

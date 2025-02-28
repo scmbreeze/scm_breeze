@@ -37,7 +37,7 @@ class GitStatus
   end
 
   def report
-    exit if all_changes.length > ENV["gs_max_changes"].to_i
+    exit if all_changes.length > ENV["GS_MAX_CHANGES"].to_i
     print_header
     print_groups
     puts filelist if @grouped_changes.any?
@@ -188,7 +188,7 @@ class GitStatus
   end
 
   def hotkey
-    "[*] => $#{ENV['git_env_char']}"
+    "[*] => $#{ENV['GIT_ENV_CHAR']}"
   end
 
   # used to delimit the left side of the screen - looks nice

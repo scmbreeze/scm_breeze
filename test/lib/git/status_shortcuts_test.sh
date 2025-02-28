@@ -28,9 +28,9 @@ source "$scmbDir/lib/git/status_shortcuts.sh"
 #-----------------------------------------------------------------------------
 oneTimeSetUp() {
   # Test Config
-  export git_env_char="e"
-  export gs_max_changes="20"
-  export ga_auto_remove="yes"
+  export GIT_ENV_CHAR="e"
+  export GS_MAX_CHANGES="20"
+  export GA_AUTO_REMOVE="yes"
 
   testRepo=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
   testRepo=$(cd $testRepo && pwd -P)
@@ -279,7 +279,7 @@ test_git_status_shortcuts_merge_conflicts() {
 test_git_status_shortcuts_max_changes() {
   setupTestRepo
 
-  export gs_max_changes="5"
+  export GS_MAX_CHANGES="5"
 
   # Add 5 untracked files
   touch a b c d e
@@ -288,13 +288,13 @@ test_git_status_shortcuts_max_changes() {
     assertIncludes "$git_status" "\[$i\]" || return
   done
 
-  # 6 untracked files is more than $gs_max_changes
+  # 6 untracked files is more than $GS_MAX_CHANGES
   touch f
   git_status=$(git_status_shortcuts | strip_colors)
   assertNotIncludes "$git_status" "\[[0-9]*\]" || return
   assertIncludes "$git_status" "There were more than 5 changed files." || return
 
-  export gs_max_changes="20"
+  export GS_MAX_CHANGES="20"
 }
 
 test_git_add_shortcuts() {

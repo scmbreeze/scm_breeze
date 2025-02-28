@@ -178,8 +178,8 @@ function parse_git_branch {
 function _git_index_status_if_dirty() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
     # Fall back to 'git status' if git status alias isn't configured
-    if type $git_status_command 2>&1 | \grep -qv "not found"; then
-      eval $git_status_command
+    if type $GIT_STATUS_COMMAND 2>&1 | \grep -qv "not found"; then
+      eval $GIT_STATUS_COMMAND
     else
       git status
     fi
