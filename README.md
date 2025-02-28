@@ -1,8 +1,8 @@
 <img src="https://user-images.githubusercontent.com/139536/30827652-08e9b684-a265-11e7-95fb-50cbd2fb7c0d.png" width="200" height="200">
 
+# SCM Breeze
 
-
-# SCM Breeze [![TravisCI](https://secure.travis-ci.org/scmbreeze/scm_breeze.png?branch=master)](http://travis-ci.org/scmbreeze/scm_breeze)
+![master branch](https://github.com/scmbreeze/scm_breeze/actions/workflows/test.yml/badge.svg)
 
 > Streamline your SCM workflow.
 
@@ -11,18 +11,29 @@ your interaction with git. It integrates with your shell to give you numbered
 file shortcuts, a repository index with tab completion, and many other useful
 features.
 
-- [Installation](#installation)
-- [Usage](#usage)
-  - [File Shortcuts](#file-shortcuts)
-  - [Keyboard bindings](#keyboard-bindings)
-  - [Repository Index](#repository-index)
-  - [Linking External Project Design Directories](#linking-external-project-design-directories)
-- [Configuration](#configuration)
-- [Updating](#updating)
-- [Uninstalling](#uninstalling)
-- [Notes about Tab Completion for Aliases](#notes-about-tab-completion-for-aliases)
-- [Contributing](#contributing)
-
+- [SCM Breeze](#scm-breeze)
+  - [Installation](#installation)
+    - [File Shortcuts](#file-shortcuts)
+      - [Git Status Shortcuts:](#git-status-shortcuts)
+      - ['ls' shortcuts:](#ls-shortcuts)
+      - [Other shortcuts](#other-shortcuts)
+    - [Keyboard bindings](#keyboard-bindings)
+    - [Repository Index](#repository-index)
+    - [Linking External Project Design Directories](#linking-external-project-design-directories)
+      - [1) Create and configure a root design directory](#1-create-and-configure-a-root-design-directory)
+      - [2) Initialize design directories for your projects](#2-initialize-design-directories-for-your-projects)
+      - [3) Link existing design directories into your projects](#3-link-existing-design-directories-into-your-projects)
+  - [Configuration](#configuration)
+    - [1) Configure and use the provided SCM Breeze aliases](#1-configure-and-use-the-provided-scm-breeze-aliases)
+    - [2) Use your own aliases](#2-use-your-own-aliases)
+  - [Custom emojis for username and "staff" group](#custom-emojis-for-username-and-staff-group)
+  - [Notes about Tab Completion for Aliases](#notes-about-tab-completion-for-aliases)
+    - [Bash](#bash)
+    - [Zsh](#zsh)
+  - [Updating](#updating)
+  - [Uninstalling](#uninstalling)
+  - [Contributing](#contributing)
+  - [Alternative Projects](#alternative-projects)
 
 ## Installation
 
@@ -42,18 +53,16 @@ to your `.bashrc` or `.zshrc`:
 ### File Shortcuts
 
 SCM Breeze makes it really easy to work with changed files, and groups of
-changed files.  Whenever you view your SCM status, each modified path is stored
-in a numbered environment variable.  You can configure the variable prefix,
+changed files. Whenever you view your SCM status, each modified path is stored
+in a numbered environment variable. You can configure the variable prefix,
 which is 'e' by default.
-
 
 #### Git Status Shortcuts:
 
 <div class="centered">
-<img src="http://madebynathan.com/images/posts/2011/10/status_with_shortcuts-resized-post.png" width="590" alt="Git Status With Shortcuts" />
+<img src="http://madebynathan.com/content/images/posts/2011/10/status_with_shortcuts-resized-post.png" width="590" alt="Git Status With Shortcuts" />
 </div>
 <br/>
-
 
 #### 'ls' shortcuts:
 
@@ -92,8 +101,7 @@ $ ga 1-10
 ```
 
 (Note that `ga` will also remove deleted files, unlike the standard `git add`
-command.  This behaviour can be turned off if you don't like it.)
-
+command. This behaviour can be turned off if you don't like it.)
 
 You can also diff, reset or checkout a file by typing:
 
@@ -103,10 +111,8 @@ $ grs 4
 $ gco 5
 ```
 
-
 You can use these shortcuts with system commands by passing your command
 through `exec_scmb_expand_args` (default alias is `ge`):
-
 
 ```bash
 $ echo $e4
@@ -118,16 +124,14 @@ $ ge echo 1-3
 # => _shared.sh assets/git_breeze/config.example.sh assets/git_breeze/config.sh
 ```
 
-
 #### Other shortcuts
 
 SCM Breeze adds a number of aliases to your shell. Use `list_aliases` to view
-all the aliases and their corresponding commands.  You can filter aliases by
+all the aliases and their corresponding commands. You can filter aliases by
 adding a search string: `list_aliases git log`
 
 There's also a `git_aliases` command, which just shows aliases for `git`
 commands. You can also pass in additional filters, e.g. `git_aliases log`.
-
 
 ### Keyboard bindings
 
@@ -137,15 +141,14 @@ commands is by binding them to keyboard shortcuts.
 
 Here are the default key bindings:
 
-* `CTRL`+`x` `c` => `git_add_and_commit` - add given files (if any), then commit staged changes
-* `CTRL`+`x` `SPACE` => `git_commit_all` - commit everything
-
+- `CTRL`+`x` `c` => `git_add_and_commit` - add given files (if any), then commit staged changes
+- `CTRL`+`x` `SPACE` => `git_commit_all` - commit everything
 
 The commit shortcuts use the `git_commit_prompt` function, which gives a simple
 prompt like this:
 
 <div class="centered"> <img
-src="http://madebynathan.com/images/posts/2011/10/git_commit_all-resized-post.png"
+src="http://madebynathan.com/content/images/posts/2011/10/git_commit_all-resized-post.png"
 alt="Git Commit All" /> </div> <br/> (When using bash, this commit prompt gives
 you access to your bash history via the arrow keys.) <br/>
 
@@ -158,26 +161,25 @@ $ 2 3 <CTRL+x c>
 This sends the `HOME` key, followed by `git_add_and_commit`:
 
 <div class="centered">
-<img src="http://madebynathan.com/images/posts/2011/10/git_add_and_commit_params-resized-post.png" alt="Git Add And Commit" />
+<img src="http://madebynathan.com/content/images/posts/2011/10/git_add_and_commit_params-resized-post.png" alt="Git Add And Commit" />
 </div>
 <br/>
-
 
 ### Repository Index
 
 The second feature is a repository index for all of your projects and
-submodules.  This gives you super-fast switching between your project
+submodules. This gives you super-fast switching between your project
 directories, with tab completion, and it can even tab-complete down to project
-subdirectories.  This means that you can keep your projects organized in
+subdirectories. This means that you can keep your projects organized in
 subfolders, but switch between them as easily as if they were all in one
 folder.
 
 It's similar to [autojump](https://github.com/joelthelion/autojump), but it
 doesn't need to 'learn' anything, and it can do SCM-specific stuff like:
 
-* Running a command for all of your repos (useful if you ever need to update a
+- Running a command for all of your repos (useful if you ever need to update a
   lot of remote URLs)
-* Update all of your repositories via a cron task
+- Update all of your repositories via a cron task
 
 The default alias for `git_index` is 'c', which might stand for 'code'
 
@@ -226,35 +228,33 @@ the first argument with a `/`:
 ### Linking External Project Design Directories
 
 When you're creating logos or icons for a project that uses `git`, have you
-ever wondered where you should store those `.psd` or `.xcf` files?  Do you
+ever wondered where you should store those `.psd` or `.xcf` files? Do you
 commit all of your raw design files, or does it put you off that any changes to
 those files will bloat your repository?
 
 Here were my goals when I set out to find a solution:
 
-* I wanted a design directory for each of my projects
-* I didn't want the design directory to be checked in to the git repository
-* The design directory needed to be synchronized across all of my machines
+- I wanted a design directory for each of my projects
+- I didn't want the design directory to be checked in to the git repository
+- The design directory needed to be synchronized across all of my machines
 
 The simplest way for me to synchronize files was via my Dropbox account.
 However, if you work with a larger team, you could set up a shared design
 directory on one of your servers and synchronize it with `rsync`.
-
 
 #### 1) Create and configure a root design directory
 
 I created my root design directory at `~/Dropbox/Design`.
 
 After you've created your root design directory, edit `~/.scmbrc` and set
-`root_design_dir` to the directory you just created.  You can also configure
+`root_design_dir` to the directory you just created. You can also configure
 the design directory that's created in each of your projects (default:
-`design_assets`), as well as the subdirectories you would like to use.  The
+`design_assets`), as well as the subdirectories you would like to use. The
 default base subdirectories are: Images, Backgrounds, Logos, Icons, Mockups,
 and Screenshots.
 
 After you have changed these settings, remember to run `source ~/.bashrc` or
 `source "${ZDOTDIR:-$HOME}/.zshrc"`.
-
 
 #### 2) Initialize design directories for your projects
 
@@ -272,10 +272,9 @@ If your root directory is `~/Dropbox/Design`, directories will be created at
 It will then symlink the project from your root design directory into your
 project's design directory, so you end up with:
 
-* `my_project/design_assets` -> `~/Dropbox/Design/projects/my_project`
+- `my_project/design_assets` -> `~/Dropbox/Design/projects/my_project`
 
 It also adds this directory to `.git/info/exclude` so that git ignores it.
-
 
 If you use the git repository index, you can run the following batch command to
 set up these directories for all of your git repos at once:
@@ -297,7 +296,6 @@ contain files:
 design rm
 ```
 
-
 #### 3) Link existing design directories into your projects
 
 If you've set up your design directories on one machine, you'll want them to be
@@ -310,38 +308,35 @@ the root design directory:
 design link
 ```
 
-This uses your git index to figure out where to create the symlinks.  If you
+This uses your git index to figure out where to create the symlinks. If you
 don't use the git index, the same outcome could be achieved by running 'design
 init' for each of the projects.
 
-
 ## Configuration
 
-SCM Breeze is configured via automatically installed `~/.*.scmbrc` files.  To
+SCM Breeze is configured via automatically installed `~/.*.scmbrc` files. To
 change git configuration, edit `~/.git.scmbrc`.
 
 Each feature is modular, so you are free to ignore the parts you don't want to
-use.  Just comment out the relevant line in `~/.scm_breeze/scm_breeze.sh`.
+use. Just comment out the relevant line in `~/.scm_breeze/scm_breeze.sh`.
 
 **Note:** After changing any settings, you will need to run `source ~/.bashrc`
 (or `source "${ZDOTDIR:-$HOME}/.zshrc"`)
 
 I know we grow attached to the aliases we use every day, so I've made the alias
-system completely customizable.  You have two options when it comes to aliases:
-
+system completely customizable. You have two options when it comes to aliases:
 
 ### 1) Configure and use the provided SCM Breeze aliases
 
 Just tweak the aliases in `~/.git.scmbrc`. You can also change or remove any
-keyboard shortcuts.  These aliases also come with tab completion. For example,
+keyboard shortcuts. These aliases also come with tab completion. For example,
 you can type `gco <tab>` to tab complete your list of branches.
-
 
 ### 2) Use your own aliases
 
 In your `git.scmbrc` config file, just set the `git_setup_aliases` option to
-`no`.  Your existing git aliases will then be used, and you will still be able
-to use the numeric shortcuts feature.  SCM Breeze creates a function to wrap
+`no`. Your existing git aliases will then be used, and you will still be able
+to use the numeric shortcuts feature. SCM Breeze creates a function to wrap
 the 'git' command, which expands numeric arguments, and uses `hub` if
 available.
 
@@ -367,28 +362,24 @@ echo 🖥 > ~/.staff_sym
 
 I also like using `~/.user_sym` [in my Bash prompt](https://github.com/ndbroadbent/dotfiles/blob/master/bashrc/prompt.sh#L71).
 
-
 ## Notes about Tab Completion for Aliases
 
 ### Bash
 
 If you use your own aliases, SCM Breeze will **not** set up bash tab completion
-for your aliases.  You will need to set that up yourself.
-
+for your aliases. You will need to set that up yourself.
 
 ### Zsh
 
 You just need to set the option: `setopt no_complete_aliases` (oh-my-zsh sets
-this by default).  Zsh will then expand aliases like `gb` to `git branch`, and
+this by default). Zsh will then expand aliases like `gb` to `git branch`, and
 use the completion for that.
-
 
 ## Updating
 
 Please run `update_scm_breeze` to fetch the latest code. This will update SCM
 Breeze from Github, and will create or patch your `~/.*.scmbrc` config files if
 any new settings are added.
-
 
 ## Uninstalling
 
@@ -401,18 +392,17 @@ The uninstall script removes the following line from your `.bashrc` or
 
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
-
 ## Contributing
 
 SCM Breeze lives on Github at
 [`scmbreeze/scm_breeze`](https://github.com/scmbreeze/scm_breeze)
 
 If you have any awesome SCM scripts lurking in your `.bashrc` or `.zshrc`,
-please feel free to send me a pull request.  It would be cool to make this
+please feel free to send me a pull request. It would be cool to make this
 project into an [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) for
 SCMs.
 
-***Enjoy!***
+**_Enjoy!_**
 
 ## Alternative Projects
 
