@@ -275,12 +275,12 @@ end
 class GitChange < GitStatus
   attr_reader :status
 
-  # Restructively singles out the submodules message and
+  # Singles out the submodules message and
   # strips the remaining string to get rid of padding
   def initialize(file_and_message, status)
     @message = file_and_message.slice!(/\(.*\)/)
     @file = file_and_message.strip
-    @file = (@file.include? " ") ? "\"#{@file}\"" : @file
+    @file = @file.include?(" ") ? "\"#{@file}\"" : @file
     @status = status.strip
   end
 

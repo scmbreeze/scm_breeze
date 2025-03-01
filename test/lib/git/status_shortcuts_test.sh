@@ -202,30 +202,30 @@ test_git_status_shortcuts() {
 test_git_status_produces_relative_paths() {
   setupTestRepo
 
-  mkdir -p dir1/sub1/subsub1
+  mkdir -p dir1/sub1/sub-sub1
   mkdir -p dir1/sub2
   mkdir -p dir2
-  touch dir1/sub1/subsub1/testfile
+  touch dir1/sub1/sub-sub1/testfile
   touch dir1/sub2/testfile
   touch dir2/testfile
   git add .
 
   git_status=$(git_status_shortcuts | strip_colors)
-  assertIncludes "$git_status" "dir1/sub1/subsub1/testfile" || return
+  assertIncludes "$git_status" "dir1/sub1/sub-sub1/testfile" || return
 
   cd $testRepo/dir1
   git_status=$(git_status_shortcuts | strip_colors)
-  assertIncludes "$git_status" " sub1/subsub1/testfile" || return
+  assertIncludes "$git_status" " sub1/sub-sub1/testfile" || return
   assertIncludes "$git_status" " sub2/testfile" || return
   assertIncludes "$git_status" "../dir2/testfile" || return
 
   cd $testRepo/dir1/sub1
   git_status=$(git_status_shortcuts | strip_colors)
-  assertIncludes "$git_status" " subsub1/testfile" || return
+  assertIncludes "$git_status" " sub-sub1/testfile" || return
   assertIncludes "$git_status" " ../sub2/testfile" || return
   assertIncludes "$git_status" "../../dir2/testfile" || return
 
-  cd $testRepo/dir1/sub1/subsub1
+  cd $testRepo/dir1/sub1/sub-sub1
   git_status=$(git_status_shortcuts | strip_colors)
   assertIncludes "$git_status" " testfile" || return
   assertIncludes "$git_status" " ../../sub2/testfile" || return

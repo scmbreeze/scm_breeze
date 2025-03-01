@@ -101,7 +101,7 @@ $ ga 1-10
 ```
 
 (Note that `ga` will also remove deleted files, unlike the standard `git add`
-command. This behaviour can be turned off if you don't like it.)
+command. This behavior can be turned off if you don't like it.)
 
 You can also diff, reset or checkout a file by typing:
 

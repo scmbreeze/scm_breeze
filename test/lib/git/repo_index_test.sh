@@ -43,7 +43,7 @@ oneTimeSetUp() {
     cd - >/dev/null
   done
 
-  # Add some nested dirs for testing resursive tab completion
+  # Add some nested dirs for testing recursive tab completion
   mkdir -p github/videos/octocat/live_action
   # Add hidden dir to test that '.git' is filtered, but other hidden dirs are available.
   mkdir -p github/.im_hidden
@@ -150,11 +150,11 @@ test_git_index_changing_directory() {
   assertEquals "$GIT_REPO_DIR/github" "$PWD"
   git_index "bucket"
   assertEquals "$GIT_REPO_DIR/bitbucket" "$PWD"
-  git_index "testcaps"
+  git_index "testcaps" # cspell:disable-line
   assertEquals "$GIT_REPO_DIR/TestCaps" "$PWD"
   git_index "green_sub"
   assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/green_submodule" "$PWD"
-  git_index "_submod"
+  git_index "_submod" # cspell:disable-line
   assertEquals "$GIT_REPO_DIR/submodules_everywhere/very/nested/directory/blue_submodule" "$PWD"
   git_index "test_repo_1"
   assertEquals "/tmp/test_repo_1" "$PWD"
@@ -177,7 +177,7 @@ test_git_index_tab_completion() {
     _git_index_tab_completion
     assertEquals "Incorrect number of tab-completed '--' commands" "5" "$(tab_completions | wc -w)"
 
-    COMP_WORDS="gith"
+    COMP_WORDS="gith" # cspell:disable-line
     _git_index_tab_completion
     assertIncludes "$(tab_completions)" "github/"
 

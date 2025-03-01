@@ -98,7 +98,7 @@ test_ls_with_file_shortcuts() {
   TEST_DIR=$(mktemp -d -t scm_breeze.XXXXXXXXXX)
 
   # Darwin actually symlinks /var inside /private, but mktemp reports back the
-  # logical pathat time of file creation.  So make sure we always get the
+  # logical path at time of file creation.  So make sure we always get the
   # full physical path to be absolutely certain when doing comparisons later,
   # because thats how the Ruby status_shortcuts.rb script is going to obtain
   # them.
