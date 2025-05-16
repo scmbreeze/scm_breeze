@@ -17,6 +17,11 @@
 # 1 || staged,  2 || unmerged,  3 || unstaged,  4 || untracked
 # --------------------------------------------------------------------
 git_status_shortcuts() {
+  if [ "${scmbDebug:-}" = "true" ]; then
+    set -x
+    trap "set +x;" RETURN
+  fi
+
   fail_if_not_git_repo || return 1
   zsh_compat # Ensure shwordsplit is on for zsh
   git_clear_vars
@@ -155,8 +160,8 @@ scmb_expand_args() {
 _print_path() {
   local pathname
   pathname=$(eval printf '%s' "\"\${$2}\"")
-  if [ "$1" = 1 ]; then  # print relative
-    pathname=${pathname#$PWD/}  # Remove $PWD from beginning of the path
+  if [ "$1" = 1 ]; then        # print relative
+    pathname=${pathname#$PWD/} # Remove $PWD from beginning of the path
   fi
   printf '%s' "$pathname"
 }
@@ -216,7 +221,7 @@ git_commit_prompt() (
     saved_commit_msg="$(cat /tmp/.git_commit_message~)"
     echo -e "\033[0;36mLeave blank to use saved commit message: \033[0m$saved_commit_msg"
   fi
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     vared -h -p "Commit Message: " commit_msg
   else
     read -r -e -p "Commit Message: " commit_msg
@@ -242,7 +247,7 @@ git_commit_prompt() (
   escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
   # Add command to bash history, so that if a git pre-commit hook fails,
   # you can just press "up" and "return" to retry the commit.
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     # zsh's print needs double escaping
     print -s "git commit -m \"${escaped_msg//\\/\\\\}\""
   else
@@ -252,14 +257,14 @@ git_commit_prompt() (
   fi
 
   # Also save the commit message to a temp file in case git commit fails
-  echo "$commit_msg" > "/tmp/.git_commit_message~"
+  echo "$commit_msg" >"/tmp/.git_commit_message~"
   eval $@ # run any prequisite commands
 
   echo "$commit_msg" | git commit -F - | tail -n +2
 
   # Fetch the pipe status (for both bash and zsh):
   GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     git_exit_status="${GIT_PIPE_STATUS[2]}" # zsh array indexes start at 1
   else
     git_exit_status="${GIT_PIPE_STATUS[1]}"
