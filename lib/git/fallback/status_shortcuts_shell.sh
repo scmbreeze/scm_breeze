@@ -53,10 +53,14 @@ git_status_shortcuts() {
     echo -e "$c_dark#$c_rst On branch: $c_branch$branch$c_rst  $c_dark|  [$c_rst*$c_dark]$c_rst => \$$GIT_ENV_CHAR*\n$c_dark#$c_rst"
 
     for line in $git_status; do
-      if [[ $shell == *bash ]]; then
-        x=${line:0:1}; y=${line:1:1}; file=${line:3}
+      if breeze_shell_is "bash"; then
+        x=${line:0:1}
+        y=${line:1:1}
+        file=${line:3}
       else
-        x=$line[1]; y=$line[2]; file=$line[4,-1]
+        x=$line[1]
+        y=$line[2]
+        file=$line[4,-1]
       fi
 
       # Index modification states

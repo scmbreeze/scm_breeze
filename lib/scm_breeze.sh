@@ -1,13 +1,48 @@
 # Detect shell
-if [ -n "${ZSH_VERSION:-}" ]; then shell="zsh"; else shell="bash"; fi
+breeze_detect_shell() {
+  if [ -n "${ZSH_VERSION:-}" ]; then
+    echo "zsh"
+  else
+    echo "bash"
+  fi
+}
+
+breeze_shell_is() {
+  [ "$(breeze_detect_shell)" = "$1" ] && return 0
+  return 1
+}
 # Detect whether zsh 'shwordsplit' option is on by default.
-if [ $shell = "zsh" ]; then zsh_shwordsplit=$( (setopt | grep -q shwordsplit) && echo "true" ); fi
+if breeze_shell_is "zsh"; then
+  zsh_shwordsplit=$( (setopt | grep -q shwordsplit) && echo "true")
+fi
+
 # Switch on/off shwordsplit for functions that require it.
-zsh_compat(){ if [ $shell = "zsh" ] && [ -z $zsh_shwordsplit ]; then setopt shwordsplit; fi; }
-zsh_reset(){  if [ $shell = "zsh" ] && [ -z $zsh_shwordsplit ]; then unsetopt shwordsplit; fi; }
+zsh_compat() {
+  if breeze_shell_is "zsh" && [ -z $zsh_shwordsplit ]; then
+    setopt shwordsplit
+  fi
+}
+zsh_reset() {
+  if breeze_shell_is "zsh" && [ -z $zsh_shwordsplit ]; then
+    unsetopt shwordsplit
+  fi
+}
+
 # Enable/disable nullglob for zsh or bash
-enable_nullglob()  { if [ $shell = "zsh" ]; then setopt NULL_GLOB;   else shopt -s nullglob; fi; }
-disable_nullglob() { if [ $shell = "zsh" ]; then unsetopt NULL_GLOB; else shopt -u nullglob; fi; }
+enable_nullglob() {
+  if breeze_shell_is "zsh"; then
+    setopt NULL_GLOB
+  else
+    shopt -s nullglob
+  fi
+}
+disable_nullglob() {
+  if breeze_shell_is "zsh"; then
+    unsetopt NULL_GLOB
+  else
+    shopt -u nullglob
+  fi
+}
 
 # Alias wrapper that ignores errors if alias is not defined.
 _safe_alias(){ alias "$@" 2> /dev/null; }
@@ -31,7 +66,7 @@ function token_quote {
   # Keep this code for use when minimum versions of {ba,z}sh can be increased.
   # See https://github.com/scmbreeze/scm_breeze/issues/260
   #
-  # if [[ $shell = bash ]]; then
+  # if breeze_detect_shell "bash"; then
   #   # ${parameter@operator} where parameter is ${@} and operator is 'Q'
   #   # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
   #   eval "${@@Q}"
@@ -50,7 +85,7 @@ function _safe_eval() {
   # Keep this code for use when minimum versions of {ba,z}sh can be increased.
   # See https://github.com/scmbreeze/scm_breeze/issues/260
   #
-  # if [[ $shell = bash ]]; then
+  # if breeze_detect_shell "bash"; then
   #   # ${parameter@operator} where parameter is ${@} and operator is 'Q'
   #   # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
   #   eval "${@@Q}"
@@ -60,8 +95,8 @@ function _safe_eval() {
   # fi
 }
 
-find_binary(){
-  if [ $shell = "zsh" ]; then
+find_binary() {
+  if breeze_shell_is "bash"; then
     builtin type -p "$1" | sed "s/$1 is //" | head -1
   else
     builtin type -P "$1"
