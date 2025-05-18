@@ -10,9 +10,9 @@
 # See [here](http://qntm.org/bash#sec1) for info about why I wanted a prompt.
 
 # Cross-shell key bindings
-_bind(){
+_bind() {
   if [ -n "$1" ]; then
-    if [[ $shell == "zsh" ]]; then
+    if breeze_shell_is "zsh"; then
       bindkey -s "$1" "$2"
     else # bash
       bind "\"$1\": $2"
@@ -24,11 +24,11 @@ _bind(){
 if [[ "$git_keyboard_shortcuts_enabled" = "true" ]]; then
   case "$-" in
   *i*)
-      if [ -n "$ZSH_VERSION" ]; then
-        RETURN_CHAR="^M"
-      else
-        RETURN_CHAR="\n"
-      fi
+    if [ -n "$ZSH_VERSION" ]; then
+      RETURN_CHAR="^M"
+    else
+      RETURN_CHAR="\n"
+    fi
 
       # Uses emacs style keybindings, so vi mode is not supported for now
       if ! set -o | grep -q '^vi .*on$'; then

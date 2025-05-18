@@ -79,8 +79,8 @@ function git_index() {
       echo
 
     # If $1 starts with '/', change to top-level directory within $GIT_REPO_DIR
-    elif ([ $shell = "bash" ] && [ "${1:0:1}" = "/" ]) || \
-         ([ $shell = "zsh" ]  && [ "${1[1]}"  = "/" ]); then
+    elif (breeze_shell_is "bash" && [ "${1:0:1}" = "/" ]) || \
+         (breeze_shell_is "zsh"  && [ "${1[1]}"  = "/" ]); then
       if [ -d "$GIT_REPO_DIR$1" ]; then
         builtin cd "$GIT_REPO_DIR$1"
       fi
@@ -278,7 +278,7 @@ function _git_index_batch_cmd() {
 }
 
 
-if [ $shell = 'bash' ]; then
+if breeze_shell_is "bash"; then
 	# Bash tab completion function for git_index()
 	function _git_index_tab_completion() {
 		_check_git_index

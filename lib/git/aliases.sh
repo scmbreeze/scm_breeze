@@ -76,7 +76,7 @@ __git_alias () {
 
     alias $alias_str="$cmd_prefix $cmd${cmd_args:+ }${cmd_args[*]}"
     if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
-      if [ "$shell" = "bash" ]; then
+      if breeze_shell_is "bash"; then
         __define_git_completion "$alias_str" "$cmd"
         complete -o default -o nospace -F _git_"$alias_str"_shortcut "$alias_str"
       fi
@@ -179,11 +179,10 @@ if [ "$GIT_SETUP_ALIASES" = "yes" ]; then
   _alias "$git_pull_request_alias"        'gh pr'
 fi
 
-
-
+# TODO(ghthor): apply these same fixes for NixOS
 # Tab completion
 if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
-  if [ $shell = "bash" ]; then
+  if breeze_shell_is "bash"; then
     # Fix to preload Arch bash completion for git
     [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
     # new path in Ubuntu 13.04

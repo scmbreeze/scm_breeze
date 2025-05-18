@@ -335,7 +335,7 @@ test_git_commit_prompt() {
   assertIncludes "$git_show_output" "$commit_msg"
 
   # Test that history was appended correctly.
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     test_history="$(history)"
     # TODO(ghthor): zsh isn't working here
     # assertIncludes "$test_history" "git commit -m \"$dbl_escaped_msg\""
@@ -371,7 +371,7 @@ test_git_commit_prompt_with_append() {
   assertIncludes "$git_show_output" "$commit_msg \[ci skip\]"
 
   # Test that history was appended correctly.
-  if [[ $shell == "zsh" ]]; then
+  if breeze_shell_is "zsh"; then
     test_history="$(history)"
     # TODO(ghthor): zsh isn't working here
     # assertIncludes "$test_history" "$commit_msg \[ci skip\]"
