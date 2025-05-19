@@ -96,7 +96,7 @@ function _safe_eval() {
 }
 
 find_binary() {
-  if breeze_shell_is "bash"; then
+  if breeze_shell_is "zsh"; then
     builtin type -p "$1" | sed "s/$1 is //" | head -1
   else
     builtin type -P "$1"
