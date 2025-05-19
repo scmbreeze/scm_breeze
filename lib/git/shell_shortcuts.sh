@@ -98,13 +98,6 @@ fi
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby >/dev/null 2>&1; then
-  # BSD ls is different to Linux (GNU) ls
-  # Test for BSD ls
-  if ! (ls --version 2>/dev/null || echo "BSD") | grep GNU >/dev/null 2>&1; then
-    # ls is BSD
-    _ls_bsd="BSD"
-  fi
-
   # Test if readlink supports -f option, test for greadlink on Mac, then fallback to perl
   if \readlink -f / >/dev/null 2>&1; then
     _abs_path_command=(readlink -f)
@@ -117,6 +110,12 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby >/dev/nul
   unalias ll >/dev/null 2>&1
   unset -f ll >/dev/null 2>&1
   function ls_with_file_shortcuts {
+    # BSD ls is different to Linux (GNU) ls
+    if ! (\ls --version 2>/dev/null || echo "BSD") | grep GNU >/dev/null 2>&1; then
+      # ls is BSD
+      local _ls_bsd="BSD"
+    fi
+
     local ll_output
     local ll_command # Ensure sort ordering of the two invocations is the same
     if [ "$_ls_bsd" != "BSD" ]; then
@@ -124,7 +123,7 @@ if [ "$shell_ls_aliases_enabled" = "true" ] && builtin command -v ruby >/dev/nul
       ll_output="$("${ll_command[@]}" -l --color "$@")"
     else
       ll_command=(\ls)
-      ll_output="$(CLICOLOR_FORCE=1 "${ll_command[@]}" -lG "$@")"
+      ll_output="$("${ll_command[@]}" -lG --color=always "$@")"
     fi
 
     if breeze_shell_is "zsh"; then
@@ -215,7 +214,7 @@ EOF
     if [ -z $_ls_bsd ]; then
       ll_files="$(QUOTING_STYLE=literal "${ll_command[@]}" --color=never "$@")"
     else
-      ll_files="$("${ll_command[@]}" "$@")"
+      ll_files="$("${ll_command[@]}" --color=never "$@")"
     fi
 
     local IFS=$'\n'
