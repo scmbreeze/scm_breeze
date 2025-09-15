@@ -110,7 +110,7 @@ update_scm_breeze() {
   currDir=$PWD
   cd "$scmbDir"
   oldHEAD=$(git rev-parse HEAD 2> /dev/null)
-  git pull origin master
+  git pull origin main
   # Reload latest version of '_create_or_patch_scmbrc' function
   source "$scmbDir/lib/scm_breeze.sh"
   _create_or_patch_scmbrc $oldHEAD
