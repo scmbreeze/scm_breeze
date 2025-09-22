@@ -27,18 +27,52 @@ function _scmb_git_branch_shortcuts {
     line_count = output.lines.to_a.size
     output.lines.each_with_index do |line, i|
       spaces = (line_count > 9 && i < 9 ? "  " : " ")
-      puts line.sub(/^([ *]{2})/, "\\\1\033[2;37m[\033[0m#{i+1}\033[2;37m]\033[0m" << spaces)
+      puts line.sub(/^([ *+]{2})/, "\\\1\033[2;37m[\033[0m#{i+1}\033[2;37m]\033[0m" << spaces)
     end
 EOF
-  )"
+)"
 
   # Set numbered file shortcut in variable
   local e=1 IFS=$'\n'
-  for branch in $($_git_cmd branch "$@" | sed "s/^[* ]\{2\}//"); do
+  for branch in $($_git_cmd branch "$@" | sed "s/^[*+ ]\{2\}//"); do
     export $GIT_ENV_CHAR$e="$branch"
     if [ "${scmbDebug:-}" = "true" ]; then echo "Set \$$GIT_ENV_CHAR$e  => $file"; fi
     let e++
   done
+}
+
+function _scmb_git_checkout_shortcuts {
+  fail_if_not_git_repo || return 1
+
+  if [ -z "$1" ]; then
+    exec_scmb_expand_args $_git_cmd checkout
+    return $?
+  fi
+
+  if [[ "$1" =~ ^[0-9]+$ ]]; then
+    local branch_var="${git_env_char}$1"
+    local branch=$(eval echo "\$$branch_var")
+
+    if [ -n "$branch" ]; then
+      if $_git_cmd worktree list --porcelain 2>/dev/null | grep -q "^branch refs/heads/$branch$"; then
+        local worktree_path=$($_git_cmd worktree list --porcelain | awk "
+          /^worktree / {
+            path = substr(\$0, 10); next
+          }
+          /^branch refs\/heads\/$branch$/ {
+            print path; exit
+          }
+        ")
+        if [ -n "$worktree_path" ] && [ -d "$worktree_path" ]; then
+          echo "Switching to worktree: $worktree_path"
+          cd "$worktree_path"
+          return $?
+        fi
+      fi
+    fi
+  fi
+
+  exec_scmb_expand_args $_git_cmd checkout "$@"
 }
 
 __git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts" ""
