@@ -94,6 +94,7 @@ _alias "$exec_scmb_expand_args_alias" 'exec_scmb_expand_args'
 _alias "$git_show_files_alias"        'git_show_affected_files'
 _alias "$git_commit_all_alias"        'git_commit_all'
 _alias "$git_grep_shortcuts_alias"    'git_grep_shortcuts'
+_alias "$git_reset_last_commit"       'git_reset_last_commit'
 
 # Git Index alias
 _alias "$git_index_alias"             'git_index'
@@ -145,7 +146,6 @@ if [ "$GIT_SETUP_ALIASES" = "yes" ]; then
   __git_alias "$git_rebase_interactive_alias"       'git' 'rebase' '-i'
   __git_alias "$git_rebase_alias_continue"          'git' 'rebase' '--continue'
   __git_alias "$git_rebase_alias_abort"             'git' 'rebase' '--abort'
-  __git_alias "$git_reset_last_commit"              'git' 'reset HEAD~'
   __git_alias "$git_top_level_alias"                'git' 'rev-parse' '--show-toplevel'
   __git_alias "$git_merge_alias"                    'git' 'merge'
   __git_alias "$git_merge_no_fast_forward_alias"    'git' 'merge' '--no-ff'
