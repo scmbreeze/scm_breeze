@@ -217,8 +217,12 @@ theirs(){ _git_resolve_merge_conflict "their" "$@"; }
 git_commit_prompt() (
   local commit_msg
   local saved_commit_msg
-  if [ -f "/tmp/.git_commit_message~" ]; then
-    saved_commit_msg="$(cat /tmp/.git_commit_message~)"
+  # Use repo-specific commit message file in .git/ directory (follows git's naming convention)
+  local git_dir
+  git_dir="$(git rev-parse --git-dir 2>/dev/null)"
+  local commit_msg_file="${git_dir}/SCM_BREEZE_COMMIT_MSG"
+  if [ -f "$commit_msg_file" ]; then
+    saved_commit_msg="$(cat "$commit_msg_file")"
     echo -e "\033[0;36mLeave blank to use saved commit message: \033[0m$saved_commit_msg"
   fi
   if breeze_shell_is "zsh"; then
@@ -257,7 +261,7 @@ git_commit_prompt() (
   fi
 
   # Also save the commit message to a temp file in case git commit fails
-  echo "$commit_msg" >"/tmp/.git_commit_message~"
+  echo "$commit_msg" > "$commit_msg_file"
   eval $@ # run any prequisite commands
 
   echo "$commit_msg" | git commit -F - | tail -n +2
@@ -271,7 +275,7 @@ git_commit_prompt() (
   fi
   if [[ "$git_exit_status" == 0 ]]; then
     # Delete saved commit message if commit was successful
-    rm -f "/tmp/.git_commit_message~"
+    rm -f "$commit_msg_file"
   fi
 )
 
@@ -302,3 +306,15 @@ git_add_and_commit() (
     echo "# No staged changes to commit."
   fi
 )
+
+# Reset last commit and save its message for reuse
+git_reset_last_commit() {
+  fail_if_not_git_repo || return 1
+  local git_dir
+  git_dir="$(git rev-parse --git-dir 2>/dev/null)"
+  if [ -n "$git_dir" ]; then
+    # Save the current commit message before resetting
+    git log -1 --pretty=%B > "$git_dir/SCM_BREEZE_COMMIT_MSG"
+  fi
+  git reset HEAD~ "$@"
+}
