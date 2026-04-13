@@ -228,7 +228,7 @@ theirs(){ _git_resolve_merge_conflict "their" "$@"; }
 # * Execute prerequisite commands if message given, abort if not
 # * Pipe commit message to 'git commit'
 # * Add escaped commit command and unescaped message to bash history.
-git_commit_prompt() (
+git_commit_prompt() {
   local commit_msg
   local saved_commit_msg
   # Use repo-specific commit message file in .git/ directory (follows git's naming convention)
@@ -262,7 +262,7 @@ git_commit_prompt() (
 
   # Exclamation marks are really difficult to escape properly in a bash prompt.
   # They must always be enclosed with single quotes.
-  escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
+  local escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
   # Add command to bash history, so that if a git pre-commit hook fails,
   # you can just press "up" and "return" to retry the commit.
   if breeze_shell_is "zsh"; then
@@ -281,22 +281,23 @@ git_commit_prompt() (
   echo "$commit_msg" | git commit -F - | tail -n +2
 
   # Fetch the pipe status (for both bash and zsh):
-  GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
-  if breeze_shell_is "zsh"; then
-    git_exit_status="${GIT_PIPE_STATUS[2]}" # zsh array indexes start at 1
-  else
-    git_exit_status="${GIT_PIPE_STATUS[1]}"
-  fi
-  if [[ "$git_exit_status" == 0 ]]; then
-    # Delete saved commit message if commit was successful
-    rm -f "$commit_msg_file"
-  fi
-)
+    local GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
+    local git_exit_status
+    if breeze_shell_is "zsh"; then
+      git_exit_status="${GIT_PIPE_STATUS[2]}" # zsh array indexes start at 1
+    else
+      git_exit_status="${GIT_PIPE_STATUS[1]}"
+    fi
+    if [[ "$git_exit_status" == 0 ]]; then
+      # Delete saved commit message if commit was successful
+      rm -f "$commit_msg_file"
+    fi
+}
 
 # Prompt for commit message, then commit all modified and untracked files.
-git_commit_all() (
+git_commit_all() {
   fail_if_not_git_repo || return 1
-  changes=$(git status --porcelain | wc -l | tr -d ' ')
+  local changes=$(git status --porcelain | wc -l | tr -d ' ')
   if [ "$changes" -gt 0 ]; then
     if [ -n "$GIT_COMMIT_MSG_SUFFIX" ]; then
       local appending=" | \033[0;36mappending '\033[1;36m$GIT_COMMIT_MSG_SUFFIX\033[0;36m' to commit message.\033[0m"
@@ -306,20 +307,20 @@ git_commit_all() (
   else
     echo "# No changed files to commit."
   fi
-)
+}
 
 # Add paths or expanded args if any given, then commit all staged changes.
-git_add_and_commit() (
+git_add_and_commit() {
   fail_if_not_git_repo || return 1
   git_silent_add_shortcuts "$@"
-  changes=$(git diff --cached --numstat | wc -l)
+  local changes=$(git diff --cached --numstat | wc -l)
   if [ "$changes" -gt 0 ]; then
     git_status_shortcuts 1  # only show staged changes
     git_commit_prompt
   else
     echo "# No staged changes to commit."
   fi
-)
+}
 
 # Reset last commit and save its message for reuse
 git_reset_last_commit() {
