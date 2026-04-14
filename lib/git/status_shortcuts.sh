@@ -169,6 +169,10 @@ _print_path() {
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
+  # Fallback for _safe_eval if it is not defined (e.g. in some restricted environments)
+  if ! type _safe_eval >/dev/null 2>&1; then
+    _safe_eval() { eval $(token_quote "$@"); }
+  fi
   local args
   eval "args=$(scmb_expand_args "$@")"  # populate $args array
   _safe_eval "${args[@]}"
