@@ -1,5 +1,0 @@
-alias gf='
-  repo=$(basename "$(git rev-parse --show-toplevel)" .git)
-  git remote set-url origin git@github.com:johnyoonh/${repo}.git
-  echo "origin ➜ johnyoonh/${repo}"
-'

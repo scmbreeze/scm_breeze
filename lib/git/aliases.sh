@@ -25,7 +25,7 @@ if type hub > /dev/null 2>&1; then export _git_cmd="hub"; fi
 #if type gh  > /dev/null 2>&1; then export _git_cmd="gh"; fi
 
 # Create 'git' function that calls hub if defined, and expands all numeric arguments
-function git(){
+git(){
   # Only expand args for git commands that deal with paths or branches
   case $1 in
     commit|blame|add|log|rebase|merge|difftool|switch)

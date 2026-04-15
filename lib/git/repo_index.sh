@@ -50,7 +50,7 @@
 #     # => cd $GIT_REPO_DIR
 
 
-function git_index() {
+git_index() {
   local IFS=$'\n'
   if [ -z "$1" ]; then
     # Just change to $GIT_REPO_DIR if no params given.
@@ -123,7 +123,7 @@ _git_index_dirs_without_home() {
 }
 
 # Recursively searches for git repos in $GIT_REPO_DIR
-function _find_git_repos() {
+_find_git_repos() {
   # Find all unarchived projects
   local IFS=$'\n'
   for repo in $(find -L "$GIT_REPO_DIR" -maxdepth 3 -name ".git" -type d \! -wholename '*/archive/*'); do
@@ -133,7 +133,7 @@ function _find_git_repos() {
 }
 
 # List all submodules for a git repo, if any.
-function _find_git_submodules() {
+_find_git_submodules() {
   if [ -e "$1/../.gitmodules" ]; then
     \grep "\[submodule" "$1/../.gitmodules" | sed "s%\[submodule \"%${1%/.git}/%g" | sed "s/\"]//g"
   fi
@@ -141,7 +141,7 @@ function _find_git_submodules() {
 
 
 # Rebuilds index of git repos in $GIT_REPO_DIR.
-function _rebuild_git_index() {
+_rebuild_git_index() {
   if [ "$1" != "--silent" ]; then echo -e "== Scanning $GIT_REPO_DIR for git repos & submodules..."; fi
   # Get repos from src dir and custom dirs, then sort by basename
   local IFS=$'\n'
@@ -155,27 +155,27 @@ function _rebuild_git_index() {
 }
 
 # Build index if empty
-function _check_git_index() {
+_check_git_index() {
   if [ ! -f "$GIT_REPO_DIR/.git_index" ]; then
     _rebuild_git_index --silent
   fi
 }
 
 # Produces a count of repos in the tab completion index (excluding commands)
-function _git_index_count() {
+_git_index_count() {
   echo $(sed -e "s/--.*//" "$GIT_REPO_DIR/.git_index" | \grep . | wc -l)
 }
 
 # Returns the current $GIT_BINARY branch (returns nothing if not a git repository)
-function is_git_dirty {
+is_git_dirty() {
     [[ $($GIT_BINARY status 2> /dev/null | tail -n1) != "nothing to commit (working directory clean)" ]] && echo "*"
  }
-function parse_git_branch {
+parse_git_branch() {
     git rev-parse --abbrev-ref HEAD 2> /dev/null
 }
 
 # If the working directory is clean, update the git repository. Otherwise, show changes.
-function _git_index_status_if_dirty() {
+_git_index_status_if_dirty() {
   if ! [ `git status --porcelain | wc -l` -eq 0 ]; then
     # Fall back to 'git status' if git status alias isn't configured
     if type $GIT_STATUS_COMMAND 2>&1 | \grep -qv "not found"; then
@@ -254,14 +254,14 @@ _git_index_update_all_branches() {
 # Updates all git repositories with clean working directories.
 # Use the following cron configuration:
 # */10 * * * * /bin/bash -c '. $HOME/.bashrc && git_index --rebuild && git_index --update-all'
-function _git_index_update_all() {
+_git_index_update_all() {
   echo -e "== Safely updating all local branches in $_bld_col$(_git_index_count)$_txt_col repos...\n"
   _git_index_batch_cmd _git_index_update_all_branches
 }
 
 
 # Runs a command for all git repos
-function _git_index_batch_cmd() {
+_git_index_batch_cmd() {
   cwd="$PWD"
   if [ -n "$1" ]; then
     echo -e "== Running command for $_bld_col$(_git_index_count)$_txt_col repos...\n"
@@ -280,7 +280,7 @@ function _git_index_batch_cmd() {
 
 if breeze_shell_is "bash"; then
 	# Bash tab completion function for git_index()
-	function _git_index_tab_completion() {
+	_git_index_tab_completion() {
 		_check_git_index
 		local curw IFS=$'\n'
 		COMPREPLY=()
@@ -312,7 +312,7 @@ if breeze_shell_is "bash"; then
 		return 0
 	}
 else  # Zsh tab completion function for git_index()
-	function _git_index_tab_completion() {
+	_git_index_tab_completion() {
 		typeset -A opt_args
 		local state state_descr context line
 

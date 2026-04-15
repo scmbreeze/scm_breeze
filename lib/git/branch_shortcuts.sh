@@ -11,7 +11,7 @@
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
-function _scmb_git_branch_shortcuts {
+_scmb_git_branch_shortcuts() {
   fail_if_not_git_repo || return 1
 
   # Fall back to normal git branch, if any unknown args given
