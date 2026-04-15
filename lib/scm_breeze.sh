@@ -99,7 +99,7 @@ find_binary() {
   if breeze_shell_is "bash"; then
     builtin type -p "$1" | sed "s/$1 is //" | head -1
   else
-    builtin type -P "$1"
+    builtin type -p "$1"
   fi
 }
 
