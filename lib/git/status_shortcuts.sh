@@ -169,6 +169,13 @@ _print_path() {
 # Execute a command with expanded args, e.g. Delete files 6 to 12: $ ge rm 6-12
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
+  local required_fn
+  for required_fn in _safe_eval token_quote breeze_shell_is; do
+    if ! type "$required_fn" >/dev/null 2>&1; then
+      echo "SCM Breeze error: required function '$required_fn' is not loaded; ensure lib/scm_breeze.sh has been sourced." >&2
+      return 1
+    fi
+  done
   local args
   eval "args=$(scmb_expand_args "$@")"  # populate $args array
   _safe_eval "${args[@]}"

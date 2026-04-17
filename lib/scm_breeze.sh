@@ -54,7 +54,7 @@ _alias() {
 }
 
 # Quote the contents of "$@"
-function token_quote {
+token_quote() {
     # Older versions of {ba,z}sh don't support the built-in quoting, so fall back to printf %q
   local quoted
   quoted=()  # Assign separately for zsh 5.0.2 of Ubuntu 14.04
@@ -79,7 +79,7 @@ function token_quote {
 # Quote "$@" before `eval` to prevent arbitrary code execution.
 # Eg, the following will run `date`:
 # evil() { eval "$@"; }; evil "echo" "foo;date"
-function _safe_eval() {
+_safe_eval() {
   eval $(token_quote "$@")
 
   # Keep this code for use when minimum versions of {ba,z}sh can be increased.
@@ -99,7 +99,7 @@ find_binary() {
   if breeze_shell_is "bash"; then
     builtin type -p "$1" | sed "s/$1 is //" | head -1
   else
-    builtin type -P "$1"
+    builtin type -p "$1" | sed "s/$1 is //" | head -1
   fi
 }
 
