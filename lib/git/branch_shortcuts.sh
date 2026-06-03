@@ -49,25 +49,25 @@ function _scmb_git_checkout_shortcuts {
     return $?
   fi
 
+  # If only branch then check if it's a worktree
   if [[ "$1" =~ ^[0-9]+$ ]]; then
     local branch_var="${git_env_char}$1"
-    local branch=$(eval echo "\$$branch_var")
+    local branch=$(exec_scmb_expand_args echo "${branch_var}")
 
     if [ -n "$branch" ]; then
-      if $_git_cmd worktree list --porcelain 2>/dev/null | grep -q "^branch refs/heads/$branch$"; then
-        local worktree_path=$($_git_cmd worktree list --porcelain | awk "
-          /^worktree / {
-            path = substr(\$0, 10); next
-          }
-          /^branch refs\/heads\/$branch$/ {
-            print path; exit
-          }
-        ")
-        if [ -n "$worktree_path" ] && [ -d "$worktree_path" ]; then
-          echo "Switching to worktree: $worktree_path"
-          cd "$worktree_path"
-          return $?
-        fi
+      local worktree_path=$($_git_cmd worktree list --porcelain 2>/dev/null | awk -v target_branch="$branch" '
+        /^worktree / { path = substr($0, 10); next }
+        /^branch / {
+          ref = substr($0, 8)
+          sub(/^refs\/heads\//, "", ref)
+          if (ref == target_branch) { print path; exit }
+        }
+      ')
+
+      if [ -n "$worktree_path" ] && [ -d "$worktree_path" ]; then
+        echo "Switching to worktree: $worktree_path"
+        cd "$worktree_path"
+        return $?
       fi
     fi
   fi
