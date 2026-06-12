@@ -110,6 +110,8 @@ git_apply_alias="gapp"
 git_switch_alias="gsw"
 git_restore_alias="grt"
 git_worktree_alias="gwt"
+git_worktree_add_alias="gwta"
+git_worktree_remove_alias="gwtr"
 # Hub aliases (https://github.com/github/hub)
 git_pull_request_alias="gpr"
 
