@@ -184,8 +184,8 @@ _print_path() {
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
   local args
-  eval "args=$(scmb_expand_args "$@")" # populate $args array
-  _safe_eval "${args[@]}"
+  eval "args=$(scmb_expand_args "$@")"  # populate $args array
+  __safe_eval "${args[@]}"
 }
 
 # Clear numbered env variables
