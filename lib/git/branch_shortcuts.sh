@@ -50,7 +50,7 @@ function _scmb_git_checkout_shortcuts {
   fi
 
   if [[ "$1" =~ ^[0-9]+$ ]]; then
-    local branch_var="${git_env_char}$1"
+    local branch_var="${GIT_ENV_CHAR}$1"
     local branch=$(eval echo "\$$branch_var")
 
     if [ -n "$branch" ]; then
