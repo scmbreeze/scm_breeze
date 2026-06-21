@@ -128,8 +128,21 @@ scmb_expand_args() {
 
   local args
   args=()  # initially empty array. zsh 5.0.2 from Ubuntu 14.04 requires this to be separated
+  local prev_arg=""
   for arg in "$@"; do
-    if [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
+    # Skip expansion if previous arg was a flag expecting an integer value.
+    # Without this, "git log -n 30" would try to expand "30" to "$e30" (a file shortcut),
+    # which fails with "fatal: '': not an integer" when $e30 is empty.
+    local skip_expand=0
+    if [[ "$prev_arg" =~ ^-[nCAB]$ ]] || \
+       [[ "$prev_arg" =~ ^--(max-count|skip|depth)$ ]]; then
+      skip_expand=1
+    fi
+
+    if [[ $skip_expand -eq 1 ]]; then
+      # Don't expand - this is an integer argument for a flag
+      args+=("$arg")
+    elif [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
       if [ -e "$arg" ]; then
         # Don't expand files or directories with numeric names
         args+=("$arg")
@@ -143,6 +156,7 @@ scmb_expand_args() {
     else   # Otherwise, treat $arg as a normal string.
       args+=("$arg")
     fi
+    prev_arg="$arg"
   done
 
   # "declare -p" with zsh 5.0.2 on Ubuntu 14.04 creates a string that it cannot process:

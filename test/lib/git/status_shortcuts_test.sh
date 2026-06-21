@@ -86,6 +86,36 @@ test_scmb_expand_args() {
       eval args="$(scmb_expand_args 7 1-1 8)"
       token_quote "${args[@]}"
     )"
+  assertEquals "$error" '-n 1 three six' \
+    "$(
+      eval args="$(scmb_expand_args -n 1 3 6)"
+      token_quote "${args[@]}"
+    )"
+  assertEquals "$error" '-n1 three six' \
+    "$(
+      eval args="$(scmb_expand_args -n1 3 6)"
+      token_quote "${args[@]}"
+    )"
+  assertEquals "$error" 'one -n 3 six' \
+    "$(
+      eval args="$(scmb_expand_args 1 -n 3 6)"
+      token_quote "${args[@]}"
+    )"
+  assertEquals "$error" 'one -n3 six' \
+    "$(
+      eval args="$(scmb_expand_args 1 -n3 6)"
+      token_quote "${args[@]}"
+    )"
+  assertEquals "$error" 'one three -n 6' \
+    "$(
+      eval args="$(scmb_expand_args 1 3 -n 6)"
+      token_quote "${args[@]}"
+    )"
+  assertEquals "$error" 'one three -n6' \
+    "$(
+      eval args="$(scmb_expand_args 1 3 -n6)"
+      token_quote "${args[@]}"
+    )"
 
   # Keep this code for use when minimum versions of {ba,z}sh can be increased.
   # See token_quote() source and https://github.com/scmbreeze/scm_breeze/issues/260
