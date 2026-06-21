@@ -8,7 +8,6 @@
 # Numbered file shortcuts for git commands
 # ------------------------------------------------------------------------------
 
-
 # Processes 'git status --porcelain', and exports numbered
 # env variables that contain the path of each affected file.
 # Output is also more concise than standard 'git status'.
@@ -55,8 +54,6 @@ git_status_shortcuts() {
   zsh_reset # Reset zsh environment to default
 }
 
-
-
 # 'git add' & 'git rm' wrapper
 # This shortcut means 'stage the change to the file'
 # i.e. It will add new and changed files, and remove deleted files.
@@ -85,7 +82,7 @@ git_silent_add_shortcuts() {
   if [ -n "$1" ]; then
     # Expand args and process resulting set of files.
     local args
-    eval args="$(scmb_expand_args "$@")"  # populate $args array
+    eval args="$(scmb_expand_args "$@")" # populate $args array
     for file in "${args[@]}"; do
       # Use 'git rm' if file doesn't exist and GA_AUTO_REMOVE is enabled.
       if [[ $GA_AUTO_REMOVE = yes && ! -e $file ]]; then
@@ -102,16 +99,19 @@ git_silent_add_shortcuts() {
 
 # Prints a list of all files affected by a given SHA1,
 # and exports numbered environment variables for each file.
-git_show_affected_files(){
+git_show_affected_files() {
   fail_if_not_git_repo || return 1
-  local f=0  # File count
+  local f=0 # File count
   # Show colored revision and commit message
-  echo -n "# "; git show --oneline --name-only "$@" | head -n1; echo "# "
+  echo -n "# "
+  git show --oneline --name-only "$@" | head -n1
+  echo "# "
   for file in $(git show --pretty="format:" --name-only "$@" | \grep -v '^$'); do
     let f++
-    export $GIT_ENV_CHAR$f=$file     # Export numbered variable.
+    export $GIT_ENV_CHAR$f=$file # Export numbered variable.
     echo -e "#     \033[2;37m[\033[0m$f\033[2;37m]\033[0m $file"
-  done; echo "# "
+  done
+  echo "# "
 }
 
 # Allows expansion of numbered shortcuts, ranges of shortcuts, or standard paths.
@@ -127,33 +127,33 @@ scmb_expand_args() {
   fi
 
   local args
-  args=()  # initially empty array. zsh 5.0.2 from Ubuntu 14.04 requires this to be separated
+  args=() # initially empty array. zsh 5.0.2 from Ubuntu 14.04 requires this to be separated
   local prev_arg=""
   for arg in "$@"; do
     # Skip expansion if previous arg was a flag expecting an integer value.
     # Without this, "git log -n 30" would try to expand "30" to "$e30" (a file shortcut),
     # which fails with "fatal: '': not an integer" when $e30 is empty.
     local skip_expand=0
-    if [[ "$prev_arg" =~ ^-[nCAB]$ ]] || \
-       [[ "$prev_arg" =~ ^--(max-count|skip|depth)$ ]]; then
+    if [[ "$prev_arg" =~ ^-[nCAB]$ ]] ||
+      [[ "$prev_arg" =~ ^--(max-count|skip|depth)$ ]]; then
       skip_expand=1
     fi
 
     if [[ $skip_expand -eq 1 ]]; then
       # Don't expand - this is an integer argument for a flag
       args+=("$arg")
-    elif [[ "$arg" =~ ^[0-9]{0,4}$ ]] ; then      # Substitute $e{*} variables for any integers
+    elif [[ "$arg" =~ ^[0-9]{0,4}$ ]]; then # Substitute $e{*} variables for any integers
       if [ -e "$arg" ]; then
         # Don't expand files or directories with numeric names
         args+=("$arg")
       else
         args+=("$(_print_path "$relative" "$GIT_ENV_CHAR$arg")")
       fi
-    elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then           # Expand ranges into $e{*} variables
+    elif [[ "$arg" =~ ^[0-9]+-[0-9]+$ ]]; then # Expand ranges into $e{*} variables
       for i in $(eval echo {${arg/-/..}}); do
         args+=("$(_print_path "$relative" "$GIT_ENV_CHAR$i")")
       done
-    else   # Otherwise, treat $arg as a normal string.
+    else # Otherwise, treat $arg as a normal string.
       args+=("$arg")
     fi
     prev_arg="$arg"
@@ -184,14 +184,14 @@ _print_path() {
 # Fails if command is a number or range (probably not worth fixing)
 exec_scmb_expand_args() {
   local args
-  eval "args=$(scmb_expand_args "$@")"  # populate $args array
+  eval "args=$(scmb_expand_args "$@")" # populate $args array
   _safe_eval "${args[@]}"
 }
 
 # Clear numbered env variables
 git_clear_vars() {
   local i
-  for (( i=1; i<=$GS_MAX_CHANGES; i++ )); do
+  for ((i = 1; i <= $GS_MAX_CHANGES; i++)); do
     # Stop clearing after first empty var
     local env_var_i=${GIT_ENV_CHAR}${i}
     if [[ -z "$(eval echo "\${$env_var_i:-}")" ]]; then
@@ -202,24 +202,22 @@ git_clear_vars() {
   done
 }
 
-
 # Shortcuts for resolving merge conflicts.
 _git_resolve_merge_conflict() {
   if [ -n "$2" ]; then
     # Expand args and process resulting set of files.
     local args
-    eval "args=$(scmb_expand_args "$@")"  # populate $args array
+    eval "args=$(scmb_expand_args "$@")" # populate $args array
     for file in "${args[@]:2}"; do
-      git checkout "--$1""s" "$file"   # "--$1""s" is expanded to --ours or --theirs
+      git checkout "--$1""s" "$file" # "--$1""s" is expanded to --ours or --theirs
       git add "$file"
       echo -e "# Added $1 version of '$file'"
     done
     echo -e "# -- If you have finished resolving conflicts, commit the resolutions with 'git commit'"
   fi
 }
-ours(){   _git_resolve_merge_conflict "our" "$@"; }
-theirs(){ _git_resolve_merge_conflict "their" "$@"; }
-
+ours() { _git_resolve_merge_conflict "our" "$@"; }
+theirs() { _git_resolve_merge_conflict "their" "$@"; }
 
 # Git commit prompts
 # ------------------------------------------------------------------------------
@@ -228,7 +226,7 @@ theirs(){ _git_resolve_merge_conflict "their" "$@"; }
 # * Execute prerequisite commands if message given, abort if not
 # * Pipe commit message to 'git commit'
 # * Add escaped commit command and unescaped message to bash history.
-git_commit_prompt() (
+git_commit_prompt() {
   local commit_msg
   local saved_commit_msg
   # Use repo-specific commit message file in .git/ directory (follows git's naming convention)
@@ -262,7 +260,7 @@ git_commit_prompt() (
 
   # Exclamation marks are really difficult to escape properly in a bash prompt.
   # They must always be enclosed with single quotes.
-  escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
+  local escaped_msg=$(echo "$commit_msg" | sed -e 's/"/\\"/g' -e "s/!/\"'!'\"/g")
   # Add command to bash history, so that if a git pre-commit hook fails,
   # you can just press "up" and "return" to retry the commit.
   if breeze_shell_is "zsh"; then
@@ -275,13 +273,14 @@ git_commit_prompt() (
   fi
 
   # Also save the commit message to a temp file in case git commit fails
-  echo "$commit_msg" > "$commit_msg_file"
+  echo "$commit_msg" >"$commit_msg_file"
   eval $@ # run any prequisite commands
 
   echo "$commit_msg" | git commit -F - | tail -n +2
 
   # Fetch the pipe status (for both bash and zsh):
-  GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
+  local GIT_PIPE_STATUS=("${PIPESTATUS[@]}${pipestatus[@]}")
+  local git_exit_status
   if breeze_shell_is "zsh"; then
     git_exit_status="${GIT_PIPE_STATUS[2]}" # zsh array indexes start at 1
   else
@@ -291,12 +290,12 @@ git_commit_prompt() (
     # Delete saved commit message if commit was successful
     rm -f "$commit_msg_file"
   fi
-)
+}
 
 # Prompt for commit message, then commit all modified and untracked files.
-git_commit_all() (
+git_commit_all() {
   fail_if_not_git_repo || return 1
-  changes=$(git status --porcelain | wc -l | tr -d ' ')
+  local changes=$(git status --porcelain | wc -l | tr -d ' ')
   if [ "$changes" -gt 0 ]; then
     if [ -n "$GIT_COMMIT_MSG_SUFFIX" ]; then
       local appending=" | \033[0;36mappending '\033[1;36m$GIT_COMMIT_MSG_SUFFIX\033[0;36m' to commit message.\033[0m"
@@ -306,20 +305,20 @@ git_commit_all() (
   else
     echo "# No changed files to commit."
   fi
-)
+}
 
 # Add paths or expanded args if any given, then commit all staged changes.
-git_add_and_commit() (
+git_add_and_commit() {
   fail_if_not_git_repo || return 1
   git_silent_add_shortcuts "$@"
-  changes=$(git diff --cached --numstat | wc -l)
+  local changes=$(git diff --cached --numstat | wc -l)
   if [ "$changes" -gt 0 ]; then
-    git_status_shortcuts 1  # only show staged changes
+    git_status_shortcuts 1 # only show staged changes
     git_commit_prompt
   else
     echo "# No staged changes to commit."
   fi
-)
+}
 
 # Reset last commit and save its message for reuse
 git_reset_last_commit() {
@@ -328,7 +327,9 @@ git_reset_last_commit() {
   git_dir="$(git rev-parse --git-dir 2>/dev/null)"
   if [ -n "$git_dir" ]; then
     # Save the current commit message before resetting
-    git log -1 --pretty=%B > "$git_dir/SCM_BREEZE_COMMIT_MSG"
+    git log -1 --pretty=%B >"$git_dir/SCM_BREEZE_COMMIT_MSG"
   fi
   git reset HEAD~ "$@"
 }
+
+# vim: set filetype=bash :
