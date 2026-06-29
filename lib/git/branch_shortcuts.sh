@@ -72,7 +72,7 @@ function __scmb_git_checkout_shortcuts {
     fi
   fi
 
-  exec_scmb_expand_args $_git_cmd checkout "$@"
+  _safe_eval "$_git_cmd" checkout "${args[@]}"
 }
 
 __git_alias "$git_branch_alias"              "__scmb_git_branch_shortcuts" ""
