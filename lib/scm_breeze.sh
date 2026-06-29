@@ -79,7 +79,7 @@ function token_quote {
 # Quote "$@" before `eval` to prevent arbitrary code execution.
 # Eg, the following will run `date`:
 # evil() { eval "$@"; }; evil "echo" "foo;date"
-function _safe_eval() {
+function __safe_eval() {
   eval $(token_quote "$@")
 
   # Keep this code for use when minimum versions of {ba,z}sh can be increased.

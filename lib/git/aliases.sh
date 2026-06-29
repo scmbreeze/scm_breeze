@@ -31,11 +31,11 @@ function git(){
     commit|blame|add|log|rebase|merge|difftool|switch)
       exec_scmb_expand_args "$_git_cmd" "$@";;
     checkout)
-      _scmb_git_checkout_shortcuts "${@:2}";;
+      __scmb_git_checkout_shortcuts "${@:2}";;
     diff|rm|reset|restore)
       exec_scmb_expand_args --relative "$_git_cmd" "$@";;
     branch)
-      _scmb_git_branch_shortcuts "${@:2}";;
+      __scmb_git_branch_shortcuts "${@:2}";;
     *)
       "$_git_cmd" "$@";;
   esac

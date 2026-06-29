@@ -11,7 +11,7 @@
 # Function wrapper around 'll'
 # Adds numbered shortcuts to output of ls -l, just like 'git status'
 unalias $git_branch_alias > /dev/null 2>&1; unset -f $git_branch_alias > /dev/null 2>&1
-function _scmb_git_branch_shortcuts {
+function __scmb_git_branch_shortcuts {
   fail_if_not_git_repo || return 1
 
   # Fall back to normal git branch, if any unknown args given
@@ -41,7 +41,7 @@ EOF
   done
 }
 
-function _scmb_git_checkout_shortcuts {
+function __scmb_git_checkout_shortcuts {
   fail_if_not_git_repo || return 1
 
   if [ -z "$1" ]; then
@@ -75,11 +75,11 @@ function _scmb_git_checkout_shortcuts {
   exec_scmb_expand_args $_git_cmd checkout "$@"
 }
 
-__git_alias "$git_branch_alias"              "_scmb_git_branch_shortcuts" ""
-__git_alias "$git_branch_all_alias"          "_scmb_git_branch_shortcuts" "-a"
-__git_alias "$git_branch_move_alias"         "_scmb_git_branch_shortcuts" "-m"
-__git_alias "$git_branch_delete_alias"       "_scmb_git_branch_shortcuts" "-d"
-__git_alias "$git_branch_delete_force_alias" "_scmb_git_branch_shortcuts" "-D"
+__git_alias "$git_branch_alias"              "__scmb_git_branch_shortcuts" ""
+__git_alias "$git_branch_all_alias"          "__scmb_git_branch_shortcuts" "-a"
+__git_alias "$git_branch_move_alias"         "__scmb_git_branch_shortcuts" "-m"
+__git_alias "$git_branch_delete_alias"       "__scmb_git_branch_shortcuts" "-d"
+__git_alias "$git_branch_delete_force_alias" "__scmb_git_branch_shortcuts" "-D"
 
 # Define completions for git branch shortcuts
 if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
