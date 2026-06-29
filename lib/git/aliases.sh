@@ -163,6 +163,9 @@ if [ "$GIT_SETUP_ALIASES" = "yes" ]; then
   __git_alias "$git_whatchanged_alias"              'git' 'whatchanged'
   __git_alias "$git_apply_alias"                    'git' 'apply'
   __git_alias "$git_switch_alias"                   'git' 'switch'
+  __git_alias "$git_worktree_alias"                 'git' 'worktree'
+  __git_alias "$git_worktree_add_alias"             'git' 'worktree' 'add'
+  __git_alias "$git_worktree_remove_alias"          'git' 'worktree' 'remove'
 
   # Compound/complex commands
   _alias "$git_fetch_all_alias"           'git fetch --all'
