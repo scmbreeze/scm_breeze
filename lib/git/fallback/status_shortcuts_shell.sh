@@ -31,7 +31,7 @@ git_status_shortcuts() {
     if [ -d .git ]; then
       local project_root="$PWD"
     else
-      local project_root=$(git rev-parse --git-dir 2> /dev/null | sed "s%/\.git$%%g")
+      local project_root=$(git rev-parse --show-toplevel 2> /dev/null)
     fi
 
     # Colors
