@@ -23,11 +23,84 @@ function _scmb_git_branch_shortcuts {
   # Use ruby to inject numbers into git branch output
   ruby -e "$(
     cat <<EOF
+    def build_worktree_to_branch_map(git_cmd)
+      worktree_map = {}
+      worktree_output = %x(#{git_cmd} worktree list --porcelain 2>/dev/null)
+      current_worktree = nil
+      worktree_output.lines.each do |line|
+        if line.start_with?('worktree ')
+          current_worktree = line[9..-1].strip
+        elsif line.start_with?('branch refs/heads/') && current_worktree
+          branch_name = line[18..-1].strip
+          worktree_map[branch_name] = current_worktree
+          current_worktree = nil
+        end
+      end
+      worktree_map
+    end
+
+    def extract_branch_name(line)
+      line.strip.gsub(/^\*\s+|^\+\s+|\s+/, '').gsub(/\e\[[0-9;]*m/, '')
+    end
+
+    def strip_ansi_codes(str)
+      str.gsub(/\e\[[0-9;]*m/, '')
+    end
+
+    def find_current_branch(output)
+      output.lines.each do |line|
+        return extract_branch_name(line) if line.start_with?('* ')
+      end
+      nil
+    end
+
+    def calculate_max_branch_width(output, line_count, current_branch, worktree_map)
+      max_width = 0
+      output.lines.each_with_index do |line, i|
+        branch_name = extract_branch_name(line)
+
+        if worktree_map[branch_name] && branch_name != current_branch
+          # Add extra space for single-digit numbers when we have 10+ branches
+          number_spacing = (line_count > 9 && i < 9) ? '  ' : ' '
+          numbered_line = line.sub(/^([ *+]{2})/, "\\\1\033[2;37m[\033[0m#{i+1}\033[2;37m]\033[0m" << number_spacing)
+          width = strip_ansi_codes(numbered_line.chomp).length
+          max_width = width if width > max_width
+        end
+      end
+      max_width
+    end
+
+    def format_branch_line(line, index, line_count, branch_name, current_branch, worktree_map, max_width, show_worktrees)
+      # Add extra space for single-digit numbers when we have 10+ branches
+      number_spacing = (line_count > 9 && index < 9) ? '  ' : ' '
+
+      # Insert branch number after the leading marker (* or +)
+      formatted = line.sub(/^([ *+]{2})/, "\\\1\033[2;37m[\033[0m#{index+1}\033[2;37m]\033[0m" << number_spacing)
+
+      # Append worktree path if we have multiple worktrees and this isn't the current branch
+      if show_worktrees && worktree_map[branch_name] && branch_name != current_branch
+        current_width = strip_ansi_codes(formatted.chomp).length
+        padding = ' ' * (max_width - current_width)
+        formatted = formatted.chomp + padding + " \033[2;37m(#{worktree_map[branch_name]})\033[0m\n"
+      end
+
+      formatted
+    end
+
     output = %x($_git_cmd branch --color=always $(token_quote "$@"))
+    worktree_map = build_worktree_to_branch_map('$_git_cmd')
     line_count = output.lines.to_a.size
+    current_branch = find_current_branch(output)
+
+    show_worktrees = worktree_map.size > 1
+
+    # Align the parenthesis in worktree output
+    max_width = show_worktrees ? calculate_max_branch_width(output, line_count, current_branch, worktree_map) : 0
+
     output.lines.each_with_index do |line, i|
-      spaces = (line_count > 9 && i < 9 ? "  " : " ")
-      puts line.sub(/^([ *+]{2})/, "\\\1\033[2;37m[\033[0m#{i+1}\033[2;37m]\033[0m" << spaces)
+      branch_name = extract_branch_name(line)
+      formatted_line = format_branch_line(line, i, line_count, branch_name, current_branch, worktree_map, max_width, show_worktrees)
+      puts formatted_line
     end
 EOF
 )"
