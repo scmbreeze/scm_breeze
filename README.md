@@ -13,6 +13,7 @@ features.
 
 - [SCM Breeze](#scm-breeze)
   - [Installation](#installation)
+  - [Docker sandbox](#docker-sandbox)
     - [File Shortcuts](#file-shortcuts)
       - [Git Status Shortcuts:](#git-status-shortcuts)
       - ['ls' shortcuts:](#ls-shortcuts)
@@ -49,6 +50,27 @@ to your `.bashrc` or `.zshrc`:
 `[ -s "$HOME/.scm_breeze/scm_breeze.sh" ] && source "$HOME/.scm_breeze/scm_breeze.sh"`
 
 **Note:** You need to install ruby for some SCM Breeze commands to work. This also improves performance. See [ruby-lang.org](https://www.ruby-lang.org/en/documentation/installation/) for installation information.
+
+## Docker sandbox
+
+A small Docker setup is included under `docker/` for trying SCM Breeze in an
+isolated environment, with no impact on your host shell config. Useful for
+testing changes or kicking the tires before installing.
+
+Build and run from the repo root:
+
+```bash
+docker build -t scm_breeze-sandbox docker/
+docker run --rm -it -v "$PWD:/workspace" scm_breeze-sandbox
+```
+
+Inside the container:
+
+- `/workspace` is the bind-mounted repo (host edits are live)
+- `~/sandbox-repo` is a throwaway git repo pre-populated with staged,
+  unstaged, and untracked changes for experimentation
+- Run the test suite with `cd /workspace && ./run_tests.sh`
+- Run `zsh` to try SCM Breeze under zsh
 
 ### File Shortcuts
 

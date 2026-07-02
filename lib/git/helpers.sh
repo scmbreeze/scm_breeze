@@ -8,6 +8,11 @@ function fail_if_not_git_repo() {
   return 0
 }
 
+# True when $1 is a non-empty, non-flag argument (a plain branch/worktree name).
+function __scmb_is_plain_name() {
+  [ -n "$1" ] && [ "${1#-}" = "$1" ]
+}
+
 bin_path() {
   if [[ -n ${ZSH_VERSION:-} ]];
     then builtin whence -cp "$1" 2> /dev/null

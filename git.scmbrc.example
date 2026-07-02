@@ -109,6 +109,15 @@ git_whatchanged_alias="gwc"
 git_apply_alias="gapp"
 git_switch_alias="gsw"
 git_restore_alias="grt"
+git_worktree_alias="gwt"
+# Controls where `gwt add <name>` places the new worktree.
+#   ""           (default) - pass through to native `git worktree add`
+#   "sibling"              - create "<repo-basename>-<name>" next to the repo
+#   "/some/dir"            - create "/some/dir/<repo-basename>-<name>"
+# In all non-empty modes the new branch is named <name>.
+git_worktree_directory=""
+git_worktree_add_alias="gwta"
+git_worktree_remove_alias="gwtr"
 # Hub aliases (https://github.com/github/hub)
 git_pull_request_alias="gpr"
 
