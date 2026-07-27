@@ -187,7 +187,6 @@ if [ "$GIT_SETUP_ALIASES" = "yes" ]; then
   _alias "$git_pull_request_alias"        'gh pr'
 fi
 
-# TODO(ghthor): apply these same fixes for NixOS
 # Tab completion
 if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
   if breeze_shell_is "bash"; then
@@ -195,6 +194,8 @@ if [ "$GIT_SKIP_SHELL_COMPLETION" != "yes" ]; then
     [[ -s "/usr/share/git/completion/git-completion.bash" ]] && source "/usr/share/git/completion/git-completion.bash"
     # new path in Ubuntu 13.04
     [[ -s "/usr/share/bash-completion/completions/git" ]] && source "/usr/share/bash-completion/completions/git"
+    # NixOS / nix-managed bash-completion uses lazy loading; force-load git completion now
+    type _completion_loader &>/dev/null && _completion_loader git
     complete -o default -o nospace -F __git_wrap__git_main $git_alias
 
     # Git repo management & aliases.
