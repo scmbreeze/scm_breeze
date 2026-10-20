@@ -437,5 +437,22 @@ test_adding_files_with_spaces() {
   assertIncludes "$git_status" "new file: \[1\] \"$test_file"
 }
 
+test_git_status_shortcuts_intent_to_add_new_file() {
+  setupTestRepo
+
+  touch new_file
+  git add -N new_file
+
+  git_status=$(git_status_shortcuts 3 | strip_colors)
+
+  assertIncludes "$git_status" "Changes not staged for commit" || return
+  assertIncludes "$git_status" "new file: .*new_file" || return
+  assertNotIncludes "$git_status" "Changes to be committed" || return
+  assertNotIncludes "$git_status" "Untracked files" || return
+
+  git_status_shortcuts >/dev/null
+  assertEquals "Env variable was not set" "$testRepo/new_file" "$e1" || return
+}
+
 # load and run shUnit2
 source "$scmbDir/test/support/shunit2"

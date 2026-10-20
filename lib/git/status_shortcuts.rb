@@ -139,6 +139,8 @@ end
     @stat_hash[:unstaged] << {:msg => "   deleted", :col => :del, :file => file}
   elsif y == "T"
     @stat_hash[:unstaged] << {:msg => "typechange", :col => :typ, :file => file}
+  elsif x == " " && y == "A"
+    @stat_hash[:unstaged] << {:msg => "  new file", :col => :typ, :file => file}
   end
 end
 
