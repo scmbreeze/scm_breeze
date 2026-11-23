@@ -218,9 +218,17 @@ EOF
     fi
 
     local IFS=$'\n'
+    local shortcut_path
     for file in $ll_files; do
       file=$rel_path/$file
-      export $GIT_ENV_CHAR$e=$("${_abs_path_command[@]}" "$file")
+      if [[ -L $file ]]; then
+        # Resolve the containing directory, not the link shown in the listing.
+        shortcut_path=$("${_abs_path_command[@]}" "${file%/*}")
+        shortcut_path=${shortcut_path%/}/${file##*/}
+      else
+        shortcut_path=$("${_abs_path_command[@]}" "$file")
+      fi
+      export "$GIT_ENV_CHAR$e=$shortcut_path"
       if [[ ${scmbDebug:-} = true ]]; then echo "Set \$$GIT_ENV_CHAR$e  => $file"; fi
       let e++
     done
